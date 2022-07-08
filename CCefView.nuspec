@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CCefView</id>
+    <version>0.0.1</version>
+    <authors>Sheen Tian</authors>
+    <owners>Sheen Tian</owners>
+    <projectUrl>https://github.com/CefView/CCefView</projectUrl>
+    <license type="expression">MIT</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes>Intial relesae</releaseNotes>
+    <description>A C wrapper for CefView.</description>
+    <copyright>Copyright © 2022 Sheen Tian</copyright>
+    <tags>CefView</tags>
+    <contentFiles>
+      <files include="cs\any\AutoGen\*.cs" buildAction="Compile" />
+    </contentFiles>
+  </metadata>
+
+  <!-- Contents -->
+  <files>
+    <file src="**\*" target="" />
+  </files>
+</package>

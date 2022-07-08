@@ -1,0 +1,13 @@
+.vscode
+.build
+.build.*
+dep/cef
+output
+.DS_Store
+CMakeLists.txt.user
+out
+__pycache__
+obj/
+CefView.WPF/Demo.CefView.WPF/bin
+CefView.WPF/CefView.WPF/bin
+src/DNCef.WPF/DNCef.WPF.Demo/bin
