@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>True</UseWPF>
+		<OutputType>WinExe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\.build\windows.x86_64\src\DNCef.WPF\DNCef.WPF\DNCef.WPF.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="webres\index.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="webres\tutorial.html">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy ..\..\..\output\$(Configuration)\* $(OutDir)\ /y /e /s /i" />
+	</Target>
+
+</Project>
