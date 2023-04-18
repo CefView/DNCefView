@@ -426,7 +426,10 @@ CCefSetting::copyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings&
 
   cs.javascript_dom_paste = (cef_state_t)(qs->pImpl_->javascriptDomPaste_);
 
+#if defined(CEF_VERSION_MAJOR) && CEF_VERSION_MAJOR < 100
+  //
   cs.plugins = (cef_state_t)(qs->pImpl_->plugins_);
+#endif
 
   cs.image_loading = (cef_state_t)(qs->pImpl_->imageLoading_);
 

@@ -1,4 +1,4 @@
-#include "CefSetting_c.h"
+﻿#include "CefSetting_c.h"
 #include "CefSetting.h"
 
 void CCefSetting_Delete(ccefsetting_class * thiz) {

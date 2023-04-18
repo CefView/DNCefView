@@ -108,7 +108,7 @@ if(OS_MACOS)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
 endif()
 
-include_directories(third-party/json/single_include)
+include_directories(third-party)
 
 # Include CefViewCore
 add_subdirectory(CefViewCore)
