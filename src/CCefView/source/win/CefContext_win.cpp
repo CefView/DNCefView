@@ -14,8 +14,14 @@
 bool
 CCefContext::init(const CCefConfig* config)
 {
+  // get current dll handle
+  HMODULE hCurrentModule = nullptr;
+  ::GetModuleHandleEx(
+    GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(&CCefContext::instance), &hCurrentModule);
+
+  // set cef folder path
   std::vector<wchar_t> modPath(MAX_PATH * 4);
-  ::GetModuleFileNameW(nullptr, modPath.data(), static_cast<DWORD>(modPath.size()));
+  ::GetModuleFileNameW(hCurrentModule, modPath.data(), static_cast<DWORD>(modPath.size()));
   ::PathRemoveFileSpecW(modPath.data());
   ::PathCombineW(modPath.data(), modPath.data(), L"CefView");
   ::SetDllDirectoryW(modPath.data());
