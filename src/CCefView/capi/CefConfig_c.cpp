@@ -1,4 +1,4 @@
-#include "CefConfig_c.h"
+﻿#include "CefConfig_c.h"
 #include "CefConfig.h"
 
 void CCefConfig_Delete(ccefconfig_class * thiz) {
@@ -119,5 +119,17 @@ void CCefConfig_setRemoteDebuggingPort(ccefconfig_class * thiz, short port) {
 
 short CCefConfig_remoteDebuggingPort(ccefconfig_class * thiz) {
   return thiz->remoteDebuggingPort();
+}
+
+CCEFVIEW_EXPORT void
+CCefConfig_setWindowlessRendering(ccefconfig_class* thiz, bool enable)
+{
+  thiz->setWindowlessRendering(enable);
+}
+
+CCEFVIEW_EXPORT bool
+CCefConfig_WindowlessRendering(ccefconfig_class* thiz)
+{
+  return thiz->windowlessRendering();
 }
 

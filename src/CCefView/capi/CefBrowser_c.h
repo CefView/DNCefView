@@ -1,4 +1,4 @@
-#ifndef CefBrowser_H_
+﻿#ifndef CefBrowser_H_
 #define CefBrowser_H_
 #pragma once
 
@@ -64,6 +64,7 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_sendKeyEvent(ccefbrowser_class * thiz, cefviewkeyeventtype_enum type, uint32_t modifiers, int windowsKeyCode, int nativeKeyCode, bool isSysKey, uint16_t character, uint16_t umodifiedCharacter, bool isFocusOnEditableField);
   CCEFVIEW_EXPORT void CCefBrowser_notifyMoveOrResizeStarted(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class* thiz, int rate);
 
 #if defined(__cplusplus)
 }

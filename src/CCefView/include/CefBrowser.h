@@ -270,7 +270,7 @@ public:
                     bool isFocusOnEditableField);
   void notifyMoveOrResizeStarted();
   void notifyScreenChanged();
-
+  void setWindowlessFrameRate(int rate);
 #pragma endregion
 
 #pragma region CEF Callbacks

@@ -247,6 +247,19 @@ public:
   /// </summary>
   short remoteDebuggingPort() const;
 
+  /// <summary>
+  /// Set windowlesss rendering, only work for cef version >= 125
+  /// </summary>
+  /// <param name="enable">enable</param>
+  void setWindowlessRendering(bool enable);
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="enable"></param>
+  /// <returns></returns>
+  bool windowlessRendering() const;
+
 protected:
   /// <summary>
   ///
@@ -272,6 +285,7 @@ private:
   std::string bridgeObjectName_;
   std::string builtinSchemaName_;
   std::string acceptLanguageList_;
+  bool windowLessRendering_ = false;
 
   std::optional<uint32_t> backgroundColor_;
   std::optional<short> remoteDebuggingPort_;

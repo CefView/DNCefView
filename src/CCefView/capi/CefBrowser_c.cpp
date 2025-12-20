@@ -1,4 +1,4 @@
-#include "CefBrowser_c.h"
+﻿#include "CefBrowser_c.h"
 #include "CefBrowser.h"
 
 void CCefBrowser_Delete(ccefbrowser_class * thiz) {
@@ -145,3 +145,7 @@ void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz) {
   thiz->notifyScreenChanged();
 }
 
+void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class* thiz, int rate)
+{
+  thiz->setWindowlessFrameRate(rate);
+}

@@ -1,4 +1,4 @@
-#include "CefSetting_c.h"
+﻿#include "CefSetting_c.h"
 #include "CefSetting.h"
 
 void CCefSetting_Delete(ccefsetting_class * thiz) {
@@ -223,5 +223,17 @@ void CCefSetting_setBackgroundColor(ccefsetting_class * thiz, const uint32_t & v
 
 uint32_t CCefSetting_backgroundColor(ccefsetting_class * thiz) {
   return thiz->backgroundColor();
+}
+
+void
+CCefSetting_setSharedTextureEnabled(ccefsetting_class* thiz,  bool enable)
+{
+  thiz->setSharedTextureEnabled(enable);
+}
+
+uint32_t
+CCefSetting_sharedTextureEnabled(ccefsetting_class* thiz)
+{
+  return thiz->sharedTextureEnabled();
 }
 

@@ -179,6 +179,18 @@ CCefConfig::remoteDebuggingPort() const
   return remoteDebuggingPort_.value_or(-1);
 }
 
+void
+CCefConfig::setWindowlessRendering(bool enable)
+{
+  windowLessRendering_ = enable;
+}
+
+bool
+CCefConfig::windowlessRendering() const
+{
+  return windowLessRendering_;
+}
+
 const CCefConfig::CCefConfig::ArgsMap&
 CCefConfig::GetCommandLineArgs(const CCefConfig* config)
 {
@@ -233,6 +245,10 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
 
   if (config->remoteDebuggingPort())
     settings.remote_debugging_port = config->remoteDebuggingPort();
+
+  if (config->windowlessRendering()) {
+    settings.windowless_rendering_enabled = config->windowlessRendering();
+  }
 
   settings.log_severity = (cef_log_severity_t)config->logLevel();
 }

@@ -1,4 +1,4 @@
-#ifndef CefConfig_H_
+﻿#ifndef CefConfig_H_
 #define CefConfig_H_
 #pragma once
 
@@ -56,6 +56,8 @@ extern "C"
   CCEFVIEW_EXPORT bool CCefConfig_multiThreadedMessageLoop(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setRemoteDebuggingPort(ccefconfig_class * thiz, short port);
   CCEFVIEW_EXPORT short CCefConfig_remoteDebuggingPort(ccefconfig_class * thiz);
+  CCEFVIEW_EXPORT void CCefConfig_setWindowlessRendering(ccefconfig_class* thiz, bool enable);
+  CCEFVIEW_EXPORT bool CCefConfig_WindowlessRendering(ccefconfig_class* thiz);
 
 #if defined(__cplusplus)
 }

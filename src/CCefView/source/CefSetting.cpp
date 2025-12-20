@@ -332,6 +332,18 @@ CCefSetting::backgroundColor() const
 }
 
 void
+CCefSetting::setSharedTextureEnabled(bool enabled)
+{
+  sharedTextureEnabled_ = enabled;
+}
+
+bool
+CCefSetting::sharedTextureEnabled() const
+{
+  return sharedTextureEnabled_;
+}
+
+void
 CCefSetting::copyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs)
 {
   if (!qs) {

@@ -32,7 +32,7 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
   // Set window info
   CefWindowInfo window_info;
   window_info.SetAsWindowless(0);
-
+  window_info.shared_texture_enabled = true; 
   // create the browser settings
   CefBrowserSettings browserSettings;
   CCefSetting::copyToCefBrowserSettings(setting, browserSettings);
@@ -472,6 +472,15 @@ CCefBrowser::notifyScreenChanged()
     return;
 
   pCefBrowser_->GetHost()->NotifyScreenInfoChanged();
+}
+
+void
+CCefBrowser::setWindowlessFrameRate(int rate)
+{
+  if (!pCefBrowser_)
+    return;
+
+  pCefBrowser_->GetHost()->SetWindowlessFrameRate(rate);
 }
 
 void
