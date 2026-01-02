@@ -54,9 +54,7 @@ extern "C"
   CCEFVIEW_EXPORT bool CCefBrowser_setPreference(ccefbrowser_class * thiz, const char * name, const char * value);
   CCEFVIEW_EXPORT void CCefBrowser_setDisablePopupContextMenu(ccefbrowser_class * thiz, bool disable);
   CCEFVIEW_EXPORT bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz);
-  CCEFVIEW_EXPORT void CCefBrowser_ImeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range);
-  CCEFVIEW_EXPORT void CCefBrowser_ImeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos);
-  CCEFVIEW_EXPORT void CCefBrowser_ImeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
+  CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate);
   CCEFVIEW_EXPORT void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused);
   CCEFVIEW_EXPORT void CCefBrowser_wasResized(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_wasHidden(ccefbrowser_class * thiz, bool hidden);
@@ -66,7 +64,9 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_sendKeyEvent(ccefbrowser_class * thiz, cefviewkeyeventtype_enum type, uint32_t modifiers, int windowsKeyCode, int nativeKeyCode, bool isSysKey, uint16_t character, uint16_t umodifiedCharacter, bool isFocusOnEditableField);
   CCEFVIEW_EXPORT void CCefBrowser_notifyMoveOrResizeStarted(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz);
-  CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate);
+  CCEFVIEW_EXPORT void CCefBrowser_imeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range);
+  CCEFVIEW_EXPORT void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos);
+  CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
 
 #if defined(__cplusplus)
 }

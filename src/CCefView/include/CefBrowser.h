@@ -226,34 +226,8 @@ public:
   /// <returns>True to disable; otherwise false</returns>
   bool isPopupContextMenuDisabled();
 
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="text"></param>
-  /// <param name="underlines"></param>
-  /// <param name="replacement_range"></param>
-  /// <param name="selection_range"></param>
-  virtual void ImeSetComposition(const std::string& text,
-                                 CefViewCompositionUnderline underlines[],
-                                 int count,
-                                 CefViewRange replacement_range,
-                                 CefViewRange selection_range);
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="text"></param>
-  /// <param name="replacement_range"></param>
-  /// <param name="relative_cursor_pos"></param>
-  virtual void ImeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos);
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="keep_selection"></param>
-  virtual void ImeFinishComposingText(bool keep_selection);
-
 #pragma region Control CEF
+  void setWindowlessFrameRate(int rate);
   void setFocus(bool focused);
   void wasResized();
   void wasHidden(bool hidden);
@@ -270,7 +244,13 @@ public:
                     bool isFocusOnEditableField);
   void notifyMoveOrResizeStarted();
   void notifyScreenChanged();
-  void setWindowlessFrameRate(int rate);
+  void imeSetComposition(const std::string& text,
+                         CefViewCompositionUnderline underlines[],
+                         int count,
+                         CefViewRange replacement_range,
+                         CefViewRange selection_range);
+  void imeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos);
+  void imeFinishComposingText(bool keep_selection);
 #pragma endregion
 
 #pragma region CEF Callbacks

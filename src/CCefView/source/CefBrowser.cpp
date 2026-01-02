@@ -324,41 +324,12 @@ CCefBrowser::isPopupContextMenuDisabled()
 }
 
 void
-CCefBrowser::ImeSetComposition(const std::string& text,
-                               CefViewCompositionUnderline underlines[],
-                               int count,
-                               CefViewRange replacement_range,
-                               CefViewRange selection_range)
+CCefBrowser::setWindowlessFrameRate(int rate)
 {
   if (!pCefBrowser_)
     return;
 
-  std::vector<CefCompositionUnderline> underlineBuffer;
-  for (int i = 0; i < count; i++) {
-    CefViewCompositionUnderline ul = *(underlines + i);
-    underlineBuffer.push_back(ul);
-  }
-  pCefBrowser_->GetHost()->ImeSetComposition(CefString(text), underlineBuffer, replacement_range, selection_range);
-}
-
-void
-CCefBrowser::ImeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos)
-{
-  if (!pCefBrowser_)
-    return;
-
-  CefString t;
-  t.FromString(text);
-  pCefBrowser_->GetHost()->ImeCommitText(t, replacement_range, relative_cursor_pos);
-}
-
-void
-CCefBrowser::ImeFinishComposingText(bool keep_selection)
-{
-  if (!pCefBrowser_)
-    return;
-
-  pCefBrowser_->GetHost()->ImeFinishComposingText(keep_selection);
+  pCefBrowser_->GetHost()->SetWindowlessFrameRate(rate);
 }
 
 void
@@ -476,12 +447,41 @@ CCefBrowser::notifyScreenChanged()
 }
 
 void
-CCefBrowser::setWindowlessFrameRate(int rate)
+CCefBrowser::imeSetComposition(const std::string& text,
+                               CefViewCompositionUnderline underlines[],
+                               int count,
+                               CefViewRange replacement_range,
+                               CefViewRange selection_range)
 {
   if (!pCefBrowser_)
     return;
 
-  pCefBrowser_->GetHost()->SetWindowlessFrameRate(rate);
+  std::vector<CefCompositionUnderline> underlineBuffer;
+  for (int i = 0; i < count; i++) {
+    CefViewCompositionUnderline ul = *(underlines + i);
+    underlineBuffer.push_back(ul);
+  }
+  pCefBrowser_->GetHost()->ImeSetComposition(CefString(text), underlineBuffer, replacement_range, selection_range);
+}
+
+void
+CCefBrowser::imeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos)
+{
+  if (!pCefBrowser_)
+    return;
+
+  CefString t;
+  t.FromString(text);
+  pCefBrowser_->GetHost()->ImeCommitText(t, replacement_range, relative_cursor_pos);
+}
+
+void
+CCefBrowser::imeFinishComposingText(bool keep_selection)
+{
+  if (!pCefBrowser_)
+    return;
+
+  pCefBrowser_->GetHost()->ImeFinishComposingText(keep_selection);
 }
 
 void

@@ -99,16 +99,8 @@ bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz) {
   return thiz->isPopupContextMenuDisabled();
 }
 
-void CCefBrowser_ImeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range) {
-  thiz->ImeSetComposition(text, underlines, count, replacement_range, selection_range);
-}
-
-void CCefBrowser_ImeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos) {
-  thiz->ImeCommitText(text, replacement_range, relative_cursor_pos);
-}
-
-void CCefBrowser_ImeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection) {
-  thiz->ImeFinishComposingText(keep_selection);
+void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate) {
+  thiz->setWindowlessFrameRate(rate);
 }
 
 void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused) {
@@ -147,7 +139,15 @@ void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz) {
   thiz->notifyScreenChanged();
 }
 
-void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate) {
-  thiz->setWindowlessFrameRate(rate);
+void CCefBrowser_imeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range) {
+  thiz->imeSetComposition(text, underlines, count, replacement_range, selection_range);
+}
+
+void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos) {
+  thiz->imeCommitText(text, replacement_range, relative_cursor_pos);
+}
+
+void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection) {
+  thiz->imeFinishComposingText(keep_selection);
 }
 

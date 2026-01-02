@@ -192,24 +192,10 @@ namespace DNCefView
         }
 
         [DllImport("CCefView")]
-        private static extern void CCefBrowser_ImeSetComposition(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, CefViewCompositionUnderline[] underlines, int count, CefViewRange replacement_range, CefViewRange selection_range);
-        public void ImeSetComposition(string text, CefViewCompositionUnderline[] underlines, int count, CefViewRange replacement_range, CefViewRange selection_range)
+        private static extern void CCefBrowser_setWindowlessFrameRate(IntPtr thiz, int rate);
+        public void SetWindowlessFrameRate(int rate)
         {
-            CCefBrowser_ImeSetComposition(_native, text, underlines, count, replacement_range, selection_range);
-        }
-
-        [DllImport("CCefView")]
-        private static extern void CCefBrowser_ImeCommitText(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, CefViewRange replacement_range, int relative_cursor_pos);
-        public void ImeCommitText(string text, CefViewRange replacement_range, int relative_cursor_pos)
-        {
-            CCefBrowser_ImeCommitText(_native, text, replacement_range, relative_cursor_pos);
-        }
-
-        [DllImport("CCefView")]
-        private static extern void CCefBrowser_ImeFinishComposingText(IntPtr thiz, bool keep_selection);
-        public void ImeFinishComposingText(bool keep_selection)
-        {
-            CCefBrowser_ImeFinishComposingText(_native, keep_selection);
+            CCefBrowser_setWindowlessFrameRate(_native, rate);
         }
 
         [DllImport("CCefView")]
@@ -276,10 +262,24 @@ namespace DNCefView
         }
 
         [DllImport("CCefView")]
-        private static extern void CCefBrowser_setWindowlessFrameRate(IntPtr thiz, int rate);
-        public void SetWindowlessFrameRate(int rate)
+        private static extern void CCefBrowser_imeSetComposition(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, CefViewCompositionUnderline[] underlines, int count, CefViewRange replacement_range, CefViewRange selection_range);
+        public void ImeSetComposition(string text, CefViewCompositionUnderline[] underlines, CefViewRange replacement_range, CefViewRange selection_range)
         {
-            CCefBrowser_setWindowlessFrameRate(_native, rate);
+            CCefBrowser_imeSetComposition(_native, text, underlines, underlines.Length, replacement_range, selection_range);
+        }
+
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_imeCommitText(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, CefViewRange replacement_range, int relative_cursor_pos);
+        public void ImeCommitText(string text, CefViewRange replacement_range, int relative_cursor_pos)
+        {
+            CCefBrowser_imeCommitText(_native, text, replacement_range, relative_cursor_pos);
+        }
+
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_imeFinishComposingText(IntPtr thiz, bool keep_selection);
+        public void ImeFinishComposingText(bool keep_selection)
+        {
+            CCefBrowser_imeFinishComposingText(_native, keep_selection);
         }
 
     }
