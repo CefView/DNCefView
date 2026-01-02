@@ -167,123 +167,131 @@ namespace DNCefView
         CEF_CUS_NONE = 3,
     };
 
+    // Source: CefViewPoint 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewPoint
     {
-        // int x;
+        // Source: int x
         public int X;
 
-        // int y;
+        // Source: int y
         public int Y;
 
     }
 
+    // Source: CefViewSize 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewSize
     {
-        // int width;
+        // Source: int width
         public int Width;
 
-        // int height;
+        // Source: int height
         public int Height;
 
     }
 
+    // Source: CefViewRect 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewRect
     {
-        // int x;
+        // Source: int x
         public int X;
 
-        // int y;
+        // Source: int y
         public int Y;
 
-        // int width;
+        // Source: int width
         public int Width;
 
-        // int height;
+        // Source: int height
         public int Height;
 
     }
 
+    // Source: CefViewScreenInfo 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewScreenInfo
     {
-        // float device_scale_factor;
+        // Source: float device_scale_factor
         public float DeviceScaleFactor;
 
-        // int depth;
+        // Source: int depth
         public int Depth;
 
-        // int depth_per_component;
+        // Source: int depth_per_component
         public int DepthPerComponent;
 
-        // int is_monochrome;
+        // Source: int is_monochrome
         public int IsMonochrome;
 
-        // _cef_rect_t rect;
+        // Source: cef_rect_t rect
         public CefViewRect Rect;
 
-        // _cef_rect_t available_rect;
+        // Source: cef_rect_t available_rect
         public CefViewRect AvailableRect;
 
     }
 
+    // Source: CefViewRange 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewRange
     {
-        // unsigned int from;
+        // Source: uint32_t from
         public uint From;
 
-        // unsigned int to;
+        // Source: uint32_t to
         public uint To;
 
     }
 
+    // Source: CefViewDraggableRegion 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewDraggableRegion
     {
-        // _cef_rect_t bounds;
+        // Source: cef_rect_t bounds
         public CefViewRect Bounds;
 
-        // int draggable;
+        // Source: int draggable
         public int Draggable;
 
     }
 
+    // Source: CefViewCursorInfo 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewCursorInfo
     {
-        // _cef_point_t hotspot;
+        // Source: cef_point_t hotspot
         public CefViewPoint Hotspot;
 
-        // float image_scale_factor;
+        // Source: float image_scale_factor
         public float ImageScaleFactor;
 
-        // void * buffer;
+        // Source: void * buffer
         public IntPtr Buffer;
 
-        // _cef_size_t size;
+        // Source: cef_size_t size
         public CefViewSize Size;
 
     }
 
+    // Source: CefViewCompositionUnderline 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewCompositionUnderline
     {
-        // _cef_range_t range;
+        // Source: cef_range_t range
         public CefViewRange Range;
 
-        // unsigned int color;
+        // Source: cef_color_t color
         public uint Color;
 
-        // unsigned int background_color;
+        // Source: cef_color_t background_color
         public uint BackgroundColor;
 
-        // int thick;
+        // Source: int thick
         public int Thick;
 
-        // cef_composition_underline_style_t style;
+        // Source: cef_composition_underline_style_t style
         public CefViewCompositionUnderlineStyle Style;
 
     }

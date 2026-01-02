@@ -177,7 +177,7 @@ namespace DNCefView.WPF
             rect.Height = RenderSize.Height == 0 ? 1 : (int)RenderSize.Height;
         }
 
-        bool WPF_OnCefGetScreenPoint(int browserId, int viewX, int viewY, out int screenX, out int screenY)
+        bool WPF_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
             Point p;
             this.Dispatcher.Invoke(() =>

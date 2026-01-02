@@ -265,12 +265,12 @@ namespace DNCefView
             }
         }
 
-        bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, out int screenX, out int screenY)
+        bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
             var del = _dnCefViewDelegate.Target as ICefViewDelegate;
             if (null != del)
             {
-                return del.OnCefGetScreenPoint(browserId, viewX, viewY, out screenX, out screenY);
+                return del.OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
             }
 
             screenX = 0;

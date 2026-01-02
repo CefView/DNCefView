@@ -35,9 +35,9 @@ class CSharpTypeMapper(TypeMapper):
         super().__init__()
         self.table = {
             "void *": ("IntPtr", ""),
+            "char *": ("string", ""),
+            "unsigned char *": ("byte[]", ""),
             "std::string": ("string", ""),
-            "int": ("int", ""),
-            "uint": ("uint", ""),
             "unsigned int": ("uint", ""),
             "int16_t": ("Int16", ""),
             "uint16_t": ("UInt16", ""),
@@ -45,6 +45,7 @@ class CSharpTypeMapper(TypeMapper):
             "uint32_t": ("UInt32", ""),
             "int64_t": ("Int64", ""),
             "uint64_t": ("UInt64", ""),
+            "char *": ("string", ""),
         }
 
     def map_type(self, type):

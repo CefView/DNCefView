@@ -11,8 +11,9 @@ TYPE_PREFIX = ""
 
 
 class Parameter:
-    def __init__(self, type, spelling) -> None:
+    def __init__(self, type, basic, spelling) -> None:
         self.type = type
+        self.basic = basic
         self.spelling = spelling
 
 
@@ -28,15 +29,20 @@ class CSharpGenerator(SourceGenerator):
     #################################################################################
     def translate_type(self, t, marshal: bool = False):
         type = t.spelling
+        is_ref = False
+
         match t.get_canonical().kind:
-            case clang.cindex.TypeKind.VOID:
-                type = t.spelling
-            case clang.cindex.TypeKind.POINTER:
-                type = t.spelling
-            case clang.cindex.TypeKind.LVALUEREFERENCE:
-                type = t.get_pointee().spelling
-            case clang.cindex.TypeKind.POINTER:
-                type = t.get_pointee().spelling
+            case clang.cindex.TypeKind.LVALUEREFERENCE | clang.cindex.TypeKind.POINTER:
+                pointee = t.get_pointee()
+                if not pointee.kind in [
+                    clang.cindex.TypeKind.VOID, 
+                    clang.cindex.TypeKind.SCHAR, 
+                    clang.cindex.TypeKind.CHAR_S, 
+                    clang.cindex.TypeKind.UCHAR,
+                    clang.cindex.TypeKind.CHAR_U,
+                ]:
+                    is_ref = not pointee.is_const_qualified()
+                    type = pointee.spelling
 
         type = type.replace("const", "").strip()
 
@@ -48,33 +54,58 @@ class CSharpGenerator(SourceGenerator):
         if marshal and target_type == "string":
             return "IntPtr"
 
-        return target_type
+        return f"{'ref ' if is_ref else ''}{target_type}"
 
     def parse_param_list(self, cursor: clang.cindex.Cursor):
         params = []
         args = []
+        
         # collect data
-        for m_cursor in cursor.get_children():
-            match m_cursor.kind:
+        for c in cursor.get_children():
+            match c.kind:
                 case clang.cindex.CursorKind.PARM_DECL:
-                    param_type = m_cursor.type
-                    param_name = m_cursor.spelling
+                    is_ref = False
+                    param_type = c.type
+                    basic_type = c.type
+                    param_name = c.spelling
 
-                    # find the basic type
-                    for cur in m_cursor.get_children():
-                        match cur.kind:
-                            case clang.cindex.CursorKind.TYPE_REF:
-                                param_type = cur.type
+                    match param_type.kind:
+                        case clang.cindex.TypeKind.LVALUEREFERENCE | clang.cindex.TypeKind.POINTER:
+                            for cc in c.get_children():
+                                match cc.kind:
+                                    case clang.cindex.CursorKind.TYPE_REF:
+                                        basic_type = cc.type
+                        case _:
+                            pass
 
                     params.append(
                         Parameter(
                             param_type.spelling,
-                            f"{self.translate_type(param_type)} {param_name}",
+                            basic_type.spelling,
+                            f"{self.translate_type(param_type)} {param_name}"
                         )
                     )
                     args.append(param_name)
 
         return (params, args)
+
+    def marshal_params(self, params, args, out_params, out_args):
+        for i in range(0, len(params)):
+            p = params[i]
+            a = args[i]
+
+            if p.basic.startswith("CCef") and p.basic in self.types.keys():
+                out_params.append(p.spelling.replace(self.types[p.basic], "IntPtr"))
+                out_args.append(f"{a}.NativeObject")
+            elif p.basic.startswith("std::string"):
+                out_params.append(f"[MarshalAs(UnmanagedType.LPUTF8Str)] " + p.spelling)
+                out_args.append(a)
+            elif "[]" in p.spelling:
+                out_params.append(f"[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = {len(out_params) + 1})] " + p.spelling)
+                out_args.append(a)
+            else:
+                out_params.append(p.spelling)
+                out_args.append(a)
 
     def return_prefix(self, rt):
         match rt.get_canonical().kind:
@@ -184,6 +215,7 @@ class CSharpGenerator(SourceGenerator):
         )
 
         class_header = (
+            f'    // Source: {cpp_class} \n'
             f"    public partial class {sharp_class} : IDisposable\n"
             f"    {{\n"
             f"        private IntPtr _native;\n"
@@ -228,31 +260,19 @@ class CSharpGenerator(SourceGenerator):
             match c_cursor.kind:
                 case clang.cindex.CursorKind.CONSTRUCTOR:
                     print(f"******************************************")
-                    method_name = c_cursor.spelling
+                    cpp_constructor_name = c_cursor.spelling
+                    print(f"Constructor: {cpp_constructor_name}")
 
-                    print(f"Constructor: {method_name}")
                     params, args = self.parse_param_list(c_cursor)
-                    print(f"Parameters:")
-                    [print(f"  {e}") for e in params]
+                    print(f"  Parameters:")
+                    [print(f"    {e}") for e in params]
 
                     marshal_params = []
-                    for p in params:
-                        if p.type.startswith("CCef") and p.type in self.types.keys():
-                            marshal_params.append(
-                                p.spelling.replace(self.types[p.type], "IntPtr")
-                            )
-                        elif p.spelling.startswith("string"):
-                            marshal_params.append(
-                                p.spelling.replace(
-                                    "string",
-                                    "[MarshalAs(UnmanagedType.LPUTF8Str)] string",
-                                )
-                            )
-                        else:
-                            marshal_params.append(p.spelling)
+                    self.marshal_params(params, args, marshal_params, [])
 
                     # render class constructor
                     constructor = (
+                        f"        // Source: {c_cursor.displayname}\n"
                         f'        [DllImport("{self.dll}")]\n'
                         f'        private static extern IntPtr {cpp_class}_new{constructor_index}({", ".join(marshal_params)});\n'
                         f"\n"
@@ -263,46 +283,29 @@ class CSharpGenerator(SourceGenerator):
 
                 case clang.cindex.CursorKind.CXX_METHOD:
                     print(f"******************************************")
-                    cpp_return_type = c_cursor.result_type
                     cpp_method_name = c_cursor.spelling
+                    print(f"Method: {cpp_method_name}")
+                    cpp_return_type = c_cursor.result_type
+
                     csharp_method_name = (
                         c_cursor.spelling[:1].upper() + c_cursor.spelling[1:]
                     )
 
                     params, args = self.parse_param_list(c_cursor)
-
+                    print(f"  Parameters:")
+                    [print(f"    {e}") for e in params]
+                    
                     marshal_params = [f"IntPtr thiz"]
                     marshal_args = ["_native"]
-
-                    for i in range(0, len(params)):
-                        if (
-                            params[i].type.startswith("CCef")
-                            and params[i].type in self.types.keys()
-                        ):
-                            marshal_params.append(
-                                params[i].spelling.replace(
-                                    self.types[params[i].type], "IntPtr"
-                                )
-                            )
-                            marshal_args.append(f"{args[i]}.NativeObject")
-                        elif params[i].spelling.startswith("string"):
-                            marshal_params.append(
-                                params[i].spelling.replace(
-                                    "string",
-                                    "[MarshalAs(UnmanagedType.LPUTF8Str)] string",
-                                )
-                            )
-                            marshal_args.append(args[i])
-                        else:
-                            marshal_params.append(params[i].spelling)
-                            marshal_args.append(args[i])
+                    self.marshal_params(params, args, marshal_params, marshal_args)
 
                     # render class method
                     print(f"Definition:")
                     method = (
+                        f"        // Source: {cpp_return_type.spelling} {c_cursor.displayname}\n"
                         f'        [DllImport("{self.dll}")]\n'
                         f'        private static extern {self.translate_type(cpp_return_type, True)} {cpp_class}_{cpp_method_name}({", ".join(marshal_params)});\n'
-                        f'        public {self.translate_type(cpp_return_type)} {csharp_method_name}({", ".join([i.spelling for i in params])})\n'
+                        f'        public {self.translate_type(cpp_return_type)} {csharp_method_name}({", ".join([p.spelling for p in params])})\n'
                         f"        {{\n"
                     )
                     if self.translate_type(cpp_return_type) == "string":
@@ -324,6 +327,7 @@ class CSharpGenerator(SourceGenerator):
         sharp_struct = f"{TYPE_PREFIX}{cpp_struct}"
 
         struct_header = (
+            f'    // Source: {cpp_struct} \n'
             f"    [StructLayout(LayoutKind.Sequential)]\n"
             f"    public partial struct {sharp_struct}\n"
             f"    {{\n"
@@ -334,12 +338,10 @@ class CSharpGenerator(SourceGenerator):
         for f_cursor in cursor.get_children():
             if f_cursor.access_specifier != clang.cindex.AccessSpecifier.PUBLIC:
                 continue
+
             match f_cursor.kind:
                 case clang.cindex.CursorKind.FIELD_DECL:
                     print(f"==== struct member: {f_cursor.spelling}")
-                    self.source_file.write(
-                        f"        // {f_cursor.type.get_canonical().spelling} {f_cursor.spelling};\n"
-                    )
 
                     # write the field declaration
                     match f_cursor.type.get_canonical().kind:
@@ -350,17 +352,26 @@ class CSharpGenerator(SourceGenerator):
                                 clang.cindex.TypeKind.FUNCTIONNOPROTO,
                             ]:
                                 params, args = self.parse_param_list(f_cursor)
+                                print(f"  Parameters:")
+                                [print(f"    {e}") for e in params]
+
+                                marshal_params = []
+                                self.marshal_params(params, args, marshal_params, [])
+
                                 self.source_file.write(
+                                    f"        // Source: {f_cursor.type.get_canonical().spelling.replace('(*)', f_cursor.displayname)}\n"
                                     f"        [UnmanagedFunctionPointer(CallingConvention.StdCall)]\n"
-                                    f"        public delegate {self.translate_type(pointee.get_result())} {self.extract_funcptr_name(f_cursor.spelling)}Callback({", ".join([i.spelling.replace("char *", "string").replace("int *", "out int") for i in params])});\n"
+                                    f"        public delegate {self.translate_type(pointee.get_result())} {self.extract_funcptr_name(f_cursor.spelling)}Callback({", ".join(marshal_params)});\n"
                                     f"        public {self.extract_funcptr_name(f_cursor.spelling)}Callback {self.extract_funcptr_name(f_cursor.spelling)}Cb;\n"
                                 )
                             else:
                                 self.source_file.write(
+                                    f"        // Source: {f_cursor.type.spelling} {f_cursor.displayname}\n"
                                     f"        public {self.translate_type(f_cursor.type.get_canonical())} {self.convert_arg_name(f_cursor.spelling)};\n"
                                 )
                         case _:
                             self.source_file.write(
+                                f"        // Source: {f_cursor.type.spelling} {f_cursor.displayname}\n"
                                 f"        public {self.translate_type(f_cursor.type.get_canonical())} {self.convert_arg_name(f_cursor.spelling)};\n"
                             )
                             pass

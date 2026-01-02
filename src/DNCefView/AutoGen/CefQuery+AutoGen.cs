@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace DNCefView
 {
+    // Source: CCefQuery 
     public partial class CefQuery : IDisposable
     {
         private IntPtr _native;
@@ -34,12 +35,15 @@ namespace DNCefView
             }
         }
 
+        // Source: CCefQuery()
         [DllImport("CCefView")]
         private static extern IntPtr CCefQuery_new0();
 
+        // Source: CCefQuery(const std::string &, const int64_t)
         [DllImport("CCefView")]
         private static extern IntPtr CCefQuery_new1([MarshalAs(UnmanagedType.LPUTF8Str)] string req, Int64 query);
 
+        // Source: const std::string & getRequest()
         [DllImport("CCefView")]
         private static extern IntPtr CCefQuery_getRequest(IntPtr thiz);
         public string GetRequest()
@@ -47,6 +51,7 @@ namespace DNCefView
             return Marshal.PtrToStringUTF8(CCefQuery_getRequest(_native));
         }
 
+        // Source: const int64_t getId()
         [DllImport("CCefView")]
         private static extern Int64 CCefQuery_getId(IntPtr thiz);
         public Int64 GetId()
@@ -54,6 +59,7 @@ namespace DNCefView
             return CCefQuery_getId(_native);
         }
 
+        // Source: const std::string & getResponse()
         [DllImport("CCefView")]
         private static extern IntPtr CCefQuery_getResponse(IntPtr thiz);
         public string GetResponse()
@@ -61,6 +67,7 @@ namespace DNCefView
             return Marshal.PtrToStringUTF8(CCefQuery_getResponse(_native));
         }
 
+        // Source: const bool getResult()
         [DllImport("CCefView")]
         private static extern bool CCefQuery_getResult(IntPtr thiz);
         public bool GetResult()
@@ -68,6 +75,7 @@ namespace DNCefView
             return CCefQuery_getResult(_native);
         }
 
+        // Source: const int getError()
         [DllImport("CCefView")]
         private static extern int CCefQuery_getError(IntPtr thiz);
         public int GetError()
@@ -75,6 +83,7 @@ namespace DNCefView
             return CCefQuery_getError(_native);
         }
 
+        // Source: void setResponseResult(bool, const std::string &, int)
         [DllImport("CCefView")]
         private static extern void CCefQuery_setResponseResult(IntPtr thiz, bool success, [MarshalAs(UnmanagedType.LPUTF8Str)] string response, int error);
         public void SetResponseResult(bool success, string response, int error)

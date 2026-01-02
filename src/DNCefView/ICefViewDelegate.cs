@@ -1,3 +1,5 @@
+using System;
+
 namespace DNCefView
 {
     public interface ICefViewDelegate
@@ -42,7 +44,7 @@ namespace DNCefView
 
         void OnCefGetViewRect(int browserId, ref CefViewRect rect);
 
-        bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, out int screenX, out int screenY);
+        bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY);
 
         bool OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info);
 

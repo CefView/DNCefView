@@ -338,9 +338,9 @@ namespace DNCefView.WPF
             WPF_OnCefGetViewRect(browserId, ref rect);
         }
 
-        bool ICefViewDelegate.OnCefGetScreenPoint(int browserId, int viewX, int viewY, out int screenX, out int screenY)
+        bool ICefViewDelegate.OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
-            return WPF_OnCefGetScreenPoint(browserId, viewX, viewY, out screenX, out screenY);
+            return WPF_OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
         }
 
         bool ICefViewDelegate.OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
