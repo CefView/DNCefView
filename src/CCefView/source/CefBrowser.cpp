@@ -29,13 +29,14 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
   // create browser client handler
   CefRefPtr<CefViewBrowserClient> pClient = new CefViewBrowserClient(pContext->pApp_, pClientDelegate);
 
-  // Set window info
-  CefWindowInfo window_info;
-  window_info.SetAsWindowless(0);
-  window_info.shared_texture_enabled = true; 
   // create the browser settings
   CefBrowserSettings browserSettings;
   CCefSetting::copyToCefBrowserSettings(setting, browserSettings);
+
+  // Set window info
+  CefWindowInfo window_info;
+  window_info.SetAsWindowless(0);
+  window_info.shared_texture_enabled = (setting && setting->hardwareAcceleration_);
 
   if (CefColorGetA(browserSettings.background_color) == 0)
     transparentPaintingEnabled = true;
