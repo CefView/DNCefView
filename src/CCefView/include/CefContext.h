@@ -23,9 +23,9 @@
 /// <summary>
 ///
 /// </summary>
-struct CCefContext
+class CCefContext
 {
-  friend struct CCefBrowser;
+  friend class CCefBrowser;
   friend class CCefAppDelegate;
   friend class CCefClientDelegate;
 

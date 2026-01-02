@@ -24,6 +24,18 @@ CCefConfig::addCommandLineSwitchWithValue(const std::string& smitch, const std::
 }
 
 void
+CCefConfig::setCommandLinePassthroughDisabled(const bool disabled)
+{
+  commandLinePassthroughDisabled_ = disabled;
+}
+
+bool
+CCefConfig::commandLinePassthroughDisabled() const
+{
+  return commandLinePassthroughDisabled_;
+}
+
+void
 CCefConfig::setLogLevel(CefViewLogLevel lvl)
 {
   logLevel_ = lvl;
@@ -219,6 +231,10 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
     return;
   }
 
+  settings.command_line_args_disabled = config->commandLinePassthroughDisabled_;
+  settings.windowless_rendering_enabled = config->windowlessRendering();
+  settings.log_severity = (cef_log_severity_t)config->logLevel();
+
   if (!config->userAgent().empty())
     CefString(&settings.user_agent) = config->userAgent();
 
@@ -231,24 +247,18 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
   if (!config->acceptLanguageList().empty())
     CefString(&settings.accept_language_list) = config->acceptLanguageList();
 
-  if (config->persistSessionCookies())
+  if (config->persistSessionCookies_.has_value())
     settings.persist_session_cookies = config->persistSessionCookies();
 
-  if (config->persistUserPreferences())
+  if (config->persistUserPreferences_.has_value())
     settings.persist_user_preferences = config->persistUserPreferences();
 
-  if (config->multiThreadedMessageLoop())
+  if (config->multiThreadedMessageLoop_.has_value())
     settings.multi_threaded_message_loop = config->multiThreadedMessageLoop();
 
-  if (config->backgroundColor())
+  if (config->backgroundColor_.has_value())
     settings.background_color = config->backgroundColor();
 
-  if (config->remoteDebuggingPort())
+  if (config->remoteDebuggingPort_.has_value())
     settings.remote_debugging_port = config->remoteDebuggingPort();
-
-  if (config->windowlessRendering()) {
-    settings.windowless_rendering_enabled = config->windowlessRendering();
-  }
-
-  settings.log_severity = (cef_log_severity_t)config->logLevel();
 }

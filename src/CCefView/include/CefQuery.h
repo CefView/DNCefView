@@ -9,7 +9,7 @@
 /// <summary>
 ///
 /// </summary>
-struct CCefQuery
+class CCefQuery
 {
 public:
   /// <summary>

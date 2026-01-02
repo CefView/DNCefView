@@ -68,7 +68,7 @@ if __name__ == "__main__":
     translator.add_generator(cgen)
 
     csharpgen = CSharpGenerator(
-        "src/DNCef/AutoGen", "DNCefView", "CCefView", CSharpTypeMapper()
+        "src/DNCefView/AutoGen", "DNCefView", "CCefView", CSharpTypeMapper()
     )
     translator.add_generator(csharpgen)
 

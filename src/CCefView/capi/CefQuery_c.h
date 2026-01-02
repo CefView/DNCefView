@@ -1,3 +1,5 @@
+// Auto-generated file. Do not modify.
+// clang-format off
 #ifndef CefQuery_H_
 #define CefQuery_H_
 #pragma once

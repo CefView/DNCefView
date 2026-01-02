@@ -16,9 +16,9 @@
 /// <summary>
 ///
 /// </summary>
-struct CCefConfig
+class CCefConfig
 {
-  friend struct CCefContext;
+  friend class CCefContext;
 
 public:
   /// <summary>
@@ -82,6 +82,18 @@ public:
   ///// Gets the locales directory path
   ///// </summary>
   // const std::string& localesDirectoryPath() const;
+
+  /// <summary>
+  /// Sets the flag to disable the command line pass through
+  /// </summary>
+  /// <param name="disabled">True to disable the command line pass through, false to enable</param>
+  void setCommandLinePassthroughDisabled(const bool disabled);
+
+  /// <summary>
+  /// Gets the flag of disable command line pass through
+  /// </summary>
+  /// <returns>The flag indicates the disable command line pass through</returns>
+  bool commandLinePassthroughDisabled() const;
 
   /// <summary>
   /// Sets the log level
@@ -278,6 +290,9 @@ private:
   CefViewLogLevel logLevel_;
   ArgsMap commandLineArgs_;
 
+  bool commandLinePassthroughDisabled_ = true;
+  bool windowLessRendering_ = true;
+
   std::string locale_;
   std::string userAgent_;
   std::string cachePath_;
@@ -285,7 +300,6 @@ private:
   std::string bridgeObjectName_;
   std::string builtinSchemaName_;
   std::string acceptLanguageList_;
-  bool windowLessRendering_ = false;
 
   std::optional<uint32_t> backgroundColor_;
   std::optional<short> remoteDebuggingPort_;

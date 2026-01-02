@@ -415,5 +415,19 @@ namespace DNCefView
             return CCefSetting_backgroundColor(_native);
         }
 
+        [DllImport("CCefView")]
+        private static extern void CCefSetting_setHardwareAccelerationEnabled(IntPtr thiz, bool enabled);
+        public void SetHardwareAccelerationEnabled(bool enabled)
+        {
+            CCefSetting_setHardwareAccelerationEnabled(_native, enabled);
+        }
+
+        [DllImport("CCefView")]
+        private static extern bool CCefSetting_hardwareAccelerationEnabled(IntPtr thiz);
+        public bool HardwareAccelerationEnabled()
+        {
+            return CCefSetting_hardwareAccelerationEnabled(_native);
+        }
+
     }
 }

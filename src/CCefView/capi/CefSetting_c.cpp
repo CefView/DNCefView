@@ -1,4 +1,6 @@
-﻿#include "CefSetting_c.h"
+// Auto-generated file. Do not modify.
+// clang-format off
+#include "CefSetting_c.h"
 #include "CefSetting.h"
 
 void CCefSetting_Delete(ccefsetting_class * thiz) {
@@ -225,15 +227,11 @@ uint32_t CCefSetting_backgroundColor(ccefsetting_class * thiz) {
   return thiz->backgroundColor();
 }
 
-void
-CCefSetting_setSharedTextureEnabled(ccefsetting_class* thiz,  bool enable)
-{
-  thiz->setSharedTextureEnabled(enable);
+void CCefSetting_setHardwareAccelerationEnabled(ccefsetting_class * thiz, bool enabled) {
+  thiz->setHardwareAccelerationEnabled(enabled);
 }
 
-uint32_t
-CCefSetting_sharedTextureEnabled(ccefsetting_class* thiz)
-{
-  return thiz->sharedTextureEnabled();
+bool CCefSetting_hardwareAccelerationEnabled(ccefsetting_class * thiz) {
+  return thiz->hardwareAccelerationEnabled();
 }
 

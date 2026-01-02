@@ -154,6 +154,8 @@ class CGenerator(SourceGenerator):
 
         # write file header
         header = (
+            "// Auto-generated file. Do not modify.\n"
+            "// clang-format off\n"
             f"#ifndef {self.source_name}_H_\n"
             f"#define {self.source_name}_H_\n"
             "#pragma once\n"
@@ -184,6 +186,8 @@ class CGenerator(SourceGenerator):
         self.header_file.write(header)
 
         header = (
+            "// Auto-generated file. Do not modify.\n"
+            "// clang-format off\n"
             f'#include "{self.source_name}_c.h"\n'
             f'#include "{self.source_name}.h"\n\n'
         )

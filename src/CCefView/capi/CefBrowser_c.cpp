@@ -1,4 +1,6 @@
-﻿#include "CefBrowser_c.h"
+// Auto-generated file. Do not modify.
+// clang-format off
+#include "CefBrowser_c.h"
 #include "CefBrowser.h"
 
 void CCefBrowser_Delete(ccefbrowser_class * thiz) {
@@ -145,7 +147,7 @@ void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz) {
   thiz->notifyScreenChanged();
 }
 
-void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class* thiz, int rate)
-{
+void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate) {
   thiz->setWindowlessFrameRate(rate);
 }
+

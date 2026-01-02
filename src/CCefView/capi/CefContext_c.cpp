@@ -1,3 +1,5 @@
+// Auto-generated file. Do not modify.
+// clang-format off
 #include "CefContext_c.h"
 #include "CefContext.h"
 

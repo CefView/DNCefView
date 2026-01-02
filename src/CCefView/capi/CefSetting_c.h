@@ -1,4 +1,6 @@
-﻿#ifndef CefSetting_H_
+// Auto-generated file. Do not modify.
+// clang-format off
+#ifndef CefSetting_H_
 #define CefSetting_H_
 #pragma once
 
@@ -82,8 +84,8 @@ extern "C"
   CCEFVIEW_EXPORT cefviewpluingstate_enum CCefSetting_webGL(ccefsetting_class * thiz);
   CCEFVIEW_EXPORT void CCefSetting_setBackgroundColor(ccefsetting_class * thiz, const uint32_t & value);
   CCEFVIEW_EXPORT uint32_t CCefSetting_backgroundColor(ccefsetting_class * thiz);
-  CCEFVIEW_EXPORT void CCefSetting_setSharedTextureEnabled(ccefsetting_class* thiz, bool enable);
-  CCEFVIEW_EXPORT uint32_t CCefSetting_sharedTextureEnabled(ccefsetting_class* thiz);
+  CCEFVIEW_EXPORT void CCefSetting_setHardwareAccelerationEnabled(ccefsetting_class * thiz, bool enabled);
+  CCEFVIEW_EXPORT bool CCefSetting_hardwareAccelerationEnabled(ccefsetting_class * thiz);
 
 #if defined(__cplusplus)
 }

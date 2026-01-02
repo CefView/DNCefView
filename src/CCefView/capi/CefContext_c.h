@@ -1,3 +1,5 @@
+// Auto-generated file. Do not modify.
+// clang-format off
 #ifndef CefContext_H_
 #define CefContext_H_
 #pragma once

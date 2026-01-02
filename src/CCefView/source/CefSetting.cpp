@@ -332,15 +332,15 @@ CCefSetting::backgroundColor() const
 }
 
 void
-CCefSetting::setSharedTextureEnabled(bool enabled)
+CCefSetting::setHardwareAccelerationEnabled(bool enabled)
 {
-  sharedTextureEnabled_ = enabled;
+  hardwareAcceleration_ = enabled;
 }
 
 bool
-CCefSetting::sharedTextureEnabled() const
+CCefSetting::hardwareAccelerationEnabled() const
 {
-  return sharedTextureEnabled_;
+  return hardwareAcceleration_;
 }
 
 void

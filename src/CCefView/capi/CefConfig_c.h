@@ -1,4 +1,6 @@
-﻿#ifndef CefConfig_H_
+// Auto-generated file. Do not modify.
+// clang-format off
+#ifndef CefConfig_H_
 #define CefConfig_H_
 #pragma once
 
@@ -30,6 +32,8 @@ extern "C"
   CCEFVIEW_EXPORT ccefconfig_class * CCefConfig_new0();
   CCEFVIEW_EXPORT void CCefConfig_addCommandLineSwitch(ccefconfig_class * thiz, const char * smitch);
   CCEFVIEW_EXPORT void CCefConfig_addCommandLineSwitchWithValue(ccefconfig_class * thiz, const char * smitch, const char * v);
+  CCEFVIEW_EXPORT void CCefConfig_setCommandLinePassthroughDisabled(ccefconfig_class * thiz, const bool disabled);
+  CCEFVIEW_EXPORT bool CCefConfig_commandLinePassthroughDisabled(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setLogLevel(ccefconfig_class * thiz, cefviewloglevel_enum lvl);
   CCEFVIEW_EXPORT cefviewloglevel_enum CCefConfig_logLevel(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setLocale(ccefconfig_class * thiz, const char * locale);
@@ -56,8 +60,8 @@ extern "C"
   CCEFVIEW_EXPORT bool CCefConfig_multiThreadedMessageLoop(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setRemoteDebuggingPort(ccefconfig_class * thiz, short port);
   CCEFVIEW_EXPORT short CCefConfig_remoteDebuggingPort(ccefconfig_class * thiz);
-  CCEFVIEW_EXPORT void CCefConfig_setWindowlessRendering(ccefconfig_class* thiz, bool enable);
-  CCEFVIEW_EXPORT bool CCefConfig_WindowlessRendering(ccefconfig_class* thiz);
+  CCEFVIEW_EXPORT void CCefConfig_setWindowlessRendering(ccefconfig_class * thiz, bool enable);
+  CCEFVIEW_EXPORT bool CCefConfig_windowlessRendering(ccefconfig_class * thiz);
 
 #if defined(__cplusplus)
 }

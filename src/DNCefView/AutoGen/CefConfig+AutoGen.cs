@@ -52,6 +52,20 @@ namespace DNCefView
         }
 
         [DllImport("CCefView")]
+        private static extern void CCefConfig_setCommandLinePassthroughDisabled(IntPtr thiz, bool disabled);
+        public void SetCommandLinePassthroughDisabled(bool disabled)
+        {
+            CCefConfig_setCommandLinePassthroughDisabled(_native, disabled);
+        }
+
+        [DllImport("CCefView")]
+        private static extern bool CCefConfig_commandLinePassthroughDisabled(IntPtr thiz);
+        public bool CommandLinePassthroughDisabled()
+        {
+            return CCefConfig_commandLinePassthroughDisabled(_native);
+        }
+
+        [DllImport("CCefView")]
         private static extern void CCefConfig_setLogLevel(IntPtr thiz, CefViewLogLevel lvl);
         public void SetLogLevel(CefViewLogLevel lvl)
         {
@@ -231,6 +245,20 @@ namespace DNCefView
         public short RemoteDebuggingPort()
         {
             return CCefConfig_remoteDebuggingPort(_native);
+        }
+
+        [DllImport("CCefView")]
+        private static extern void CCefConfig_setWindowlessRendering(IntPtr thiz, bool enable);
+        public void SetWindowlessRendering(bool enable)
+        {
+            CCefConfig_setWindowlessRendering(_native, enable);
+        }
+
+        [DllImport("CCefView")]
+        private static extern bool CCefConfig_windowlessRendering(IntPtr thiz);
+        public bool WindowlessRendering()
+        {
+            return CCefConfig_windowlessRendering(_native);
         }
 
     }

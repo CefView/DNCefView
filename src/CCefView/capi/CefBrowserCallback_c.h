@@ -1,3 +1,5 @@
+// Auto-generated file. Do not modify.
+// clang-format off
 #ifndef CefBrowserCallback_H_
 #define CefBrowserCallback_H_
 #pragma once

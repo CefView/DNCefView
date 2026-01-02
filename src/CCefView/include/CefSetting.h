@@ -13,9 +13,9 @@
 /// <summary>
 ///
 /// </summary>
-struct CCefSetting
+class CCefSetting
 {
-  friend struct CCefBrowser;
+  friend class CCefBrowser;
 
 public:
   /// <summary
@@ -362,13 +362,13 @@ public:
   /// Set whether to enable or disable the shared texture
   /// </summary>
   /// <param name="enabled"></param>
-  void setSharedTextureEnabled(bool enabled);
+  void setHardwareAccelerationEnabled(bool enabled);
 
   /// <summary>
   /// Gets whether the shared texture is enabled
   /// </summary>
   /// <returns></returns>
-  bool sharedTextureEnabled() const;
+  bool hardwareAccelerationEnabled() const;
 
 protected:
   /// <summary>
@@ -387,10 +387,10 @@ private:
   std::string fantasyFontFamily_;
   std::string defaultEncoding_;
   std::string acceptLanguageList_;
-  bool sharedTextureEnabled_ = false;
+
+  bool hardwareAcceleration_ = false;
 
   std::optional<uint32_t> backgroundColor_;
-
   std::optional<int> windowlessFrameRate_;
   std::optional<int> defaultFontSize_;
   std::optional<int> defaultFixedFontSize_;

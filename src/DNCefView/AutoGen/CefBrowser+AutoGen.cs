@@ -275,5 +275,12 @@ namespace DNCefView
             CCefBrowser_notifyScreenChanged(_native);
         }
 
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_setWindowlessFrameRate(IntPtr thiz, int rate);
+        public void SetWindowlessFrameRate(int rate)
+        {
+            CCefBrowser_setWindowlessFrameRate(_native, rate);
+        }
+
     }
 }

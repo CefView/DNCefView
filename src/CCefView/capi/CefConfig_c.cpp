@@ -1,4 +1,6 @@
-﻿#include "CefConfig_c.h"
+// Auto-generated file. Do not modify.
+// clang-format off
+#include "CefConfig_c.h"
 #include "CefConfig.h"
 
 void CCefConfig_Delete(ccefconfig_class * thiz) {
@@ -15,6 +17,14 @@ void CCefConfig_addCommandLineSwitch(ccefconfig_class * thiz, const char * smitc
 
 void CCefConfig_addCommandLineSwitchWithValue(ccefconfig_class * thiz, const char * smitch, const char * v) {
   thiz->addCommandLineSwitchWithValue(smitch, v);
+}
+
+void CCefConfig_setCommandLinePassthroughDisabled(ccefconfig_class * thiz, const bool disabled) {
+  thiz->setCommandLinePassthroughDisabled(disabled);
+}
+
+bool CCefConfig_commandLinePassthroughDisabled(ccefconfig_class * thiz) {
+  return thiz->commandLinePassthroughDisabled();
 }
 
 void CCefConfig_setLogLevel(ccefconfig_class * thiz, cefviewloglevel_enum lvl) {
@@ -121,15 +131,11 @@ short CCefConfig_remoteDebuggingPort(ccefconfig_class * thiz) {
   return thiz->remoteDebuggingPort();
 }
 
-CCEFVIEW_EXPORT void
-CCefConfig_setWindowlessRendering(ccefconfig_class* thiz, bool enable)
-{
+void CCefConfig_setWindowlessRendering(ccefconfig_class * thiz, bool enable) {
   thiz->setWindowlessRendering(enable);
 }
 
-CCEFVIEW_EXPORT bool
-CCefConfig_WindowlessRendering(ccefconfig_class* thiz)
-{
+bool CCefConfig_windowlessRendering(ccefconfig_class * thiz) {
   return thiz->windowlessRendering();
 }
 

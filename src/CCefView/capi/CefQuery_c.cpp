@@ -1,3 +1,5 @@
+// Auto-generated file. Do not modify.
+// clang-format off
 #include "CefQuery_c.h"
 #include "CefQuery.h"
 
