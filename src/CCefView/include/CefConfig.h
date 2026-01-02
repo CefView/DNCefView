@@ -16,9 +16,9 @@
 /// <summary>
 ///
 /// </summary>
-class CCefConfig
+struct CCefConfig
 {
-  friend class CCefContext;
+  friend struct CCefContext;
 
 public:
   /// <summary>
@@ -254,7 +254,7 @@ public:
   void setWindowlessRendering(bool enable);
 
   /// <summary>
-  /// 
+  ///
   /// </summary>
   /// <param name="enable"></param>
   /// <returns></returns>

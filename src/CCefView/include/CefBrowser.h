@@ -26,7 +26,7 @@
 /// <summary>
 ///
 /// </summary>
-class CCefBrowser
+struct CCefBrowser
 {
   friend class CCefClientDelegate;
 

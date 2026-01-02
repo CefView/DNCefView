@@ -1,5 +1,6 @@
 ﻿#include <CefContext.h>
 
+#undef OS_WINDOWS
 #include <Shlwapi.h>
 
 #include <filesystem>

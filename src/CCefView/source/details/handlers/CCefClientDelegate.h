@@ -16,7 +16,7 @@
 #include <CefTypes.h>
 #include <CefVersion.h>
 
-class CCefBrowser;
+struct CCefBrowser;
 
 #define IsValidBrowser(browser) (pCefView_ && pCefView_->pCefBrowser_ && browser->IsSame(pCefView_->pCefBrowser_))
 

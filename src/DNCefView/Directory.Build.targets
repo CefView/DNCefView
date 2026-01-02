@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <CCefViewBinaryPath>$(MSBuildThisFileDirectory)\..\CCefView\$(Configuration)\</CCefViewBinaryPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="$(CCefViewBinaryPath)**\*.*" Exclude="$(CCefViewBinaryPath)**\*.lib;$(CCefViewBinaryPath)**\*.exp;">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <Pack>true</Pack>
+      <PackagePath>contentFiles\any\any\%(RecursiveDir);content\%(RecursiveDir)</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>

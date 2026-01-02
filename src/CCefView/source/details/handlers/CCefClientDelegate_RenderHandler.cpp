@@ -152,12 +152,14 @@ CCefClientDelegate::onAcceleratedPaint(CefRefPtr<CefBrowser>& browser,
 #error "Unsupported platform"
 #endif
 
-  pCefView_->callbackTable_.pfnOnAcceleratedPaint(browser->GetIdentifier(),
-                                                  type,
-                                                  dirtyRectsBuffer.data(),
-                                                  static_cast<int>(dirtyRectsBuffer.size()),
-                                                  handle,
-                                                  planeBytesCount);
+  if (pCefView_->callbackTable_.pfnOnAcceleratedPaint) {
+    pCefView_->callbackTable_.pfnOnAcceleratedPaint(browser->GetIdentifier(),
+                                                    type,
+                                                    dirtyRectsBuffer.data(),
+                                                    static_cast<int>(dirtyRectsBuffer.size()),
+                                                    handle,
+                                                    planeBytesCount);
+  }
 }
 #endif
 

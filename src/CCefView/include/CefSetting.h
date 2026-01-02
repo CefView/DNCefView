@@ -13,9 +13,9 @@
 /// <summary>
 ///
 /// </summary>
-class CCefSetting
+struct CCefSetting
 {
-  friend class CCefBrowser;
+  friend struct CCefBrowser;
 
 public:
   /// <summary

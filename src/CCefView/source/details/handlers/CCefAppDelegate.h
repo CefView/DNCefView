@@ -4,7 +4,7 @@
 
 #include <CefViewBrowserAppDelegate.h>
 
-class CCefContext;
+struct CCefContext;
 
 class CCefAppDelegate : public CefViewBrowserAppDelegateInterface
 {
