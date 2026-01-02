@@ -344,7 +344,7 @@ CCefSetting::hardwareAccelerationEnabled() const
 }
 
 void
-CCefSetting::copyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs)
+CCefSetting::CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs)
 {
   if (!qs) {
     CCefSetting defaultSettings;
@@ -417,4 +417,9 @@ CCefSetting::copyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings&
   cs.webgl = (cef_state_t)(qs->webGL_);
 
   cs.background_color = qs->backgroundColor_.value_or(0xFFFFFFFF);
+}
+
+void
+CCefSetting::CopyFromCefBrowserSettings(const CefBrowserSettings& cs, CCefSetting* qs)
+{
 }

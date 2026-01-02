@@ -371,12 +371,9 @@ public:
   bool hardwareAccelerationEnabled() const;
 
 protected:
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="setting"></param>
-  /// <param name="cs"></param>
-  static void copyToCefBrowserSettings(const CCefSetting* setting, CefBrowserSettings& cs);
+  static void CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs);
+
+  static void CopyFromCefBrowserSettings(const CefBrowserSettings& cs, CCefSetting* qs);
 
 private:
   std::string standardFontFamily_;
@@ -410,6 +407,8 @@ private:
   CefViewPluingState localStorage_ = STATE_DEFAULT;
   CefViewPluingState databases_ = STATE_DEFAULT;
   CefViewPluingState webGL_ = STATE_DEFAULT;
+
+  friend class CCefClientDelegate;
 };
 
 #endif

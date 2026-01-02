@@ -31,7 +31,7 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
 
   // create the browser settings
   CefBrowserSettings browserSettings;
-  CCefSetting::copyToCefBrowserSettings(setting, browserSettings);
+  CCefSetting::CopyToCefBrowserSettings(setting, browserSettings);
 
   // Set window info
   CefWindowInfo window_info;

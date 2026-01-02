@@ -10,6 +10,7 @@
 
 // project
 #include <CefQuery.h>
+#include <CefSetting.h>
 #include <CefTypes.h>
 
 #if defined(_WIN32)
@@ -83,15 +84,28 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
   // LifespanHandler
+  bool(STDCALL* pfnOnBeforeNewPopupCreate)(const char* frameId,
+                                           const char* targetUrl,
+                                           const char* targetFrameName,
+                                           const CefViewWindowOpenDisposition targetDisposition,
+                                           CefViewRect* rect,
+                                           CCefSetting* settings,
+                                           bool* DisableJavascriptAccess);
 
-  // bool(STDCALL* pfnOnBeforePopup)(int64_t frameId,
-  //                                 const char* targetUrl,
-  //                                 const char* targetFrameName,
-  //                                 const CefViewWindowOpenDisposition targetDisposition,
-  //                                 const CCefSetting* settings,
-  //                                 bool* DisableJavascriptAccess);
+  bool(STDCALL* pfnOnBeforeNewBrowserCreate)(const char* frameId,
+                                             const char* targetUrl,
+                                             const char* targetFrameName,
+                                             const CefViewWindowOpenDisposition targetDisposition,
+                                             const CefViewRect rect,
+                                             const CCefSetting* settings);
+
+  bool(STDCALL* pfnDoClose)();
+
+  bool(STDCALL* pfnRequestClose)();
 
   void(STDCALL* pfnOnAfterCreated)();
+
+  void(STDCALL* pfnOnBeforeClose)();
 
   //////////////////////////////////////////////////////////////////////////
   // FocusHandler

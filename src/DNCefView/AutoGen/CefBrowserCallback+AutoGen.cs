@@ -87,10 +87,35 @@ namespace DNCefView
         public delegate bool CursorChangedCallback(IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
         public CursorChangedCallback CursorChangedCb;
 
+        // Source: bool pfnOnBeforeNewPopupCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t *, CCefSetting *, bool *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool OnBeforeNewPopupCreateCallback(string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, ref CefViewRect rect, IntPtr settings, ref bool DisableJavascriptAccess);
+        public OnBeforeNewPopupCreateCallback OnBeforeNewPopupCreateCb;
+
+        // Source: bool pfnOnBeforeNewBrowserCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t, const CCefSetting *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool OnBeforeNewBrowserCreateCallback(string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, CefViewRect rect, IntPtr settings);
+        public OnBeforeNewBrowserCreateCallback OnBeforeNewBrowserCreateCb;
+
+        // Source: bool pfnDoClose()
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool DoCloseCallback();
+        public DoCloseCallback DoCloseCb;
+
+        // Source: bool pfnRequestClose()
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool RequestCloseCallback();
+        public RequestCloseCallback RequestCloseCb;
+
         // Source: void pfnOnAfterCreated()
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void OnAfterCreatedCallback();
         public OnAfterCreatedCallback OnAfterCreatedCb;
+
+        // Source: void pfnOnBeforeClose()
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnBeforeCloseCallback();
+        public OnBeforeCloseCallback OnBeforeCloseCb;
 
         // Source: void pfnFocusReleasedByTabKey(int, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]

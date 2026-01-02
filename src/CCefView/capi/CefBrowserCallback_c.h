@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 #include "CefQuery_c.h"
-#include "CefTypes_c.h"
+#include "CefSetting_c.h"
 
 #if defined(__cplusplus)
 extern "C"

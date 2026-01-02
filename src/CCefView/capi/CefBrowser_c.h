@@ -22,7 +22,6 @@
 
 #include "CefBrowserCallback_c.h"
 #include "CefContext_c.h"
-#include "CefSetting_c.h"
 
 #if defined(__cplusplus)
 extern "C"
