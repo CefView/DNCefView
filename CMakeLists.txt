@@ -30,6 +30,7 @@ set(CMAKE_VS_GLOBALS
   "RepositoryUrl=https://github.com/CefView/DNCefView"
 )
 add_subdirectory(src/DNCefView)
+add_subdirectory(src/DNCefView.Avalonia)
 add_subdirectory(src/DNCefView.WPF)
 
 set(CMAKE_FOLDER Examples)
