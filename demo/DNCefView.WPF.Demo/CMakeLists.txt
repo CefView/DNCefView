@@ -3,6 +3,10 @@ project(DNCefView.WPF.Demo LANGUAGES CSharp)
 # Include CSharpUtilities for specific C# properties and XAML handling
 include(CSharpUtilities)
 
+file(GLOB_RECURSE _HTML_FILES
+    webres/*.html
+)
+
 # Define the executable target
 add_executable(${PROJECT_NAME} WIN32
     App.xaml
@@ -10,8 +14,7 @@ add_executable(${PROJECT_NAME} WIN32
     AssemblyInfo.cs
     MainWindow.xaml
     MainWindow.xaml.cs
-    webres/index.html
-    webres/tutorial.html
+    ${_HTML_FILES}
 )
 
 csharp_set_xaml_cs_properties(
@@ -33,8 +36,7 @@ set_source_files_properties(MainWindow.xaml
 )
 
 set_source_files_properties(
-    webres/index.html
-    webres/tutorial.html
+    ${_HTML_FILES}
     PROPERTIES
     VS_COPY_TO_OUT_DIR PreserveNewest
 )

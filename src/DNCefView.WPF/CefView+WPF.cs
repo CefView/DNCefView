@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 namespace DNCefView.WPF
 {
     using IMESupport;
+    using System.Linq;
 
     public partial class CefView : FrameworkElement
     {
@@ -279,34 +280,33 @@ namespace DNCefView.WPF
             var imeKeyboardHandler = _wpfImeHandler;
             if (imeKeyboardHandler.IsActive)
             {
-                var scaleFactor = 1.0f;
                 this.Dispatcher.Invoke(() =>
                 {
                     var parentWindow = GetParentWindow();
-                    if (parentWindow != null)
+                    if (parentWindow == null)
                     {
-                        var offset = TransformToAncestor(parentWindow).Transform(new System.Windows.Point(0, 0));
-
-                        int l = int.MaxValue;
-                        int r = int.MinValue;
-                        int t = int.MaxValue;
-                        int b = int.MinValue;
-                        foreach (var item in characterBounds)
-                        {
-                            l = Math.Min(l, item.X);
-                            r = Math.Max(r, item.X + item.Width);
-                            t = Math.Min(t, item.Y);
-                            b = Math.Max(b, item.Y + item.Height);
-                        }
-
-                        var rect = new CefViewRect(
-                            (int)((offset.X + l) * scaleFactor),
-                            (int)((offset.Y + t) * scaleFactor),
-                            (int)((r - l) * scaleFactor),
-                            (int)((b - t) * scaleFactor));
-
-                        imeKeyboardHandler.UpdateComposition(range, rect);
+                        return;
                     }
+
+                    var rect = new CefViewRect(0, 0, 0, 0);
+                    if (characterBounds.Length > 0)
+                    {
+                        rect = characterBounds.Last();
+                    }
+
+                    // transform
+                    var offset = TransformToAncestor(parentWindow).Transform(new Point(0, 0));
+                    rect.X += (int)offset.X;
+                    rect.Y += (int)offset.Y;
+
+                    // scale
+                    var scale = VisualTreeHelper.GetDpi(parentWindow);
+                    rect.X = (int)(rect.X * 1.0 * scale.DpiScaleX);
+                    rect.Y = (int)(rect.Y * 1.0 * scale.DpiScaleY);
+                    rect.Width = (int)(rect.Width * 1.0 * scale.DpiScaleX);
+                    rect.Height = (int)(rect.Height * 1.0 * scale.DpiScaleX);
+
+                    imeKeyboardHandler.UpdateComposition(range, rect);
                 });
             }
 
