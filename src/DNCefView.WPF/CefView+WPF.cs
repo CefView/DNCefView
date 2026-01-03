@@ -63,9 +63,6 @@ namespace DNCefView.WPF
         private Rect _cefViewRect;
         private ImageSource _cefViewImage;
 
-        float DevicePixelRatio = 1.0f;
-        long DeviceDpi = 96;
-
         WPFImeHandler _wpfImeHandler;
 
         public CefView() : this(null, "")
@@ -194,6 +191,7 @@ namespace DNCefView.WPF
         bool WPF_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
             System.Drawing.Rectangle rc = new System.Drawing.Rectangle(0, 0, 1, 1);
+            double scale = 1.0;
             this.Dispatcher.Invoke(() =>
             {
                 var window = Window.GetWindow(this);
@@ -218,6 +216,8 @@ namespace DNCefView.WPF
                     rc.Width = (int)SystemParameters.WorkArea.Width;
                     rc.Height = (int)SystemParameters.WorkArea.Height;
                 }
+
+                scale = VisualTreeHelper.GetDpi(window).DpiScaleX;
             });
 
             info.Depth = 32;
@@ -231,7 +231,7 @@ namespace DNCefView.WPF
             info.AvailableRect.Y = rc.Y;
             info.AvailableRect.Width = rc.Width;
             info.AvailableRect.Height = rc.Height;
-            info.DeviceScaleFactor = DevicePixelRatio;
+            info.DeviceScaleFactor = (float)scale;
 
             return true;
         }
@@ -248,12 +248,14 @@ namespace DNCefView.WPF
         {
             this.Dispatcher.Invoke(() =>
             {
+                var scale = VisualTreeHelper.GetDpi(Window.GetWindow(this));
+
                 // create image source
                 var imageSource = BitmapSource.Create(
                     width,
                     height,
-                    DeviceDpi,
-                    DeviceDpi,
+                    scale.DpiScaleX,
+                    scale.DpiScaleY,
                     PixelFormats.Bgra32,
                     null,
                     imageBytes,
@@ -282,8 +284,8 @@ namespace DNCefView.WPF
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    var parentWindow = GetParentWindow();
-                    if (parentWindow == null)
+                    var window = Window.GetWindow(this);
+                    if (window == null)
                     {
                         return;
                     }
@@ -295,12 +297,12 @@ namespace DNCefView.WPF
                     }
 
                     // transform
-                    var offset = TransformToAncestor(parentWindow).Transform(new Point(0, 0));
+                    var offset = TransformToAncestor(window).Transform(new Point(0, 0));
                     rect.X += (int)offset.X;
                     rect.Y += (int)offset.Y;
 
                     // scale
-                    var scale = VisualTreeHelper.GetDpi(parentWindow);
+                    var scale = VisualTreeHelper.GetDpi(window);
                     rect.X = (int)(rect.X * 1.0 * scale.DpiScaleX);
                     rect.Y = (int)(rect.Y * 1.0 * scale.DpiScaleY);
                     rect.Width = (int)(rect.Width * 1.0 * scale.DpiScaleX);
@@ -308,15 +310,6 @@ namespace DNCefView.WPF
 
                     imeKeyboardHandler.UpdateComposition(range, rect);
                 });
-            }
-
-            Visual GetParentWindow()
-            {
-                var current = VisualTreeHelper.GetParent(this);
-                while (current != null && !(current is Window))
-                    current = VisualTreeHelper.GetParent(current);
-
-                return current as Window;
             }
         }
         #endregion
@@ -336,9 +329,6 @@ namespace DNCefView.WPF
         {
             if (null != e.NewSource)
             {
-                DevicePixelRatio = (float)e.NewSource.CompositionTarget.TransformToDevice.M11;
-                DeviceDpi = (long)(96 * e.NewSource.CompositionTarget.TransformToDevice.M11);
-
                 _wpfImeHandler.InitialiseHWND((HwndSource)e.NewSource);
             }
         }
@@ -503,9 +493,10 @@ namespace DNCefView.WPF
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            Rect rect = _cefViewRect;
-            rect.Height /= DevicePixelRatio;
-            rect.Width /= DevicePixelRatio;
+            var scale = VisualTreeHelper.GetDpi(Window.GetWindow(this));
+            var rect = _cefViewRect;
+            rect.Width /= scale.DpiScaleX;
+            rect.Height /= scale.DpiScaleY;
             drawingContext.DrawImage(_cefViewImage, rect);
             if (_isShowPopup)
             {

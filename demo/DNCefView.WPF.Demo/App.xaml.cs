@@ -16,14 +16,14 @@ namespace DNCefView.WPF.Demo
             CefConfig config = new CefConfig();
             config.SetMultiThreadedMessageLoop(true);
             config.SetLogLevel(CefViewLogLevel.LOGSEVERITY_DEFAULT);
-            config.SetRemoteDebuggingPort(9000);
+            config.SetRemoteDebuggingPort(9222);
             config.SetUserAgent("DNCefView");
             config.SetBridgeObjectName("CallBridge");
 
             _context = new CefContext(config);
             var webresDir = Path.Combine(Directory.GetCurrentDirectory(), "webres");
             _context.AddFolderResource(webresDir, "https://demo.dncefview.com", 0);
-            _context.AddCookie("test", "value", "www.a.com", "path");
+            _context.AddCookie("test", "value", "dncefview.com", "path");
 
             base.OnStartup(e);
         }
