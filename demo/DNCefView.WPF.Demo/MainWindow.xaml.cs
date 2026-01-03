@@ -43,7 +43,7 @@ namespace DNCefView.WPF.Demo
             arguments.Add(0);
 
             //broadcast the event to all frames in all browsers created by this QCefView widget
-            LocalCefview.TriggerEventOnMainFrame("colorChange", arguments);
+            LocalCefview.TriggerEvent("colorChange", arguments, CefBrowser.AllFrameID);
         }
     }
 }

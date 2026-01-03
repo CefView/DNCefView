@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -8,7 +9,6 @@ using System.Windows.Media.Imaging;
 namespace DNCefView.WPF
 {
     using IMESupport;
-    using System.Linq;
 
     public partial class CefView : FrameworkElement
     {
@@ -57,13 +57,13 @@ namespace DNCefView.WPF
             set { SetValue(UrlProperty, value); }
         }
 
-        private Rect _cefPopupRect;
-        private ImageSource _cefPopupImage;
-
         private Rect _cefViewRect;
-        private ImageSource _cefViewImage;
+        private WriteableBitmap _cefViewImage;
 
-        WPFImeHandler _wpfImeHandler;
+        private Rect _cefPopupRect;
+        private WriteableBitmap _cefPopupImage;
+
+        private WPFImeHandler _wpfImeHandler;
 
         public CefView() : this(null, "")
         {
@@ -91,7 +91,7 @@ namespace DNCefView.WPF
         #region CEF Callback Methods
         bool WPF_OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.InvokeAsync(() =>
             {
                 if (editable)
                 {
@@ -108,7 +108,7 @@ namespace DNCefView.WPF
 
         void WPF_OnCefAfterCreated()
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.InvokeAsync(() =>
             {
                 _isCreated = true;
                 _cefBrowser.WasHidden(!IsVisible);
@@ -119,7 +119,7 @@ namespace DNCefView.WPF
 
         void WPF_OnCefFocusReleasedByTabKey(int browserId, bool next)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.InvokeAsync(() =>
             {
                 if (next)
                 {
@@ -169,10 +169,18 @@ namespace DNCefView.WPF
 
         void WPF_OnCefGetViewRect(int browserId, ref CefViewRect rect)
         {
+            double w = 1.0;
+            double h = 1.0;
+            this.Dispatcher.Invoke(() =>
+            {
+                w = RenderSize.Width;
+                h = RenderSize.Height;
+            });
+
             rect.X = 0;
             rect.Y = 0;
-            rect.Width = RenderSize.Width == 0 ? 1 : (int)RenderSize.Width;
-            rect.Height = RenderSize.Height == 0 ? 1 : (int)RenderSize.Height;
+            rect.Width = w == 0 ? 1 : (int)w;
+            rect.Height = h == 0 ? 1 : (int)h;
         }
 
         bool WPF_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
@@ -246,35 +254,35 @@ namespace DNCefView.WPF
 
         void WPF_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
         {
-            this.Dispatcher.Invoke(() =>
+            void Paint()
             {
-                var scale = VisualTreeHelper.GetDpi(Window.GetWindow(this));
+                WriteableBitmap targetBitmap = (type == CefViewPaintElementType.PET_VIEW) ? _cefViewImage : _cefPopupImage;
 
-                // create image source
-                var imageSource = BitmapSource.Create(
-                    width,
-                    height,
-                    scale.DpiScaleX,
-                    scale.DpiScaleY,
-                    PixelFormats.Bgra32,
-                    null,
-                    imageBytes,
-                    4 * width);
-
-                // update target image source
-                if (type == CefViewPaintElementType.PET_VIEW)
+                if (targetBitmap == null || targetBitmap.PixelWidth != width || targetBitmap.PixelHeight != height)
                 {
-                    _cefViewRect = new Rect(0, 0, width, height);
-                    _cefViewImage = imageSource;
-                }
-                else
-                {
-                    _cefPopupImage = imageSource;
+                    targetBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+                    if (type == CefViewPaintElementType.PET_VIEW)
+                    {
+                        var scale = VisualTreeHelper.GetDpi(Window.GetWindow(this));
+                        _cefViewRect = new Rect(0, 0, width / scale.DpiScaleX, height / scale.DpiScaleY);
+                        _cefViewImage = targetBitmap;
+                    }
+                    else
+                    {
+                        _cefPopupImage = targetBitmap;
+                    }
                 }
 
-                // invalidate visual to produce repaint
+                Int32Rect rect = new Int32Rect(0, 0, width, height);
+                targetBitmap.WritePixels(rect, imageBytes, width * 4, 0);
+
                 InvalidateVisual();
-            });
+            }
+
+            if (Dispatcher.CheckAccess())
+                Paint();
+            else
+                Dispatcher.InvokeAsync(Paint, System.Windows.Threading.DispatcherPriority.Render);
         }
 
         void WPF_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
@@ -491,17 +499,19 @@ namespace DNCefView.WPF
             base.OnRenderSizeChanged(info);
         }
 
-        protected override void OnRender(DrawingContext drawingContext)
+        protected override void OnRender(DrawingContext context)
         {
-            var scale = VisualTreeHelper.GetDpi(Window.GetWindow(this));
-            var rect = _cefViewRect;
-            rect.Width /= scale.DpiScaleX;
-            rect.Height /= scale.DpiScaleY;
-            drawingContext.DrawImage(_cefViewImage, rect);
-            if (_isShowPopup)
+            if (_cefViewImage != null)
             {
-                drawingContext.DrawImage(_cefPopupImage, _cefPopupRect);
+                context.DrawImage(_cefViewImage, _cefViewRect);
             }
+
+            if (_isShowPopup && _cefPopupImage != null)
+            {
+                context.DrawImage(_cefPopupImage, _cefPopupRect);
+            }
+
+            base.OnRender(context);
         }
         #endregion
 
@@ -516,7 +526,7 @@ namespace DNCefView.WPF
 
             // SHIFT
             modifiers |= Keyboard.IsKeyDown(Key.LeftShift) ? CefViewEventFlag.EVENTFLAG_SHIFT_DOWN | CefViewEventFlag.EVENTFLAG_IS_LEFT : 0;
-            modifiers |= Keyboard.IsKeyDown(Key.RightCtrl) ? CefViewEventFlag.EVENTFLAG_SHIFT_DOWN | CefViewEventFlag.EVENTFLAG_IS_RIGHT : 0;
+            modifiers |= Keyboard.IsKeyDown(Key.RightShift) ? CefViewEventFlag.EVENTFLAG_SHIFT_DOWN | CefViewEventFlag.EVENTFLAG_IS_RIGHT : 0;
 
             // ALT
             modifiers |= Keyboard.IsKeyDown(Key.LeftAlt) ? CefViewEventFlag.EVENTFLAG_ALT_DOWN | CefViewEventFlag.EVENTFLAG_IS_LEFT : 0;

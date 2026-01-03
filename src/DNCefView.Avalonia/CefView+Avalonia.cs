@@ -39,11 +39,11 @@ namespace DNCefView.Avalonia
             }
         }
 
-        private Rect _cefPopupRect;
-        private WriteableBitmap _cefPopupImage;
-
         private Rect _cefViewRect;
         private WriteableBitmap _cefViewImage;
+
+        private Rect _cefPopupRect;
+        private WriteableBitmap _cefPopupImage;
 
         public CefView() : this(null, "")
         {
@@ -241,8 +241,9 @@ namespace DNCefView.Avalonia
 
                     if (type == CefViewPaintElementType.PET_VIEW)
                     {
+                        var scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
+                        _cefViewRect = new Rect(0, 0, (int)(width / scale), (int)(height / scale));
                         _cefViewImage = targetBitmap;
-                        _cefViewRect = new Rect(0, 0, width, height);
                     }
                     else
                     {
@@ -261,7 +262,7 @@ namespace DNCefView.Avalonia
             if (Dispatcher.UIThread.CheckAccess())
                 Paint();
             else
-                Dispatcher.UIThread.Invoke(Paint);
+                Dispatcher.UIThread.InvokeAsync(Paint);
         }
 
         void Avalonia_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)

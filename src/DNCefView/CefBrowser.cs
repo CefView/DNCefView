@@ -14,6 +14,10 @@ namespace DNCefView
 
         private CefBrowserCallback _callbackTable;
 
+        public const string MainFrameID = "0";
+
+        public const string AllFrameID = "-1";
+
         public bool TransparentPaintingEnabled = false;
 
         public bool ShowPopup = false;
