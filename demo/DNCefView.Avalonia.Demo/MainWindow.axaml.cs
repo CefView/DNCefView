@@ -1,10 +1,12 @@
-﻿using System;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Labs.Controls;
+using Avalonia.Media;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Windows;
-using System.Windows.Media;
 
-namespace DNCefView.WPF.Demo
+namespace DNCefView.Avalonia.Demo
 {
     public partial class MainWindow : Window
     {
@@ -15,17 +17,32 @@ namespace DNCefView.WPF.Demo
 
         private void OnCefQueryRequest(int browserId, string frameId, CefQuery query)
         {
-            string msg = $"OnCefQueryRequest:{query.Request}";
-            MessageBox.Show(msg);
+            var dialog = new ContentDialog
+            {
+                Title = "OnCefQueryRequest",
+                Content = query.Request,
+                PrimaryButtonText = "OK"
+            };
+            dialog.ShowAsync().GetAwaiter().GetResult();
+
             query.SetResponseResult(true, query.Request.ToUpper(), 0);
             LocalCefview.ResponseQCefQuery(query);
         }
 
         private void OnInvokeMethod(int browserId, string frameId, string method, List<dynamic> arguments)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string msg = $"OnInvokeMethod:{method}\narguments:\n{JsonSerializer.Serialize(arguments, options)}";
-            MessageBox.Show(msg);
+            var content = "";
+            content += $"Method Name: {method}\n";
+            content += $"Arguments: \n";
+            content += $"{JsonSerializer.Serialize(arguments, new JsonSerializerOptions { WriteIndented = true })}";
+
+            var dialog = new ContentDialog
+            {
+                Title = "OnInvokeMethod",
+                Content = content,
+                PrimaryButtonText = "OK"
+            };
+            dialog.ShowAsync().GetAwaiter().GetResult();
         }
 
         private void BtnChangeBGColor_Click(object sender, RoutedEventArgs e)

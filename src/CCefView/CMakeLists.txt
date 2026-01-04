@@ -19,10 +19,36 @@ if(NOT DEFINED PROJECT_ARCH)
   endif()
 endif()
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+if(OS_WINDOWS)
+  # #############################################################################
+  # Windows specific settings
+  set(OS_WINDOWS 1)
+  set(STATIC_CRT ON CACHE BOOL "Use MultiThreaded linkage for MSVC" FORCE)
+
+  add_definitions(
+    -DOS_WINDOWS=1
+    -D_WIN32_WINNT=0x602
+  )
+
+  if(USE_WIN_DCOMPOSITION)
+    add_definitions(
+      -DENABLE_WINDOWS_DIRECT_COMPOSITION=1
+    )
+  endif()
+
+  add_compile_options(
+    /W3
+    /WX
+    /wd4099
+    /MT$<$<CONFIG:Debug>:d>
+  )
+  add_link_options(/DEBUG)
+
+elseif(OS_MACOS)
+  # #############################################################################
+  # macOS specific settings
   set(OS_MACOS 1)
   set(OS_POSIX 1)
-  set(DOTNET_RID_OS "osx")
   add_definitions(-DOS_MACOS=1 -DOS_POSIX=1)
   add_compile_options(
     "-g"
@@ -52,10 +78,11 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
   endif()
 
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+elseif(OS_LINUX)
+  # #############################################################################
+  # Linux specific settings
   set(OS_LINUX 1)
   set(OS_POSIX 1)
-  set(DOTNET_RID_OS "linux")
   add_definitions(-DOS_LINUX=1 -DOS_POSIX=1)
   add_compile_options(
     "-g"
@@ -73,29 +100,8 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     add_compile_options(-m32)
     add_link_options(-m32)
   endif()
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-  set(OS_WINDOWS 1)
-  set(DOTNET_RID_OS "win")
-  set(STATIC_CRT ON CACHE BOOL "Use MultiThreaded linkage for MSVC" FORCE)
-
-  add_definitions(
-    -DOS_WINDOWS=1
-    -D_WIN32_WINNT=0x602
-  )
-
-  if(USE_WIN_DCOMPOSITION)
-    add_definitions(
-      -DENABLE_WINDOWS_DIRECT_COMPOSITION=1
-    )
-  endif()
-
-  add_compile_options(
-    /W3
-    /WX
-    /wd4099
-    /MT$<$<CONFIG:Debug>:d>
-  )
-  add_link_options(/DEBUG)
+else()
+  message(FATAL_ERROR "Unsupported OS: ${CMAKE_SYSTEM_NAME}")
 endif()
 
 # Detect Arch

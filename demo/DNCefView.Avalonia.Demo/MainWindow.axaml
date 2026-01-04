@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:dncefviewavalonia="clr-namespace:DNCefView.Avalonia;assembly=DNCefView.Avalonia"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:Class="DNCefView.Avalonia.Demo.MainWindow"
+		Title="DNCefView.Avalonia.Demo">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="200"/>
+			<ColumnDefinition/>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+		<Grid HorizontalAlignment="Center" Width="200">
+			<Button x:Name="BtnChangeBGColor" Content="Change Background Color" HorizontalAlignment="Center" VerticalAlignment="Top" Width="160" Margin="0,10,0,0" Click="BtnChangeBGColor_Click" />
+		</Grid>
+		<dncefviewavalonia:CefView x:Name="LocalCefview" Grid.Column="1" Url="https://demo.dncefview.com/index.html" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />
+		<GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="4" Background="Gray" Grid.Column="2" ShowsPreview="True" IsTabStop="False" />
+		<dncefviewavalonia:CefView x:Name="RemoteCefView" Grid.Column="3" Url="https://www.testufo.com/" />
+	</Grid>
+</Window>

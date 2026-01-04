@@ -1,18 +1,19 @@
-﻿using System.IO;
-using System.Windows;
-using System.Windows.Threading;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using System.IO;
 
-namespace DNCefView.WPF.Demo
+namespace DNCefView.Avalonia.Demo
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private CefContext? _context;
 
-        protected override void OnStartup(StartupEventArgs e)
+        public override void Initialize()
         {
+            AvaloniaXamlLoader.Load(this);
+
             CefConfig config = new CefConfig();
             config.SetMultiThreadedMessageLoop(true);
             config.SetLogLevel(CefViewLogLevel.LOGSEVERITY_DEFAULT);
@@ -24,14 +25,22 @@ namespace DNCefView.WPF.Demo
             var webresDir = Path.Combine(Directory.GetCurrentDirectory(), "webres");
             _context.AddFolderResource(webresDir, "https://demo.dncefview.com", 0);
             _context.AddCookie("test", "value", "dncefview.com", "path");
-
-            base.OnStartup(e);
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        public override void OnFrameworkInitializationCompleted()
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = new MainWindow();
+                desktop.Exit += Desktop_Exit;
+            }
+
+            base.OnFrameworkInitializationCompleted();
+        }
+
+        private void Desktop_Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
         {
             SafeShutdownCef();
-            base.OnExit(e);
         }
 
         protected void CheckSafeExit(DispatcherFrame frame)
@@ -47,7 +56,7 @@ namespace DNCefView.WPF.Demo
             else
             {
                 // keep checking
-                Dispatcher.CurrentDispatcher.InvokeAsync(
+                Dispatcher.UIThread.InvokeAsync(
                     () => CheckSafeExit(frame),
                     DispatcherPriority.SystemIdle);
             }
@@ -58,10 +67,10 @@ namespace DNCefView.WPF.Demo
             _context?.CloseAllBrowsers();
 
             var frame = new DispatcherFrame();
-            Dispatcher.CurrentDispatcher.InvokeAsync(
+            Dispatcher.UIThread.InvokeAsync(
                 () => CheckSafeExit(frame),
                 DispatcherPriority.SystemIdle);
-            Dispatcher.PushFrame(frame);
+            Dispatcher.UIThread.PushFrame(frame);
         }
     }
 }
