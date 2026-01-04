@@ -20,5 +20,6 @@ set_target_properties(${PROJECT_NAME}
     PROPERTIES
     DOTNET_TARGET_FRAMEWORK "net8.0-windows"
     VS_GLOBAL_ROOTNAMESPACE "DNCefView.WPF"
+    VS_GLOBAL_Nullable "enable"
     VS_GLOBAL_UseWPF "true"
 )

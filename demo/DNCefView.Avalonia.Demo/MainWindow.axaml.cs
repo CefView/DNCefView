@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -17,16 +18,20 @@ namespace DNCefView.Avalonia.Demo
 
         private void OnCefQueryRequest(int browserId, string frameId, CefQuery query)
         {
-            var dialog = new ContentDialog
+            Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                Title = "OnCefQueryRequest",
-                Content = query.Request,
-                PrimaryButtonText = "OK"
-            };
-            dialog.ShowAsync().GetAwaiter().GetResult();
+                var dialog = new ContentDialog
+                {
+                    Title = "OnCefQueryRequest",
+                    Content = query.Request,
+                    PrimaryButtonText = "OK"
+                };
 
-            query.SetResponseResult(true, query.Request.ToUpper(), 0);
-            LocalCefview.ResponseQCefQuery(query);
+                await dialog.ShowAsync();
+
+                query.SetResponseResult(true, query.Request.ToUpper(), 0);
+                LocalCefview.ResponseQCefQuery(query);
+            });
         }
 
         private void OnInvokeMethod(int browserId, string frameId, string method, List<dynamic> arguments)
@@ -36,13 +41,17 @@ namespace DNCefView.Avalonia.Demo
             content += $"Arguments: \n";
             content += $"{JsonSerializer.Serialize(arguments, new JsonSerializerOptions { WriteIndented = true })}";
 
-            var dialog = new ContentDialog
+            Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                Title = "OnInvokeMethod",
-                Content = content,
-                PrimaryButtonText = "OK"
-            };
-            dialog.ShowAsync().GetAwaiter().GetResult();
+                var dialog = new ContentDialog
+                {
+                    Title = "OnInvokeMethod",
+                    Content = content,
+                    PrimaryButtonText = "OK"
+                };
+
+                await dialog.ShowAsync();
+            });
         }
 
         private void BtnChangeBGColor_Click(object sender, RoutedEventArgs e)

@@ -25,4 +25,5 @@ set_target_properties(${PROJECT_NAME}
     PROPERTIES
     VS_PACKAGE_REFERENCES "${NUGET_PACKAGES}"
     VS_GLOBAL_ROOTNAMESPACE "DNCefView.Avalonia"
+    VS_GLOBAL_Nullable "enable"
 )

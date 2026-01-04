@@ -10,9 +10,9 @@ namespace DNCefView
             get { return _config; }
         }
 
-        private static WeakReference _instance;
+        private static WeakReference? _instance;
 
-        public static CefContext Instance
+        public static CefContext? Instance
         {
             get
             {

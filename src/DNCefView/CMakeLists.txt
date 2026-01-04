@@ -14,6 +14,7 @@ add_library(${PROJECT_NAME} SHARED
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     VS_GLOBAL_ROOTNAMESPACE "DNCefView"
+    VS_GLOBAL_Nullable "enable"
 )
 
 target_link_libraries(${PROJECT_NAME}

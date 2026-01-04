@@ -14,7 +14,7 @@ namespace IMESupport
     public class WPFImeHandler
     {
         CefView _owner;
-        HwndSource _source;
+        HwndSource? _source;
         IntPtr _inputContext;
         CefViewRect _compositionBounds = new CefViewRect();
         Func<IntPtr, int> _loWord;
@@ -61,7 +61,7 @@ namespace IMESupport
         {
             _compositionRange = range;
             _compositionBounds = bounds;
-            UpdateCompositionWindow(_source.Handle);
+            UpdateCompositionWindow(_source!.Handle);
         }
 
         private void Init(HwndSource source)

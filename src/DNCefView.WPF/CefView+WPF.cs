@@ -21,14 +21,14 @@ namespace DNCefView.WPF
 
         private static void OnPropertySet(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CefView cefView = d as CefView;
-            string url = e.NewValue as string;
+            CefView? cefView = d as CefView;
+            string? url = e.NewValue as string;
             if (cefView != null && url != null)
             {
                 cefView.Url = url;
                 if (cefView._isCreated)
                 {
-                    cefView._cefBrowser.NavigateToString(url);
+                    cefView?._cefBrowser?.NavigateToString(url);
                 }
             }
         }
@@ -37,8 +37,9 @@ namespace DNCefView.WPF
         {
             FocusableProperty.OverrideMetadata(
                 typeof(CefView), new FrameworkPropertyMetadata(true));
+
             FocusVisualStyleProperty.OverrideMetadata(
-                typeof(CefView), new FrameworkPropertyMetadata((object)null));
+                typeof(CefView), new FrameworkPropertyMetadata(null));
 
             KeyboardNavigation.IsTabStopProperty.OverrideMetadata(
                 typeof(CefView), new FrameworkPropertyMetadata(true));
@@ -58,23 +59,23 @@ namespace DNCefView.WPF
         }
 
         private Rect _cefViewRect;
-        private WriteableBitmap _cefViewImage;
+        private WriteableBitmap? _cefViewImage;
 
         private Rect _cefPopupRect;
-        private WriteableBitmap _cefPopupImage;
+        private WriteableBitmap? _cefPopupImage;
 
-        private WPFImeHandler _wpfImeHandler;
+        private WPFImeHandler? _wpfImeHandler;
 
         public CefView() : this(null, "")
         {
             _wpfImeHandler = new WPFImeHandler(this);
         }
 
-        public CefView(CefSetting setting) : this(setting, "")
+        public CefView(CefSetting? setting) : this(setting, "")
         {
         }
 
-        public CefView(CefSetting setting, string url)
+        public CefView(CefSetting? setting, string? url)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -89,35 +90,35 @@ namespace DNCefView.WPF
         }
 
         #region CEF Callback Methods
-        bool WPF_OnCefInputStateChanged(int browserId, string frameId, bool editable)
+        bool UI_OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
             this.Dispatcher.InvokeAsync(() =>
             {
                 if (editable)
                 {
-                    _wpfImeHandler.EnableInputMethod();
+                    _wpfImeHandler?.EnableInputMethod();
                 }
                 else
                 {
-                    _wpfImeHandler.DisableInputMethod();
+                    _wpfImeHandler?.DisableInputMethod();
                 }
             });
 
             return true;
         }
 
-        void WPF_OnCefAfterCreated()
+        void UI_OnCefAfterCreated()
         {
             this.Dispatcher.InvokeAsync(() =>
             {
                 _isCreated = true;
-                _cefBrowser.WasHidden(!IsVisible);
-                _cefBrowser.WasResized();
-                _cefBrowser.NavigateToUrl(Url);
+                _cefBrowser?.WasHidden(!IsVisible);
+                _cefBrowser?.WasResized();
+                _cefBrowser?.NavigateToUrl(Url);
             });
         }
 
-        void WPF_OnCefFocusReleasedByTabKey(int browserId, bool next)
+        void UI_OnCefFocusReleasedByTabKey(int browserId, bool next)
         {
             this.Dispatcher.InvokeAsync(() =>
             {
@@ -132,7 +133,7 @@ namespace DNCefView.WPF
             });
         }
 
-        void WPF_OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
+        void UI_OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
         {
             System.Drawing.Rectangle rc = new System.Drawing.Rectangle(0, 0, 1, 1);
             this.Dispatcher.Invoke(() =>
@@ -167,7 +168,7 @@ namespace DNCefView.WPF
             rect.Height = rc.Height;
         }
 
-        void WPF_OnCefGetViewRect(int browserId, ref CefViewRect rect)
+        void UI_OnCefGetViewRect(int browserId, ref CefViewRect rect)
         {
             double w = 1.0;
             double h = 1.0;
@@ -183,7 +184,7 @@ namespace DNCefView.WPF
             rect.Height = h == 0 ? 1 : (int)h;
         }
 
-        bool WPF_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
+        bool UI_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
             Point p;
             this.Dispatcher.Invoke(() =>
@@ -196,7 +197,7 @@ namespace DNCefView.WPF
             return true;
         }
 
-        bool WPF_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
+        bool UI_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
             System.Drawing.Rectangle rc = new System.Drawing.Rectangle(0, 0, 1, 1);
             double scale = 1.0;
@@ -244,7 +245,7 @@ namespace DNCefView.WPF
             return true;
         }
 
-        void WPF_OnCefPopupSize(int browserId, CefViewRect rect)
+        void UI_OnCefPopupSize(int browserId, CefViewRect rect)
         {
             _cefPopupRect.X = rect.X;
             _cefPopupRect.Y = rect.Y;
@@ -252,11 +253,11 @@ namespace DNCefView.WPF
             _cefPopupRect.Height = rect.Height;
         }
 
-        void WPF_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
+        void UI_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
         {
             void Paint()
             {
-                WriteableBitmap targetBitmap = (type == CefViewPaintElementType.PET_VIEW) ? _cefViewImage : _cefPopupImage;
+                WriteableBitmap? targetBitmap = (type == CefViewPaintElementType.PET_VIEW) ? _cefViewImage : _cefPopupImage;
 
                 if (targetBitmap == null || targetBitmap.PixelWidth != width || targetBitmap.PixelHeight != height)
                 {
@@ -285,10 +286,10 @@ namespace DNCefView.WPF
                 Dispatcher.InvokeAsync(Paint, System.Windows.Threading.DispatcherPriority.Render);
         }
 
-        void WPF_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
+        void UI_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
             var imeKeyboardHandler = _wpfImeHandler;
-            if (imeKeyboardHandler.IsActive)
+            if (imeKeyboardHandler?.IsActive == true)
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -325,19 +326,19 @@ namespace DNCefView.WPF
         #region UIElement Override And Event Handler
         private void OnWindowLocationChanged(object sender, EventArgs e)
         {
-            _cefBrowser.NotifyMoveOrResizeStarted();
+            _cefBrowser?.NotifyMoveOrResizeStarted();
         }
 
         private void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            _cefBrowser.WasHidden(!(bool)e.NewValue);
+            _cefBrowser?.WasHidden(!(bool)e.NewValue);
         }
 
         private void OnPresentationSourceChanged(object sender, SourceChangedEventArgs e)
         {
             if (null != e.NewSource)
             {
-                _wpfImeHandler.InitialiseHWND((HwndSource)e.NewSource);
+                _wpfImeHandler?.InitialiseHWND((HwndSource)e.NewSource);
             }
         }
 
@@ -354,7 +355,7 @@ namespace DNCefView.WPF
         {
             var p = e.GetPosition(this);
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
-            _cefBrowser.SendMouseMoveEvent((int)p.X, (int)p.Y, (uint)modifiers, false);
+            _cefBrowser?.SendMouseMoveEvent((int)p.X, (int)p.Y, (uint)modifiers, false);
             base.OnMouseMove(e);
         }
 
@@ -362,7 +363,7 @@ namespace DNCefView.WPF
         {
             var p = e.GetPosition(this);
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_LEFT, false, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_LEFT, false, 1);
             base.OnMouseLeftButtonDown(e);
         }
 
@@ -370,7 +371,7 @@ namespace DNCefView.WPF
         {
             var p = e.GetPosition(this);
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_LEFT, true, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_LEFT, true, 1);
             base.OnMouseLeftButtonUp(e);
         }
 
@@ -378,7 +379,7 @@ namespace DNCefView.WPF
         {
             var p = e.GetPosition(this);
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_RIGHT, false, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_RIGHT, false, 1);
             base.OnMouseRightButtonDown(e);
         }
 
@@ -386,7 +387,7 @@ namespace DNCefView.WPF
         {
             var p = e.GetPosition(this);
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_RIGHT, true, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, CefViewMouseButtonType.MBT_RIGHT, true, 1);
             base.OnMouseRightButtonUp(e);
         }
 
@@ -396,7 +397,7 @@ namespace DNCefView.WPF
             var modifiers = GetKeyboardModifiers() | GetMouseModifiers(e);
             var isShiftDown = (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
             int deltaY = isShiftDown ? 0 : e.Delta;
-            _cefBrowser.SendWheelEvent((int)p.X, (int)p.Y, (uint)modifiers, 0, deltaY);
+            _cefBrowser?.SendWheelEvent((int)p.X, (int)p.Y, (uint)modifiers, 0, deltaY);
             base.OnMouseWheel(e);
         }
 
@@ -434,7 +435,7 @@ namespace DNCefView.WPF
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
 
             // send key down event
-            _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYDOWN, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
+            _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYDOWN, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
         }
 
         protected override void OnKeyUp(KeyEventArgs e)
@@ -445,7 +446,7 @@ namespace DNCefView.WPF
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
 
             // send key up event
-            _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYUP, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
+            _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYUP, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
         }
 
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
@@ -463,7 +464,7 @@ namespace DNCefView.WPF
                 ushort unmodifiedCharacter = c;
 
                 // send key char event
-                _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_CHAR, (uint)modifiers, winKeyCode, 0, false, character, unmodifiedCharacter, false);
+                _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_CHAR, (uint)modifiers, winKeyCode, 0, false, character, unmodifiedCharacter, false);
             }
 
             base.OnTextInput(e);
@@ -473,29 +474,29 @@ namespace DNCefView.WPF
         {
             if (Editable)
             {
-                _wpfImeHandler.EnableInputMethod();
+                _wpfImeHandler?.EnableInputMethod();
             }
             else
             {
-                _wpfImeHandler.DisableInputMethod();
+                _wpfImeHandler?.DisableInputMethod();
             }
 
-            _cefBrowser.SetFocus(true);
+            _cefBrowser?.SetFocus(true);
             base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(RoutedEventArgs e)
         {
-            _wpfImeHandler.DisableInputMethod();
+            _wpfImeHandler?.DisableInputMethod();
 
-            _cefBrowser.SetFocus(false);
+            _cefBrowser?.SetFocus(false);
             base.OnLostFocus(e);
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo info)
         {
-            _cefBrowser.WasResized();
-            _cefBrowser.NotifyMoveOrResizeStarted();
+            _cefBrowser?.WasResized();
+            _cefBrowser?.NotifyMoveOrResizeStarted();
             base.OnRenderSizeChanged(info);
         }
 

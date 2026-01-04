@@ -12,8 +12,8 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Center" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Width="200">
-            <Button x:Name="BtnChangeBGColor" Content="Change Background Color" HorizontalAlignment="Center" VerticalAlignment="Top" Width="160" Margin="0,10,0,0" Click="BtnChangeBGColor_Click" />
+        <Grid HorizontalAlignment="Center" Width="200" Background="BurlyWood">
+            <Button x:Name="BtnChangeBGColor" Content="Change Background Color" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="BtnChangeBGColor_Click" />
         </Grid>
         <dncefviewwpf:CefView x:Name="LocalCefview" Grid.Column="1" Url="https://demo.dncefview.com/index.html" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />
         <GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="4" Background="Gray" Grid.Column="2" ShowsPreview="True" IsTabStop="False" />

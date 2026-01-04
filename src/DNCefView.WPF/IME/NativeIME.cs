@@ -108,7 +108,7 @@ namespace IMESupport
         [SecurityCritical]
         [SuppressUnmanagedCodeSecurity]
         [DllImport("imm32.dll", CharSet = CharSet.Unicode)]
-        internal static extern uint ImmGetCompositionString(IntPtr hIMC, uint dwIndex, byte[] lpBuf, uint dwBufLen);
+        internal static extern uint ImmGetCompositionString(IntPtr hIMC, uint dwIndex, byte[]? lpBuf, uint dwBufLen);
 
         [SecurityCritical]
         [SuppressUnmanagedCodeSecurity]

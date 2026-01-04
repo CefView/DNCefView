@@ -160,6 +160,7 @@ class CSharpGenerator(SourceGenerator):
         #     f'{os.path.join(self.out, self.source_name)}.cs', 'wt')
 
         header = (
+            f"#pragma warning disable CS8603\n"
             f"using System;\n"
             f"using System.Runtime.InteropServices;\n"
             f"\n"

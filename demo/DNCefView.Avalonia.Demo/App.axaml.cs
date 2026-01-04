@@ -1,5 +1,7 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Labs.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using System.IO;
@@ -14,17 +16,20 @@ namespace DNCefView.Avalonia.Demo
         {
             AvaloniaXamlLoader.Load(this);
 
-            CefConfig config = new CefConfig();
-            config.SetMultiThreadedMessageLoop(true);
-            config.SetLogLevel(CefViewLogLevel.LOGSEVERITY_DEFAULT);
-            config.SetRemoteDebuggingPort(9222);
-            config.SetUserAgent("DNCefView");
-            config.SetBridgeObjectName("CallBridge");
+            if (!Design.IsDesignMode)
+            {
+                CefConfig config = new CefConfig();
+                config.SetMultiThreadedMessageLoop(true);
+                config.SetLogLevel(CefViewLogLevel.LOGSEVERITY_DEFAULT);
+                config.SetRemoteDebuggingPort(9222);
+                config.SetUserAgent("DNCefView");
+                config.SetBridgeObjectName("CallBridge");
 
-            _context = new CefContext(config);
-            var webresDir = Path.Combine(Directory.GetCurrentDirectory(), "webres");
-            _context.AddFolderResource(webresDir, "https://demo.dncefview.com", 0);
-            _context.AddCookie("test", "value", "dncefview.com", "path");
+                _context = new CefContext(config);
+                var webresDir = Path.Combine(Directory.GetCurrentDirectory(), "webres");
+                _context.AddFolderResource(webresDir, "https://demo.dncefview.com", 0);
+                _context.AddCookie("test", "value", "dncefview.com", "path");
+            }
         }
 
         public override void OnFrameworkInitializationCompleted()
@@ -40,7 +45,10 @@ namespace DNCefView.Avalonia.Demo
 
         private void Desktop_Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
         {
-            SafeShutdownCef();
+            if (!Design.IsDesignMode)
+            {
+                SafeShutdownCef();
+            }
         }
 
         protected void CheckSafeExit(DispatcherFrame frame)

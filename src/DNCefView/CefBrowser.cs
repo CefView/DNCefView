@@ -26,9 +26,9 @@ namespace DNCefView
 
         public Rectangle ImeCursorRect;
 
-        public byte[] CefViewFrameData;
+        public byte[]? CefViewFrameData;
 
-        public byte[] CefPopupFrameData;
+        public byte[]? CefPopupFrameData;
 
         public CefBrowser(ICefViewDelegate del, string url, CefSetting setting)
         {

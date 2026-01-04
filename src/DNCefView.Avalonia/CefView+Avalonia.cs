@@ -35,26 +35,31 @@ namespace DNCefView.Avalonia
         {
             if (_isCreated && e.NewValue is string url)
             {
-                _cefBrowser.NavigateToUrl(url);
+                _cefBrowser?.NavigateToUrl(url);
             }
         }
 
         private Rect _cefViewRect;
-        private WriteableBitmap _cefViewImage;
+        private WriteableBitmap? _cefViewImage;
 
         private Rect _cefPopupRect;
-        private WriteableBitmap _cefPopupImage;
+        private WriteableBitmap? _cefPopupImage;
 
         public CefView() : this(null, "")
         {
         }
 
-        public CefView(CefSetting setting) : this(setting, "")
+        public CefView(CefSetting? setting) : this(setting, "")
         {
         }
 
-        public CefView(CefSetting setting, string url)
+        public CefView(CefSetting? setting, string? url)
         {
+            if (Design.IsDesignMode)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(url))
             {
                 url = "about:blank";
@@ -67,42 +72,42 @@ namespace DNCefView.Avalonia
         }
 
         #region CEF Callback Methods
-        bool Avalonia_OnCefInputStateChanged(int browserId, string frameId, bool editable)
+        bool UI_OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
             // IME handling is platform specific and complex in Avalonia.
             // Placeholder for future implementation.
             return false;
         }
 
-        void Avalonia_OnCefAfterCreated()
+        void UI_OnCefAfterCreated()
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 _isCreated = true;
-                _cefBrowser.WasHidden(!IsVisible);
-                _cefBrowser.WasResized();
-                _cefBrowser.NavigateToUrl(Url);
+                _cefBrowser?.WasHidden(!IsVisible);
+                _cefBrowser?.WasResized();
+                _cefBrowser?.NavigateToUrl(Url);
             });
         }
 
-        void Avalonia_OnCefFocusReleasedByTabKey(int browserId, bool next)
+        void UI_OnCefFocusReleasedByTabKey(int browserId, bool next)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (next)
                 {
                     var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
-                    KeyboardNavigationHandler.GetNext(focusManager.GetFocusedElement(), NavigationDirection.Next);
+                    KeyboardNavigationHandler.GetNext(focusManager?.GetFocusedElement()!, NavigationDirection.Next);
                 }
                 else
                 {
                     var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
-                    KeyboardNavigationHandler.GetNext(focusManager.GetFocusedElement(), NavigationDirection.Previous);
+                    KeyboardNavigationHandler.GetNext(focusManager?.GetFocusedElement()!, NavigationDirection.Previous);
                 }
             });
         }
 
-        void Avalonia_OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
+        void UI_OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
         {
             PixelRect bounds = new PixelRect(0, 0, 1, 1);
             void Action()
@@ -110,7 +115,7 @@ namespace DNCefView.Avalonia
                 var topLevel = TopLevel.GetTopLevel(this);
                 if (topLevel != null)
                 {
-                    var screen = topLevel.Screens.ScreenFromVisual(this);
+                    var screen = topLevel?.Screens?.ScreenFromVisual(this);
                     if (screen != null)
                     {
                         bounds = screen.Bounds;
@@ -129,7 +134,7 @@ namespace DNCefView.Avalonia
             rect.Height = bounds.Height;
         }
 
-        void Avalonia_OnCefGetViewRect(int browserId, ref CefViewRect rect)
+        void UI_OnCefGetViewRect(int browserId, ref CefViewRect rect)
         {
             double w = 1.0;
             double h = 1.0;
@@ -154,7 +159,7 @@ namespace DNCefView.Avalonia
             if (rect.Height <= 0) rect.Height = 1;
         }
 
-        bool Avalonia_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
+        bool UI_OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
             PixelPoint p = new PixelPoint(0, 0);
             bool success = false;
@@ -182,7 +187,7 @@ namespace DNCefView.Avalonia
             return false;
         }
 
-        bool Avalonia_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
+        bool UI_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
             double scale = 1.0;
             PixelRect bounds = new PixelRect(0, 0, 1, 1);
@@ -193,7 +198,7 @@ namespace DNCefView.Avalonia
                 if (topLevel != null)
                 {
                     scale = topLevel.RenderScaling;
-                    var screen = topLevel.Screens.ScreenFromVisual(this);
+                    var screen = topLevel?.Screens?.ScreenFromVisual(this);
                     if (screen != null)
                     {
                         bounds = screen.Bounds;
@@ -223,16 +228,16 @@ namespace DNCefView.Avalonia
             return true;
         }
 
-        void Avalonia_OnCefPopupSize(int browserId, CefViewRect rect)
+        void UI_OnCefPopupSize(int browserId, CefViewRect rect)
         {
             _cefPopupRect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        void Avalonia_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
+        void UI_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
         {
             void Paint()
             {
-                WriteableBitmap targetBitmap = (type == CefViewPaintElementType.PET_VIEW) ? _cefViewImage : _cefPopupImage;
+                WriteableBitmap? targetBitmap = (type == CefViewPaintElementType.PET_VIEW) ? _cefViewImage : _cefPopupImage;
 
                 if (targetBitmap == null || targetBitmap.PixelSize.Width != width || targetBitmap.PixelSize.Height != height)
                 {
@@ -265,7 +270,7 @@ namespace DNCefView.Avalonia
                 Dispatcher.UIThread.InvokeAsync(Paint);
         }
 
-        void Avalonia_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
+        void UI_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
             // IME Placeholder
         }
@@ -294,7 +299,7 @@ namespace DNCefView.Avalonia
 
             Focus();
 
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, false, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, false, 1);
             base.OnPointerPressed(e);
         }
 
@@ -310,7 +315,7 @@ namespace DNCefView.Avalonia
                 _ => CefViewMouseButtonType.MBT_LEFT
             };
 
-            _cefBrowser.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, true, 1);
+            _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, true, 1);
             base.OnPointerReleased(e);
         }
 
@@ -318,7 +323,7 @@ namespace DNCefView.Avalonia
         {
             var p = e.GetPosition(this);
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
-            _cefBrowser.SendMouseMoveEvent((int)p.X, (int)p.Y, (uint)modifiers, false);
+            _cefBrowser?.SendMouseMoveEvent((int)p.X, (int)p.Y, (uint)modifiers, false);
             base.OnPointerMoved(e);
         }
 
@@ -328,7 +333,7 @@ namespace DNCefView.Avalonia
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
             int deltaX = (int)(e.Delta.X * 100);
             int deltaY = (int)(e.Delta.Y * 100);
-            _cefBrowser.SendWheelEvent((int)p.X, (int)p.Y, (uint)modifiers, deltaX, deltaY);
+            _cefBrowser?.SendWheelEvent((int)p.X, (int)p.Y, (uint)modifiers, deltaX, deltaY);
             base.OnPointerWheelChanged(e);
         }
 
@@ -338,7 +343,7 @@ namespace DNCefView.Avalonia
             int virtualKey = (int)e.Key; // Note: Proper Key mapping required for production
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
 
-            _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYDOWN, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
+            _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYDOWN, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
             base.OnKeyDown(e);
         }
 
@@ -348,7 +353,7 @@ namespace DNCefView.Avalonia
             int virtualKey = (int)e.Key;
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
 
-            _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYUP, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
+            _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYUP, (uint)modifiers, virtualKey, 0, isSystemKey, 0, 0, false);
             base.OnKeyUp(e);
         }
 
@@ -359,7 +364,7 @@ namespace DNCefView.Avalonia
                 foreach (char c in e.Text)
                 {
                     uint modifiers = 0;
-                    _cefBrowser.SendKeyEvent(CefViewKeyEventType.KEYEVENT_CHAR, modifiers, c, 0, false, c, c, false);
+                    _cefBrowser?.SendKeyEvent(CefViewKeyEventType.KEYEVENT_CHAR, modifiers, c, 0, false, c, c, false);
                 }
             }
             base.OnTextInput(e);
@@ -367,20 +372,20 @@ namespace DNCefView.Avalonia
 
         protected override void OnGotFocus(GotFocusEventArgs e)
         {
-            _cefBrowser.SetFocus(true);
+            _cefBrowser?.SetFocus(true);
             base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(RoutedEventArgs e)
         {
-            _cefBrowser.SetFocus(false);
+            _cefBrowser?.SetFocus(false);
             base.OnLostFocus(e);
         }
 
         protected override void OnSizeChanged(SizeChangedEventArgs e)
         {
-            _cefBrowser.WasResized();
-            _cefBrowser.NotifyMoveOrResizeStarted();
+            _cefBrowser?.WasResized();
+            _cefBrowser?.NotifyMoveOrResizeStarted();
             base.OnSizeChanged(e);
         }
 

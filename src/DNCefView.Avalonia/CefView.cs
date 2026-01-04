@@ -12,8 +12,8 @@ namespace DNCefView.Avalonia
         /// <summary>
         /// 
         /// </summary>
-        protected CefSetting _cefSetting;
-        public CefSetting Setting
+        protected CefSetting? _cefSetting;
+        public CefSetting? Setting
         {
             get { return _cefSetting; }
         }
@@ -30,7 +30,7 @@ namespace DNCefView.Avalonia
         /// <summary>
         /// 
         /// </summary>
-        protected CefBrowser _cefBrowser;
+        protected CefBrowser? _cefBrowser;
 
         /// <summary>
         /// 
@@ -44,51 +44,51 @@ namespace DNCefView.Avalonia
 
         #region Events
         public delegate void CefQueryRequestCallback(int browserId, string frameId, CefQuery query);
-        public event CefQueryRequestCallback CefQueryRequest;
+        public event CefQueryRequestCallback? CefQueryRequest;
 
         public delegate void InvokeMethodCallback(int browserId, string frameId, string method, List<dynamic> arguments);
-        public event InvokeMethodCallback InvokeMethod;
+        public event InvokeMethodCallback? InvokeMethod;
 
         public delegate void ReportJavascriptResultCallback(int browserId, string frameId, string context, string result);
-        public event ReportJavascriptResultCallback ReportJavascriptResult;
+        public event ReportJavascriptResultCallback? ReportJavascriptResult;
 
         public delegate void InputStateChangedCallback(int browserId, string frameId, bool editable);
-        public event InputStateChangedCallback InputStateChanged;
+        public event InputStateChangedCallback? InputStateChanged;
 
         public delegate void LoadingStateChangedCallback(int browserId, bool isLoading, bool canGoBack, bool canGoForward);
-        public event LoadingStateChangedCallback LoadingStateChanged;
+        public event LoadingStateChangedCallback? LoadingStateChanged;
 
         public delegate void LoadStartCallback(int browserId, string frameId, bool isMainFrame, int transition_type);
-        public event LoadStartCallback LoadStart;
+        public event LoadStartCallback? LoadStart;
 
         public delegate void LoadEndCallback(int browserId, string frameId, bool isMainFrame, int httpStatusCode);
-        public event LoadEndCallback LoadEnd;
+        public event LoadEndCallback? LoadEnd;
 
         public delegate bool LoadErrorCallback(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl);
-        public LoadErrorCallback LoadError;
+        public LoadErrorCallback? LoadError;
 
         public delegate void AddressChangedCallback(string frameId, string url);
-        public event AddressChangedCallback AddressChanged;
+        public event AddressChangedCallback? AddressChanged;
 
         public delegate void TitleChangedCallback(string title);
-        public event TitleChangedCallback TitleChanged;
+        public event TitleChangedCallback? TitleChanged;
 
         public delegate void FullScreenModeChangedCallback(bool fullscreen);
-        public event FullScreenModeChangedCallback FullScreenModeChanged;
+        public event FullScreenModeChangedCallback? FullScreenModeChanged;
 
         public delegate void StatusMessageCallback(string message);
-        public event StatusMessageCallback StatusMessage;
+        public event StatusMessageCallback? StatusMessage;
 
         public delegate void ConsoleMessageCallback(string message, int level);
-        public event ConsoleMessageCallback ConsoleMessage;
+        public event ConsoleMessageCallback? ConsoleMessage;
 
         public delegate void LoadingProgressChangedCallback(double progress);
-        public event LoadingProgressChangedCallback LoadingProgressChanged;
+        public event LoadingProgressChangedCallback? LoadingProgressChanged;
         #endregion
 
-        private void InitializeNative(string url, CefSetting setting)
+        private void InitializeNative(string url, CefSetting? setting)
         {
-            if (null != _cefSetting)
+            if (null != setting)
             {
                 _cefSetting = setting;
             }
@@ -104,121 +104,121 @@ namespace DNCefView.Avalonia
         #region Browser Methods
         public void AddLocalFolderResource(string path, string url, int priority)
         {
-            _cefBrowser.AddLocalFolderResource(path, url, priority);
+            _cefBrowser?.AddLocalFolderResource(path, url, priority);
         }
 
         public void AddArchiveResource(string path, string url, string password, int priority)
         {
-            _cefBrowser.AddArchiveResource(path, url, password, priority);
+            _cefBrowser?.AddArchiveResource(path, url, password, priority);
         }
 
         public int BrowserId()
         {
-            return _cefBrowser.BrowserId();
+            return _cefBrowser?.BrowserId() ?? -1;
         }
 
         public void NavigateToString(string content)
         {
-            _cefBrowser.NavigateToString(content);
+            _cefBrowser?.NavigateToString(content);
         }
 
         public void NavigateToUrl(string url)
         {
-            _cefBrowser.NavigateToUrl(url);
+            _cefBrowser?.NavigateToUrl(url);
         }
 
         public bool CanGoBack()
         {
-            return _cefBrowser.CanGoBack();
+            return _cefBrowser?.CanGoBack() ?? false;
         }
 
         public bool CanGoForward()
         {
-            return _cefBrowser.CanGoForward();
+            return _cefBrowser?.CanGoForward() ?? false;
         }
 
         public void GoBack()
         {
-            _cefBrowser.GoBack();
+            _cefBrowser?.GoBack();
         }
 
         public void GoForward()
         {
-            _cefBrowser.GoForward();
+            _cefBrowser?.GoForward();
         }
 
         public bool IsLoading()
         {
-            return _cefBrowser.IsLoading();
+            return _cefBrowser?.IsLoading() ?? false; ;
         }
 
         public void Reload()
         {
-            _cefBrowser.Reload();
+            _cefBrowser?.Reload();
         }
 
         public void StopLoad()
         {
-            _cefBrowser.StopLoad();
+            _cefBrowser?.StopLoad();
         }
 
         public bool TriggerEventOnMainFrame(string evtName, List<object> evtArgs)
         {
             var argsString = JsonSerializer.Serialize(evtArgs);
-            return _cefBrowser.TriggerEventOnMainFrame(evtName, argsString);
+            return _cefBrowser?.TriggerEventOnMainFrame(evtName, argsString) ?? false;
         }
 
         public bool TriggerEventOnFrame(string evtName, List<object> evtArgs, string frameId)
         {
             var argsString = JsonSerializer.Serialize(evtArgs);
-            return _cefBrowser.TriggerEventOnFrame(evtName, argsString, frameId);
+            return _cefBrowser?.TriggerEventOnFrame(evtName, argsString, frameId) ?? false;
         }
 
         public bool BroadcastEvent(string evtName, List<object> evtArgs)
         {
             var argsString = JsonSerializer.Serialize(evtArgs);
-            return _cefBrowser.BroadcastEvent(evtName, argsString);
+            return _cefBrowser?.BroadcastEvent(evtName, argsString) ?? false;
         }
 
         public bool TriggerEvent(string name, List<object> args, string frameId)
         {
             var argsString = JsonSerializer.Serialize(args);
-            return _cefBrowser.TriggerEvent(name, argsString, frameId);
+            return _cefBrowser?.TriggerEvent(name, argsString, frameId) ?? false;
         }
 
         public bool ResponseQCefQuery(CefQuery query)
         {
-            return _cefBrowser.ResponseQCefQuery(query);
+            return _cefBrowser?.ResponseQCefQuery(query) ?? false;
         }
 
         public bool ExecuteJavascript(string frameId, string code, string url)
         {
-            return _cefBrowser.ExecuteJavascript(frameId, code, url);
+            return _cefBrowser?.ExecuteJavascript(frameId, code, url) ?? false;
         }
 
         public bool ExecuteJavascriptWithResult(string frameId, string code, string url, string context)
         {
-            return (_cefBrowser.ExecuteJavascriptWithResult(frameId, code, url, context));
+            return _cefBrowser?.ExecuteJavascriptWithResult(frameId, code, url, context) ?? false;
         }
 
         public bool SetPreference(string name, string value)
         {
-            return _cefBrowser.SetPreference(name, value);
+            return _cefBrowser?.SetPreference(name, value) ?? false;
         }
 
         public void ImeSetComposition(string text, CefViewCompositionUnderline[] underlines, CefViewRange replacement_range, CefViewRange selection_range)
         {
-            _cefBrowser.ImeSetComposition(text, underlines, underlines.Length, replacement_range, selection_range);
+            _cefBrowser?.ImeSetComposition(text, underlines, underlines.Length, replacement_range, selection_range);
         }
 
         public void ImeCommitText(string text, CefViewRange replacement_range, int relative_cursor_pos)
         {
-            _cefBrowser.ImeCommitText(text, replacement_range, relative_cursor_pos);
+            _cefBrowser?.ImeCommitText(text, replacement_range, relative_cursor_pos);
         }
 
         public void ImeFinishComposingText(bool keep_selection)
         {
-            _cefBrowser.ImeFinishComposingText(keep_selection);
+            _cefBrowser?.ImeFinishComposingText(keep_selection);
         }
         #endregion
 
@@ -230,17 +230,16 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefInvokeMethod(int browserId, string frameId, string method, string arguments)
         {
-            List<dynamic> argList;
+            List<dynamic>? argList = new List<dynamic>();
             try
             {
                 argList = JsonSerializer.Deserialize<List<dynamic>>(arguments);
             }
             catch (Exception)
             {
-                argList = new List<dynamic>();
             }
 
-            InvokeMethod?.Invoke(browserId, frameId, method, argList);
+            InvokeMethod?.Invoke(browserId, frameId, method, argList!);
         }
 
         void ICefViewDelegate.OnCefReportJavascriptResult(int browserId, string frameId, string context, string result)
@@ -251,7 +250,7 @@ namespace DNCefView.Avalonia
         void ICefViewDelegate.OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
             _editable = editable;
-            if (Avalonia_OnCefInputStateChanged(browserId, frameId, editable))
+            if (UI_OnCefInputStateChanged(browserId, frameId, editable))
                 InputStateChanged?.Invoke(browserId, frameId, editable);
         }
 
@@ -310,12 +309,12 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefAfterCreated()
         {
-            Avalonia_OnCefAfterCreated();
+            UI_OnCefAfterCreated();
         }
 
         void ICefViewDelegate.OnCefFocusReleasedByTabKey(int browserId, bool next)
         {
-            Avalonia_OnCefFocusReleasedByTabKey(browserId, next);
+            UI_OnCefFocusReleasedByTabKey(browserId, next);
         }
 
         bool ICefViewDelegate.OnCefSetFocus(int browserId)
@@ -330,22 +329,22 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
         {
-            Avalonia_OnCefGetRootScreenRect(browserId, ref rect);
+            UI_OnCefGetRootScreenRect(browserId, ref rect);
         }
 
         void ICefViewDelegate.OnCefGetViewRect(int browserId, ref CefViewRect rect)
         {
-            Avalonia_OnCefGetViewRect(browserId, ref rect);
+            UI_OnCefGetViewRect(browserId, ref rect);
         }
 
         bool ICefViewDelegate.OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
-            return Avalonia_OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
+            return UI_OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
         }
 
         bool ICefViewDelegate.OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
-            return Avalonia_OnCefGetScreenInfo(browserId, ref info);
+            return UI_OnCefGetScreenInfo(browserId, ref info);
         }
 
         void ICefViewDelegate.OnCefPopupShow(int browserId, bool show)
@@ -355,17 +354,17 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefPopupSize(int browserId, CefViewRect rect)
         {
-            Avalonia_OnCefPopupSize(browserId, rect);
+            UI_OnCefPopupSize(browserId, rect);
         }
 
         void ICefViewDelegate.OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
         {
-            Avalonia_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
+            UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
         }
 
         void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
-            Avalonia_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
+            UI_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
         }
         #endregion
     }
