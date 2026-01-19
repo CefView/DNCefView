@@ -72,6 +72,7 @@ namespace DNCefView
             _callbackTable.OnPopupShowCb = OnCefPopupShow;
             _callbackTable.OnPopupSizeCb = OnCefPopupSize;
             _callbackTable.OnPaintCb = OnCefPaint;
+            _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
             _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
 
             _native = CCefBrowser_new0(_callbackTable, url, setting.NativeObject);
@@ -317,6 +318,15 @@ namespace DNCefView
             if (null != del)
             {
                 del.OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
+            }
+        }
+
+        public void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
             }
         }
 

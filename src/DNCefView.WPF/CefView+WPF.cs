@@ -286,6 +286,10 @@ namespace DNCefView.WPF
                 Dispatcher.InvokeAsync(Paint, System.Windows.Threading.DispatcherPriority.Render);
         }
 
+        void UI_OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
+        {
+        }
+
         void UI_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
             var imeKeyboardHandler = _wpfImeHandler;

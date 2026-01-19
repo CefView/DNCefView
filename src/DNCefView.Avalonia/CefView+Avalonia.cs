@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using System;
 using System.Runtime.InteropServices;
 
 
@@ -268,6 +269,10 @@ namespace DNCefView.Avalonia
                 Paint();
             else
                 Dispatcher.UIThread.InvokeAsync(Paint);
+        }
+
+        void UI_OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
+        {
         }
 
         void UI_OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)

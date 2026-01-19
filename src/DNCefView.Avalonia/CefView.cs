@@ -362,6 +362,11 @@ namespace DNCefView.Avalonia
             UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
         }
 
+        void ICefViewDelegate.OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
+        {
+            UI_OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
+        }
+
         void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
             UI_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
