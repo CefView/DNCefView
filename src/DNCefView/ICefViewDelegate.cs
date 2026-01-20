@@ -56,6 +56,8 @@ namespace DNCefView
 
         void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
 
+        void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange);
+
         void OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount);
     }
 }

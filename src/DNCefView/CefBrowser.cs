@@ -74,6 +74,7 @@ namespace DNCefView
             _callbackTable.OnPaintCb = OnCefPaint;
             _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
             _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
+            _callbackTable.OnTextSelectionChangedCb = OnCefTextSelectionChanged;
 
             _native = CCefBrowser_new0(_callbackTable, url, setting.NativeObject);
         }
@@ -336,6 +337,15 @@ namespace DNCefView
             if (null != del)
             {
                 del.OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
+            }
+        }
+
+        public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefTextSelectionChanged(browserId, selectedText, selectedRange);
             }
         }
         #endregion
