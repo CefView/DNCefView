@@ -320,5 +320,13 @@ namespace DNCefView
             CCefBrowser_imeFinishComposingText(_native, keep_selection);
         }
 
+        // Source: void imeCancelComposition()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_imeCancelComposition(IntPtr thiz);
+        public void ImeCancelComposition()
+        {
+            CCefBrowser_imeCancelComposition(_native);
+        }
+
     }
 }

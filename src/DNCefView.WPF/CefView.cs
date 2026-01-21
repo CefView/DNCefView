@@ -220,6 +220,11 @@ namespace DNCefView.WPF
         {
             _cefBrowser?.ImeFinishComposingText(keep_selection);
         }
+
+        public void ImeCancelComposition(bool keep_selection)
+        {
+            _cefBrowser?.ImeCancelComposition(keep_selection);
+        }
         #endregion
 
         #region CEF Callbacks

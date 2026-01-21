@@ -151,3 +151,7 @@ void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_sele
   thiz->imeFinishComposingText(keep_selection);
 }
 
+void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz) {
+  thiz->imeCancelComposition();
+}
+

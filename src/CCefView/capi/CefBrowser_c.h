@@ -66,6 +66,7 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_imeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range);
   CCEFVIEW_EXPORT void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos);
   CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
+  CCEFVIEW_EXPORT void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz);
 
 #if defined(__cplusplus)
 }

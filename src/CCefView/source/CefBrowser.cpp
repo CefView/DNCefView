@@ -485,6 +485,14 @@ CCefBrowser::imeFinishComposingText(bool keep_selection)
 }
 
 void
+CCefBrowser::imeCancelComposition()
+{
+  if (!pCefBrowser_)
+    return;
+  pCefBrowser_->GetHost()->ImeCancelComposition();
+}
+
+void
 CCefBrowser::cefQueryRequest(int browserId, const std::string& frameId, const CCefQuery* query)
 {
   if (callbackTable_.pfnCefQueryRequest)

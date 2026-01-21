@@ -251,6 +251,7 @@ public:
                          CefViewRange selection_range);
   void imeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos);
   void imeFinishComposingText(bool keep_selection);
+  void imeCancelComposition();
 #pragma endregion
 
 #pragma region CEF Callbacks
