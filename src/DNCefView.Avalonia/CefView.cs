@@ -221,9 +221,9 @@ namespace DNCefView.Avalonia
             _cefBrowser?.ImeFinishComposingText(keep_selection);
         }
 
-        public void ImeCancelComposition(bool keep_selection)
+        public void ImeCancelComposition()
         {
-            _cefBrowser?.ImeCancelComposition(keep_selection);
+            _cefBrowser?.ImeCancelComposition();
         }
         #endregion
 
@@ -375,6 +375,10 @@ namespace DNCefView.Avalonia
         void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
         {
             UI_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
+        }
+
+        public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
+        {
         }
         #endregion
     }
