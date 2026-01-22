@@ -3,9 +3,13 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:dncefviewavalonia="clr-namespace:DNCefView.Avalonia;assembly=DNCefView.Avalonia"
-		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="DNCefView.Avalonia.Demo.MainWindow"
-		Title="DNCefView.Avalonia.Demo">
+		mc:Ignorable="d" 
+		d:DesignWidth="800" 
+		d:DesignHeight="450"
+		Title="DNCefView.Avalonia.Demo"
+		Width="1920"
+		Height="1080">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="200"/>
