@@ -2,6 +2,8 @@
 
 #include <CefViewCoreProtocol.h>
 
+static std::string sEmptyString;
+
 CCefConfig::CCefConfig()
 {
   backgroundColor_ = 0xFFFFFFFF;
@@ -86,13 +88,43 @@ CCefConfig::cachePath() const
 void
 CCefConfig::setUserDataPath(const std::string& path)
 {
+#if CEF_VERSION_MAJOR < 115
   userDataPath_ = path;
+#else
+  DEPRECATED_CEF_API_WARNING(115, 0, 0);
+#endif
 }
 
 const std::string&
 CCefConfig::userDataPath() const
 {
+#if CEF_VERSION_MAJOR < 115
   return userDataPath_;
+#else
+  DEPRECATED_CEF_API_WARNING(115, 0, 0);
+  return sEmptyString;
+#endif
+}
+
+void
+CCefConfig::setRootCachePath(const std::string& path)
+{
+#if CEF_VERSION_MAJOR >= 115
+  rootCachePath_ = path;
+#else
+  INTRODUCED_CEF_API_WARNING(115, 0, 0);
+#endif
+}
+
+const std::string&
+CCefConfig::rootCachePath() const
+{
+#if CEF_VERSION_MAJOR >= 115
+  return rootCachePath_;
+#else
+  INTRODUCED_CEF_API_WARNING(115, 0, 0);
+  return sEmptyString;
+#endif
 }
 
 void
@@ -158,13 +190,22 @@ CCefConfig::persistSessionCookies() const
 void
 CCefConfig::setPersistUserPreferences(bool enabled)
 {
+#if CEF_VERSION_MAJOR < 128
   persistUserPreferences_ = enabled;
+#else
+  DEPRECATED_CEF_API_WARNING(128, 0, 0);
+#endif
 }
 
 bool
 CCefConfig::persistUserPreferences() const
 {
+#if CEF_VERSION_MAJOR < 128
   return persistUserPreferences_.value_or(false);
+#else
+  DEPRECATED_CEF_API_WARNING(128, 0, 0);
+  return false;
+#endif
 }
 
 void
@@ -241,6 +282,14 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
   if (!config->cachePath().empty())
     CefString(&settings.cache_path) = config->cachePath();
 
+#if CEF_VERSION_MAJOR < 115
+  if (!config->userDataPath_.empty())
+    CefString(&settings.user_data_path) = config->userDataPath_;
+#else
+  if (!config->rootCachePath_.empty())
+    CefString(&settings.root_cache_path) = config->rootCachePath_;
+#endif
+
   if (!config->locale().empty())
     CefString(&settings.locale) = config->locale();
 
@@ -250,8 +299,10 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
   if (config->persistSessionCookies_.has_value())
     settings.persist_session_cookies = config->persistSessionCookies();
 
+#if CEF_VERSION_MAJOR < 128
   if (config->persistUserPreferences_.has_value())
     settings.persist_user_preferences = config->persistUserPreferences();
+#endif
 
   if (config->multiThreadedMessageLoop_.has_value())
     settings.multi_threaded_message_loop = config->multiThreadedMessageLoop();

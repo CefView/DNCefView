@@ -11,7 +11,9 @@
 #include <include/cef_app.h>
 
 // project
+#include <CefGlobal.h>
 #include <CefTypes.h>
+#include <CefVersion.h>
 
 /// <summary>
 ///
@@ -146,12 +148,27 @@ public:
   /// Sets the user data directory path
   /// </summary>
   /// <param name="path">The user data directory path</param>
+  DEPRECATED_SINCE_CEF_VERSION(115, 0, 0)
   void setUserDataPath(const std::string& path);
 
   /// <summary>
   /// Gets the user data directory path
   /// </summary>
+  DEPRECATED_SINCE_CEF_VERSION(115, 0, 0)
   const std::string& userDataPath() const;
+
+  /// <summary>
+  /// Sets the user data directory path
+  /// </summary>
+  /// <param name="path">The user data directory path</param>
+  INTRODUCED_SINCE_CEF_VERSION(115, 0, 0)
+  void setRootCachePath(const std::string& path);
+
+  /// <summary>
+  /// Gets the user data directory path
+  /// </summary>
+  INTRODUCED_SINCE_CEF_VERSION(115, 0, 0)
+  const std::string& rootCachePath() const;
 
   /// <summary>
   /// Sets the bridge object name
@@ -225,11 +242,13 @@ public:
   /// Sets whether to persist user preferences
   /// </summary>
   /// <param name="enabled">True if to persist user preferences</param>
+  DEPRECATED_SINCE_CEF_VERSION(128, 0, 0)
   void setPersistUserPreferences(bool enabled);
 
   /// <summary>
   /// Gets whether to persist user preferences
   /// </summary>
+  DEPRECATED_SINCE_CEF_VERSION(128, 0, 0)
   bool persistUserPreferences() const;
 
   /// <summary>
@@ -296,7 +315,13 @@ private:
   std::string locale_;
   std::string userAgent_;
   std::string cachePath_;
+
+#if CEF_VERSION_MAJOR < 115
   std::string userDataPath_;
+#else
+  std::string rootCachePath_;
+#endif
+
   std::string bridgeObjectName_;
   std::string builtinSchemaName_;
   std::string acceptLanguageList_;
@@ -304,7 +329,11 @@ private:
   std::optional<uint32_t> backgroundColor_;
   std::optional<short> remoteDebuggingPort_;
   std::optional<bool> persistSessionCookies_;
+
+#if CEF_VERSION_MAJOR < 128
   std::optional<bool> persistUserPreferences_;
+#endif
+
   std::optional<bool> multiThreadedMessageLoop_;
 };
 

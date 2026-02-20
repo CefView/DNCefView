@@ -67,6 +67,14 @@ const char * CCefConfig_userDataPath(ccefconfig_class * thiz) {
   return thiz->userDataPath().c_str();
 }
 
+void CCefConfig_setRootCachePath(ccefconfig_class * thiz, const char * path) {
+  thiz->setRootCachePath(path);
+}
+
+const char * CCefConfig_rootCachePath(ccefconfig_class * thiz) {
+  return thiz->rootCachePath().c_str();
+}
+
 void CCefConfig_setBridgeObjectName(ccefconfig_class * thiz, const char * name) {
   thiz->setBridgeObjectName(name);
 }

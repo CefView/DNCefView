@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
 from pp2xlang.translator import Translator
 from pp2xlang.translator import TypeMapper
@@ -37,6 +38,7 @@ class CSharpTypeMapper(TypeMapper):
             "void *": ("IntPtr", ""),
             "char *": ("string", ""),
             "unsigned char *": ("byte[]", ""),
+            "unsigned long long": ("ulong", ""),
             "std::string": ("string", ""),
             "unsigned int": ("uint", ""),
             "int16_t": ("Int16", ""),
@@ -56,12 +58,18 @@ class CSharpTypeMapper(TypeMapper):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        cef_include_path = sys.argv[1]
+        print("cef_include_path:", cef_include_path)
+    else:
+        print("cef include path not found")
+
     # configuration
     args = [
         "-x",
         "c++",
         "-std=c++17",
-        "-I.build/windows.x86_64/_deps/cefviewcore-src/dep/cef_binary_126.2.18+g3647d39+chromium-126.0.6478.183_windows64",
+        f"-I{cef_include_path}",
     ]
     translator = Translator(args)
 
@@ -74,6 +82,8 @@ if __name__ == "__main__":
     translator.add_generator(csharpgen)
 
     # parse
+    translator.parse("src/CCefView/include/CefVersion.h")
+    translator.parse("src/CCefView/include/CefGlobal.h")
     translator.parse("src/CCefView/include/CefTypes.h")
     translator.parse("src/CCefView/include/CefConfig.h")
     translator.parse("src/CCefView/include/CefContext.h")

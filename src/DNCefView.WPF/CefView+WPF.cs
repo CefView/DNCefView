@@ -200,8 +200,8 @@ namespace DNCefView.WPF
         bool UI_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
             System.Drawing.Rectangle rc = new System.Drawing.Rectangle(0, 0, 1, 1);
-            double scale = 1.0;
-            this.Dispatcher.Invoke(() =>
+            float scale = 1.0f;
+            Dispatcher.Invoke(() =>
             {
                 var window = Window.GetWindow(this);
                 if (null == window)
@@ -226,7 +226,7 @@ namespace DNCefView.WPF
                     rc.Height = (int)SystemParameters.WorkArea.Height;
                 }
 
-                scale = VisualTreeHelper.GetDpi(window).DpiScaleX;
+                scale = (float)VisualTreeHelper.GetDpi(window).DpiScaleX;
             });
 
             info.Depth = 32;
@@ -240,7 +240,7 @@ namespace DNCefView.WPF
             info.AvailableRect.Y = rc.Y;
             info.AvailableRect.Width = rc.Width;
             info.AvailableRect.Height = rc.Height;
-            info.DeviceScaleFactor = (float)scale;
+            info.DeviceScaleFactor = scale;
 
             return true;
         }

@@ -28,5 +28,4 @@ set_target_properties(${PROJECT_NAME}
     VS_GLOBAL_Nullable "enable"
 
     VS_GLOBAL_PackageId "${PROJECT_NAME}"
-    VS_GLOBAL_Version 0.0.1
 )

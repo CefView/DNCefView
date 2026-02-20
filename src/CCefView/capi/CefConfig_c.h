@@ -20,7 +20,9 @@
 
 #include <stdint.h>
 
+#include "CefGlobal_c.h"
 #include "CefTypes_c.h"
+#include "CefVersion_c.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -44,6 +46,8 @@ extern "C"
   CCEFVIEW_EXPORT const char * CCefConfig_cachePath(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setUserDataPath(ccefconfig_class * thiz, const char * path);
   CCEFVIEW_EXPORT const char * CCefConfig_userDataPath(ccefconfig_class * thiz);
+  CCEFVIEW_EXPORT void CCefConfig_setRootCachePath(ccefconfig_class * thiz, const char * path);
+  CCEFVIEW_EXPORT const char * CCefConfig_rootCachePath(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setBridgeObjectName(ccefconfig_class * thiz, const char * name);
   CCEFVIEW_EXPORT const char * CCefConfig_bridgeObjectName(ccefconfig_class * thiz);
   CCEFVIEW_EXPORT void CCefConfig_setBuiltinSchemaName(ccefconfig_class * thiz, const char * name);

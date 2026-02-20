@@ -190,7 +190,7 @@ namespace DNCefView.Avalonia
 
         bool UI_OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
-            double scale = 1.0;
+            float scale = 1.0f;
             PixelRect bounds = new PixelRect(0, 0, 1, 1);
             PixelRect workingArea = new PixelRect(0, 0, 1, 1);
             void Action()
@@ -198,7 +198,7 @@ namespace DNCefView.Avalonia
                 var topLevel = TopLevel.GetTopLevel(this);
                 if (topLevel != null)
                 {
-                    scale = topLevel.RenderScaling;
+                    scale = (float)topLevel.RenderScaling;
                     var screen = topLevel?.Screens?.ScreenFromVisual(this);
                     if (screen != null)
                     {
@@ -224,7 +224,7 @@ namespace DNCefView.Avalonia
             info.Depth = 32;
             info.DepthPerComponent = 8;
             info.IsMonochrome = 0;
-            info.DeviceScaleFactor = (float)scale;
+            info.DeviceScaleFactor = scale;
 
             return true;
         }

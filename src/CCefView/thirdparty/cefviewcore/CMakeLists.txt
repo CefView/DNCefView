@@ -63,3 +63,14 @@ configure_file(
     "${CMAKE_SOURCE_DIR}/src/CCefView/include/CefVersion.h"
     COPYONLY
 )
+
+# run code gen
+message(STATUS "Generating C and C# binding source files")
+execute_process(
+    COMMAND python scripts/gen.py "${CefViewCore_CEF_INCLUDE_DIR}/.."
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE res
+    OUTPUT_VARIABLE out
+    OUTPUT_FILE ${CMAKE_BINARY_DIR}/code-gen.log
+    ERROR_FILE ${CMAKE_BINARY_DIR}/code-gen.log
+)

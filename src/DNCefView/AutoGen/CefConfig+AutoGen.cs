@@ -152,6 +152,22 @@ namespace DNCefView
             return Marshal.PtrToStringUTF8(CCefConfig_userDataPath(_native));
         }
 
+        // Source: void setRootCachePath(const std::string &)
+        [DllImport("CCefView")]
+        private static extern void CCefConfig_setRootCachePath(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string path);
+        public void SetRootCachePath(string path)
+        {
+            CCefConfig_setRootCachePath(_native, path);
+        }
+
+        // Source: const std::string & rootCachePath()
+        [DllImport("CCefView")]
+        private static extern IntPtr CCefConfig_rootCachePath(IntPtr thiz);
+        public string RootCachePath()
+        {
+            return Marshal.PtrToStringUTF8(CCefConfig_rootCachePath(_native));
+        }
+
         // Source: void setBridgeObjectName(const std::string &)
         [DllImport("CCefView")]
         private static extern void CCefConfig_setBridgeObjectName(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
