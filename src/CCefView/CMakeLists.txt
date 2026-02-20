@@ -19,6 +19,10 @@ if(NOT DEFINED PROJECT_ARCH)
   endif()
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/runtimes/${DOTNET_RID}/native/)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/)
+
 if(OS_WINDOWS)
   # #############################################################################
   # Windows specific settings
@@ -104,15 +108,6 @@ else()
   message(FATAL_ERROR "Unsupported OS: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Detect Arch
-if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
-  set(DOTNET_RID_ARCH "arm64")
-elseif(CMAKE_SIZEOF_VOID_P MATCHES 8)
-  set(DOTNET_RID_ARCH "x64")
-else()
-  set(DOTNET_RID_ARCH "x86")
-endif()
-
 set(CCefView_LIB_TYPE SHARED)
 
 add_subdirectory(thirdparty/json)
@@ -120,7 +115,7 @@ add_subdirectory(thirdparty/cefviewcore)
 
 # ## CCefView
 # ###############################################################################################
-project(CCefView)
+set(PROJECT_NAME CCefView)
 
 file(GLOB CCefView_capi_SRC_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/capi/*.h"
@@ -331,7 +326,8 @@ add_dependencies(${PROJECT_NAME}
   CefViewCore::CefViewCore
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX)
+target_compile_definitions(${PROJECT_NAME}
+  PRIVATE NOMINMAX)
 
 target_include_directories(${PROJECT_NAME}
   PRIVATE
@@ -344,3 +340,9 @@ target_link_libraries(${PROJECT_NAME}
   nlohmann_json::nlohmann_json
   CefViewCore::CefViewCore
 )
+
+# set_target_properties(${PROJECT_NAME}
+# PROPERTIES
+# ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/lib
+# OUTPUT_NAME runtimes/${DOTNET_RID}/native/${OUTPUT_NAME}
+# )

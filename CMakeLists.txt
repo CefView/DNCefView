@@ -15,6 +15,16 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(DOTNET_RID_OS "linux")
 endif()
 
+if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
+  set(DOTNET_RID_ARCH "arm64")
+elseif(CMAKE_SIZEOF_VOID_P MATCHES 8)
+  set(DOTNET_RID_ARCH "x64")
+else()
+  set(DOTNET_RID_ARCH "x86")
+endif()
+
+set(DOTNET_RID "${DOTNET_RID_OS}-${DOTNET_RID_ARCH}")
+
 # Only generate Debug and Release configuration types.
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
@@ -29,6 +39,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "~CMakeTargets")
 # ################################################################
 # Native projects
 set(CMAKE_FOLDER CCefView)
+set(CEF_SDK_VERSION "137.0.19+g8a1c4ce+chromium-137.0.7151.121")
+set(CEFVIEW_CORE_VERSION "main")
 add_subdirectory(src/CCefView)
 
 # ################################################################
@@ -37,11 +49,20 @@ set(CMAKE_FOLDER DNCefView)
 set(CMAKE_DOTNET_SDK "Microsoft.NET.Sdk")
 set(CMAKE_DOTNET_TARGET_FRAMEWORK "net8.0")
 set(CMAKE_VS_GLOBALS
-  "Authors=tishion"
-  "Copyright=Copyright © 2025 tishion"
-  "Description=An encapsulation of CefView for .NET"
+  "Authors=CefView"
+  "Company=CefView"
+  "Copyright=Copyright © 2025 CefView"
+  "Description=.NET Implementation of CefView"
+  "PackageTags=CefView CEF"
+  "PackageLicenseExpression=MIT"
+  "PackageRequireLicenseAcceptance false"
   "PackageProjectUrl=https://github.com/CefView/DNCefView"
   "RepositoryUrl=https://github.com/CefView/DNCefView"
+  "IncludeSymbols=true"
+  "SymbolPackageFormat=snupkg"
+  "PublishRepositoryUrl=true"
+  "EmbedUntrackedSources=false"
+  "GeneratePackageOnBuild=true"
 )
 
 # ###################################################################

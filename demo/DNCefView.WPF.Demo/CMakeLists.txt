@@ -53,4 +53,5 @@ set_target_properties(${PROJECT_NAME}
     VS_GLOBAL_ROOTNAMESPACE "DNCefView.WPF.Demo"
     VS_GLOBAL_UseWPF "true"
     VS_GLOBAL_Nullable "enable"
+    VS_GLOBAL_GeneratePackageOnBuild false
 )

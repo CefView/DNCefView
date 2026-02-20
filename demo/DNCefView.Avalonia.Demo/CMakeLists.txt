@@ -57,4 +57,5 @@ set_target_properties(${PROJECT_NAME}
     VS_GLOBAL_Nullable "enable"
     VS_GLOBAL_ApplicationManifest "app.manifest"
     VS_GLOBAL_AvaloniaUseCompiledBindingsByDefault "true"
+    VS_GLOBAL_GeneratePackageOnBuild false
 )

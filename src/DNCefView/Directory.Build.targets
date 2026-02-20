@@ -4,12 +4,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(CCefViewBinaryPath)**\*.*" Exclude="$(CCefViewBinaryPath)**\*.lib;$(CCefViewBinaryPath)**\*.exp;">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <None 
+      Include="$(CCefViewBinaryPath)runtimes\**\*.*" 
+      Exclude="$(CCefViewBinaryPath)runtimes\**\*.lib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
+      <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <Pack>true</Pack>
-      <PackagePath>contentFiles\any\any\%(RecursiveDir);content\%(RecursiveDir)</PackagePath>
-    </Content>
+      <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

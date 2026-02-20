@@ -1,7 +1,7 @@
 include(FetchContent)
 
 if(NOT CEFVIEW_CORE_VERSION)
-    set(DEFAULT_CEFVIEW_CORE_VERSION "f2089f2091fddab7c9642256f0d7c717f9de830e")
+    set(DEFAULT_CEFVIEW_CORE_VERSION "main")
     set(CEFVIEW_CORE_VERSION ${DEFAULT_CEFVIEW_CORE_VERSION})
     message(STATUS "CEFVIEW_CORE_VERSION not set, use default value:${CEFVIEW_CORE_VERSION}")
 endif()
@@ -47,8 +47,7 @@ FetchContent_Declare(
 # set(CEF_SDK_VERSION "123.0.13+gfc703fb+chromium-123.0.6312.124")  # NOT TEST
 # set(CEF_SDK_VERSION "124.3.9+g9bd638f+chromium-124.0.6367.207")   # NOT TEST
 # set(CEF_SDK_VERSION "125.0.22+gc410c95+chromium-125.0.6422.142")  # NOT TEST
-set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183") # NOT TEST
-
+# set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183") # NOT TEST
 # set(CEF_SDK_VERSION "127.3.5+g114ea2a+chromium-127.0.6533.120") # GOOD
 # set(CEF_SDK_VERSION "128.4.9+g9840ad9+chromium-128.0.6613.120")   # BAD   # debugbreak - debug mode
 # set(CEF_SDK_VERSION "136.1.6+g1ac1b14+chromium-136.0.7103.114")
@@ -61,6 +60,6 @@ FetchContent_MakeAvailable(CefViewCore)
 
 configure_file(
     "${CefViewCore_SOURCE_DIR}/include/CefVersion.h"
-    "${CMAKE_SOURCE_DIR}/src/CCefView/CefVersion.h"
+    "${CMAKE_SOURCE_DIR}/src/CCefView/include/CefVersion.h"
     COPYONLY
 )
