@@ -3,6 +3,13 @@
     <CCefViewBinaryPath>$(MSBuildThisFileDirectory)\..\CCefView\$(Configuration)\</CCefViewBinaryPath>
   </PropertyGroup>
 
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <Private>True</Private>
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+
   <ItemGroup>
     <None 
       Include="$(CCefViewBinaryPath)runtimes\**\*.*" 

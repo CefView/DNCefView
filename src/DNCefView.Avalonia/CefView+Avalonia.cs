@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using System;
 using System.Runtime.InteropServices;
 
@@ -113,14 +114,10 @@ namespace DNCefView.Avalonia
             PixelRect bounds = new PixelRect(0, 0, 1, 1);
             void Action()
             {
-                var topLevel = TopLevel.GetTopLevel(this);
-                if (topLevel != null)
+                var screen = (this.GetVisualRoot() as Window)?.Screens?.ScreenFromVisual(this);
+                if (screen != null)
                 {
-                    var screen = topLevel?.Screens?.ScreenFromVisual(this);
-                    if (screen != null)
-                    {
-                        bounds = screen.Bounds;
-                    }
+                    bounds = screen.Bounds;
                 }
             }
 
@@ -195,16 +192,11 @@ namespace DNCefView.Avalonia
             PixelRect workingArea = new PixelRect(0, 0, 1, 1);
             void Action()
             {
-                var topLevel = TopLevel.GetTopLevel(this);
-                if (topLevel != null)
+                var screen = (this.GetVisualRoot() as Window)?.Screens?.ScreenFromVisual(this);
+                if (screen != null)
                 {
-                    scale = (float)topLevel.RenderScaling;
-                    var screen = topLevel?.Screens?.ScreenFromVisual(this);
-                    if (screen != null)
-                    {
-                        bounds = screen.Bounds;
-                        workingArea = screen.WorkingArea;
-                    }
+                    bounds = screen.Bounds;
+                    workingArea = screen.WorkingArea;
                 }
             }
 
