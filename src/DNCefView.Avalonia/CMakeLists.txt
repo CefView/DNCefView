@@ -22,9 +22,8 @@ string(JOIN ";" NUGET_PACKAGES
 # Set CLR assembly properties.
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
-    VS_PACKAGE_REFERENCES "${NUGET_PACKAGES}"
     VS_GLOBAL_ROOTNAMESPACE "${PROJECT_NAME}"
-    VS_GLOBAL_Nullable "enable"
 
+    VS_PACKAGE_REFERENCES "${NUGET_PACKAGES}"
     VS_GLOBAL_PackageId "${PROJECT_NAME}"
 )

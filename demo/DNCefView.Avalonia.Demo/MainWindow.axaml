@@ -4,12 +4,12 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:dncefviewavalonia="clr-namespace:DNCefView.Avalonia;assembly=DNCefView.Avalonia"
 		x:Class="DNCefView.Avalonia.Demo.MainWindow"
-		mc:Ignorable="d" 
-		d:DesignWidth="800" 
+		mc:Ignorable="d"
+		d:DesignWidth="800"
 		d:DesignHeight="450"
 		Title="DNCefView.Avalonia.Demo"
-		Width="1920"
-		Height="1080">
+		Width="1280"
+		Height="720">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="200"/>
@@ -22,6 +22,6 @@
 		</Grid>
 		<dncefviewavalonia:CefView x:Name="LocalCefview" Grid.Column="1" Url="https://demo.dncefview.com/index.html" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />
 		<GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="4" Background="Gray" Grid.Column="2" ShowsPreview="True" IsTabStop="False" />
-		<dncefviewavalonia:CefView x:Name="RemoteCefView" Grid.Column="3" Url="https://www.testufo.com/" />
+		<dncefviewavalonia:CefView x:Name="RemoteCefView" Grid.Column="3" Url="http://elektronotdienst-nuernberg.de/bugs/cursor.html" />
 	</Grid>
 </Window>

@@ -87,15 +87,17 @@
         function testInvokeMethod() {
         let d = {
         d1: true,
-        d2: 5678,
+        d2: 56.78,
         d3: "test object",
-        d4: [1, "2", false],
+        d4: [3.14, "2", false],
         d5: {
         d1: true,
         d2: 5678,
         d3: "nested object",
         d4: [1, "2", true],
         },
+        d6: (1.0 / 0),
+        d7: parseInt("hello"),
         };
         onInvokeMethodClicked("TestMethod", 1, false, "arg3", d);
         }

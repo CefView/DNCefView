@@ -21,11 +21,12 @@ namespace DNCefView.Avalonia
         /// <summary>
         /// 
         /// </summary>
-        protected bool _editable;
-        public bool Editable
-        {
-            get { return _editable; }
-        }
+        private bool _hasCefGotFocus = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected bool _isCefFocusedNodeEditable = false;
 
         /// <summary>
         /// 
@@ -52,8 +53,6 @@ namespace DNCefView.Avalonia
         public delegate void ReportJavascriptResultCallback(int browserId, string frameId, string context, string result);
         public event ReportJavascriptResultCallback? ReportJavascriptResult;
 
-        public delegate void InputStateChangedCallback(int browserId, string frameId, bool editable);
-        public event InputStateChangedCallback? InputStateChanged;
 
         public delegate void LoadingStateChangedCallback(int browserId, bool isLoading, bool canGoBack, bool canGoForward);
         public event LoadingStateChangedCallback? LoadingStateChanged;
@@ -67,22 +66,22 @@ namespace DNCefView.Avalonia
         public delegate bool LoadErrorCallback(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl);
         public LoadErrorCallback? LoadError;
 
-        public delegate void AddressChangedCallback(string frameId, string url);
+        public delegate void AddressChangedCallback(int browserId, string frameId, string url);
         public event AddressChangedCallback? AddressChanged;
 
-        public delegate void TitleChangedCallback(string title);
+        public delegate void TitleChangedCallback(int browserId, string title);
         public event TitleChangedCallback? TitleChanged;
 
-        public delegate void FullScreenModeChangedCallback(bool fullscreen);
+        public delegate void FullScreenModeChangedCallback(int browserId, bool fullscreen);
         public event FullScreenModeChangedCallback? FullScreenModeChanged;
 
-        public delegate void StatusMessageCallback(string message);
+        public delegate void StatusMessageCallback(int browserId, string message);
         public event StatusMessageCallback? StatusMessage;
 
-        public delegate void ConsoleMessageCallback(string message, int level);
+        public delegate void ConsoleMessageCallback(int browserId, string message, int level);
         public event ConsoleMessageCallback? ConsoleMessage;
 
-        public delegate void LoadingProgressChangedCallback(double progress);
+        public delegate void LoadingProgressChangedCallback(int browserId, double progress);
         public event LoadingProgressChangedCallback? LoadingProgressChanged;
         #endregion
 
@@ -94,6 +93,7 @@ namespace DNCefView.Avalonia
             }
             else
             {
+                this.LogI("Use default CefSettings");
                 _cefSetting = new CefSetting();
                 _cefSetting.SetWindowlessFrameRate(60);
             }
@@ -228,6 +228,7 @@ namespace DNCefView.Avalonia
         #endregion
 
         #region CEF Callbacks
+        #region CefView events
         void ICefViewDelegate.OnCefQueryRequest(int browserId, string frameId, CefQuery query)
         {
             CefQueryRequest?.Invoke(browserId, frameId, query);
@@ -254,11 +255,72 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
-            _editable = editable;
-            if (UI_OnCefInputStateChanged(browserId, frameId, editable))
-                InputStateChanged?.Invoke(browserId, frameId, editable);
+            UI_OnCefInputStateChanged(browserId, frameId, editable);
+        }
+        #endregion
+
+        #region DisplayHandler
+        void ICefViewDelegate.OnCefAddressChanged(int browserId, string frameId, string url)
+        {
+            AddressChanged?.Invoke(browserId, frameId, url);
         }
 
+        void ICefViewDelegate.OnCefTitleChanged(int browserId, string title)
+        {
+            TitleChanged?.Invoke(browserId, title);
+        }
+
+        void ICefViewDelegate.OnCefFullScreenModeChanged(int browserId, bool fullscreen)
+        {
+            FullScreenModeChanged?.Invoke(browserId, fullscreen);
+        }
+
+        void ICefViewDelegate.OnCefStatusMessage(int browserId, string message)
+        {
+            StatusMessage?.Invoke(browserId, message);
+        }
+
+        void ICefViewDelegate.OnCefConsoleMessage(int browserId, string message, int level)
+        {
+            ConsoleMessage?.Invoke(browserId, message, level);
+        }
+
+        void ICefViewDelegate.OnCefLoadingProgressChanged(int browserId, double progress)
+        {
+            LoadingProgressChanged?.Invoke(browserId, progress);
+        }
+
+        void ICefViewDelegate.OnCefCursorChanged(int browserId, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
+        {
+            UI_OnCefCursorChanged(browserId, type, customCursorInfo);
+        }
+        #endregion
+
+        #region FocusHandler
+        void ICefViewDelegate.OnCefFocusReleasedByTabKey(int browserId, bool next)
+        {
+            UI_OnCefFocusReleasedByTabKey(browserId, next);
+        }
+
+        bool ICefViewDelegate.OnCefSetFocus(int browserId)
+        {
+            return false;
+        }
+
+        void ICefViewDelegate.OnCefGotFocus(int browserId)
+        {
+            _hasCefGotFocus = true;
+        }
+        #endregion
+
+        #region LifespanHandler
+        void ICefViewDelegate.OnCefAfterCreated()
+        {
+            UI_OnCefAfterCreated();
+        }
+        #endregion
+
+        #region LoadHandler
         void ICefViewDelegate.OnCefLoadingStateChanged(int browserId, bool isLoading, bool canGoBack, bool canGoForward)
         {
             LoadingStateChanged?.Invoke(browserId, isLoading, canGoBack, canGoForward);
@@ -281,57 +343,9 @@ namespace DNCefView.Avalonia
 
             return false;
         }
+        #endregion
 
-        void ICefViewDelegate.OnCefAddressChanged(string frameId, string url)
-        {
-            AddressChanged?.Invoke(frameId, url);
-        }
-
-        void ICefViewDelegate.OnCefTitleChanged(string title)
-        {
-            TitleChanged?.Invoke(title);
-        }
-
-        void ICefViewDelegate.OnCefFullScreenModeChanged(bool fullscreen)
-        {
-            FullScreenModeChanged?.Invoke(fullscreen);
-        }
-
-        void ICefViewDelegate.OnCefStatusMessage(string message)
-        {
-            StatusMessage?.Invoke(message);
-        }
-
-        void ICefViewDelegate.OnCefConsoleMessage(string message, int level)
-        {
-            ConsoleMessage?.Invoke(message, level);
-        }
-
-        void ICefViewDelegate.OnCefLoadingProgressChanged(double progress)
-        {
-            LoadingProgressChanged?.Invoke(progress);
-        }
-
-        void ICefViewDelegate.OnCefAfterCreated()
-        {
-            UI_OnCefAfterCreated();
-        }
-
-        void ICefViewDelegate.OnCefFocusReleasedByTabKey(int browserId, bool next)
-        {
-            UI_OnCefFocusReleasedByTabKey(browserId, next);
-        }
-
-        bool ICefViewDelegate.OnCefSetFocus(int browserId)
-        {
-            return false;
-        }
-
-        void ICefViewDelegate.OnCefGotFocus(int browserId)
-        {
-
-        }
-
+        #region RenderHandler
         void ICefViewDelegate.OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
         {
             UI_OnCefGetRootScreenRect(browserId, ref rect);
@@ -362,9 +376,9 @@ namespace DNCefView.Avalonia
             UI_OnCefPopupSize(browserId, rect);
         }
 
-        void ICefViewDelegate.OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
+        void ICefViewDelegate.OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
         {
-            UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
+            UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytesBuffer, imageBytesCount, width, height);
         }
 
         void ICefViewDelegate.OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
@@ -372,14 +386,16 @@ namespace DNCefView.Avalonia
             UI_OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
         }
 
-        void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
+        void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount)
         {
-            UI_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
+            UI_OnCefImeCompositionRangeChanged(browserId, selectedRange, characterBounds, characterBoundsCount);
         }
 
         public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
         {
+            UI_OnCefImeTextSelectionChanged(browserId, selectedText, selectedRange);
         }
+        #endregion
         #endregion
     }
 }

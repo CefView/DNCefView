@@ -253,7 +253,7 @@ namespace DNCefView.WPF
             _cefPopupRect.Height = rect.Height;
         }
 
-        void UI_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
+        void UI_OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
         {
             void Paint()
             {
@@ -275,7 +275,11 @@ namespace DNCefView.WPF
                 }
 
                 Int32Rect rect = new Int32Rect(0, 0, width, height);
-                targetBitmap.WritePixels(rect, imageBytes, width * 4, 0);
+
+                unsafe
+                {
+                    Buffer.MemoryCopy((void*)imageBytesBuffer, (void*)targetBitmap.BackBuffer, imageBytesCount, imageBytesCount);
+                }
 
                 InvalidateVisual();
             }

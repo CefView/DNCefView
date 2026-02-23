@@ -28,65 +28,60 @@ namespace DNCefView
         public delegate void InputStateChangedCallback(int browserId, string frameId, bool editable);
         public InputStateChangedCallback InputStateChangedCb;
 
-        // Source: void pfnLoadingStateChanged(int, bool, bool, bool)
+        // Source: void pfnAddressChanged(int, const char *, const char *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void LoadingStateChangedCallback(int browserId, bool isLoading, bool canGoBack, bool canGoForward);
-        public LoadingStateChangedCallback LoadingStateChangedCb;
+        public delegate void AddressChangedCallback(int browserId, string frameId, string url);
+        public AddressChangedCallback AddressChangedCb;
 
-        // Source: void pfnLoadStart(int, const char *, bool, int)
+        // Source: void pfnTitleChanged(int, const char *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void LoadStartCallback(int browserId, string frameId, bool isMainFrame, int transition_type);
-        public LoadStartCallback LoadStartCb;
+        public delegate void TitleChangedCallback(int browserId, string title);
+        public TitleChangedCallback TitleChangedCb;
 
-        // Source: void pfnLoadEnd(int, const char *, bool, int)
+        // Source: void pfnFullscreenModeChanged(int, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void LoadEndCallback(int browserId, string frameId, bool isMainFrame, int httpStatusCode);
-        public LoadEndCallback LoadEndCb;
+        public delegate void FullscreenModeChangedCallback(int browserId, bool fullscreen);
+        public FullscreenModeChangedCallback FullscreenModeChangedCb;
 
-        // Source: bool pfnLoadError(int, const char *, bool, int, const char *, const char *)
+        // Source: void pfnStatusMessage(int, const char *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate bool LoadErrorCallback(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl);
-        public LoadErrorCallback LoadErrorCb;
+        public delegate void StatusMessageCallback(int browserId, string message);
+        public StatusMessageCallback StatusMessageCb;
+
+        // Source: void pfnConsoleMessage(int, const char *, int)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void ConsoleMessageCallback(int browserId, string message, int level);
+        public ConsoleMessageCallback ConsoleMessageCb;
+
+        // Source: void pfnLoadingProgressChanged(int, double)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void LoadingProgressChangedCallback(int browserId, double progress);
+        public LoadingProgressChangedCallback LoadingProgressChangedCb;
+
+        // Source: bool pfnCursorChanged(int, const void *, cef_cursor_type_t, _cef_cursor_info_t)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool CursorChangedCallback(int browserId, IntPtr cursorHandle, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
+        public CursorChangedCallback CursorChangedCb;
 
         // Source: void pfnDraggableRegionChanged(const _cef_draggable_region_t *, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void DraggableRegionChangedCallback([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] CefViewDraggableRegion[] draggableRegion, int count);
         public DraggableRegionChangedCallback DraggableRegionChangedCb;
 
-        // Source: void pfnAddressChanged(const char *, const char *)
+        // Source: void pfnFocusReleasedByTabKey(int, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void AddressChangedCallback(string frameId, string url);
-        public AddressChangedCallback AddressChangedCb;
+        public delegate void FocusReleasedByTabKeyCallback(int browserId, bool next);
+        public FocusReleasedByTabKeyCallback FocusReleasedByTabKeyCb;
 
-        // Source: void pfnTitleChanged(const char *)
+        // Source: bool pfnSetFocus(int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void TitleChangedCallback(string title);
-        public TitleChangedCallback TitleChangedCb;
+        public delegate bool SetFocusCallback(int browserId);
+        public SetFocusCallback SetFocusCb;
 
-        // Source: void pfnFullscreenModeChanged(bool)
+        // Source: void pfnGotFocus(int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void FullscreenModeChangedCallback(bool fullscreen);
-        public FullscreenModeChangedCallback FullscreenModeChangedCb;
-
-        // Source: void pfnStatusMessage(const char *)
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void StatusMessageCallback(string message);
-        public StatusMessageCallback StatusMessageCb;
-
-        // Source: void pfnConsoleMessage(const char *, int)
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void ConsoleMessageCallback(string message, int level);
-        public ConsoleMessageCallback ConsoleMessageCb;
-
-        // Source: void pfnLoadingProgressChanged(double)
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void LoadingProgressChangedCallback(double progress);
-        public LoadingProgressChangedCallback LoadingProgressChangedCb;
-
-        // Source: bool pfnCursorChanged(const void *, cef_cursor_type_t, _cef_cursor_info_t)
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate bool CursorChangedCallback(IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
-        public CursorChangedCallback CursorChangedCb;
+        public delegate void GotFocusCallback(int browserId);
+        public GotFocusCallback GotFocusCb;
 
         // Source: bool pfnOnBeforeNewPopupCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t *, CCefSetting *, bool *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -118,20 +113,25 @@ namespace DNCefView
         public delegate void OnBeforeCloseCallback();
         public OnBeforeCloseCallback OnBeforeCloseCb;
 
-        // Source: void pfnFocusReleasedByTabKey(int, bool)
+        // Source: void pfnLoadingStateChanged(int, bool, bool, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void FocusReleasedByTabKeyCallback(int browserId, bool next);
-        public FocusReleasedByTabKeyCallback FocusReleasedByTabKeyCb;
+        public delegate void LoadingStateChangedCallback(int browserId, bool isLoading, bool canGoBack, bool canGoForward);
+        public LoadingStateChangedCallback LoadingStateChangedCb;
 
-        // Source: bool pfnSetFocus(int)
+        // Source: void pfnLoadStart(int, const char *, bool, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate bool SetFocusCallback(int browserId);
-        public SetFocusCallback SetFocusCb;
+        public delegate void LoadStartCallback(int browserId, string frameId, bool isMainFrame, int transition_type);
+        public LoadStartCallback LoadStartCb;
 
-        // Source: void pfnGotFocus(int)
+        // Source: void pfnLoadEnd(int, const char *, bool, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void GotFocusCallback(int browserId);
-        public GotFocusCallback GotFocusCb;
+        public delegate void LoadEndCallback(int browserId, string frameId, bool isMainFrame, int httpStatusCode);
+        public LoadEndCallback LoadEndCb;
+
+        // Source: bool pfnLoadError(int, const char *, bool, int, const char *, const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool LoadErrorCallback(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl);
+        public LoadErrorCallback LoadErrorCb;
 
         // Source: void pfnGetRootScreenRect(int, _cef_rect_t *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -163,9 +163,9 @@ namespace DNCefView
         public delegate void OnPopupSizeCallback(int browserId, CefViewRect rect);
         public OnPopupSizeCallback OnPopupSizeCb;
 
-        // Source: void pfnOnPaint(int, cef_paint_element_type_t, const _cef_rect_t *, int, const unsigned char *, int, int, int)
+        // Source: void pfnOnPaint(int, cef_paint_element_type_t, const _cef_rect_t *, int, const void *, int, int, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void OnPaintCallback(int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] dirtyRects, int dirtyRectCount, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] byte[] imageBytes, int imageBytesCount, int width, int height);
+        public delegate void OnPaintCallback(int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height);
         public OnPaintCallback OnPaintCb;
 
         // Source: void pfnOnAcceleratedPaint(int, cef_paint_element_type_t, const _cef_rect_t *, int, const void *, int)

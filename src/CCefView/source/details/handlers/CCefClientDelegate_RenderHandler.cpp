@@ -102,7 +102,7 @@ CCefClientDelegate::onPaint(CefRefPtr<CefBrowser>& browser,
                                        type,
                                        dirtyRectsBuffer.data(),
                                        (int)dirtyRectsBuffer.size(),
-                                       (unsigned char*)buffer,
+                                       buffer,
                                        width * height * 4,
                                        width,
                                        height);
@@ -211,6 +211,10 @@ CCefClientDelegate::onTextSelectionChanged(CefRefPtr<CefBrowser>& browser,
                                            const CefString& selected_text,
                                            const CefRange& selected_range)
 {
+  if (pCefView_->callbackTable_.pfnOnTextSelectionChanged) {
+    pCefView_->callbackTable_.pfnOnTextSelectionChanged(
+      browser->GetIdentifier(), selected_text.ToString().c_str(), selected_range);
+  }
 }
 
 void

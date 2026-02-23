@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Logging;
 using System;
 
 namespace DNCefView.Avalonia.Demo
@@ -17,6 +18,6 @@ namespace DNCefView.Avalonia.Demo
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace();
+                .LogToTrace(LogEventLevel.Debug);
     }
 }

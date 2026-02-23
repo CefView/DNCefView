@@ -70,7 +70,8 @@ CCefClientDelegate::addressChanged(CefRefPtr<CefBrowser>& browser, CefRefPtr<Cef
 
   if (pCefView_->callbackTable_.pfnAddressChanged) {
     auto frameId = frame->GetIdentifier();
-    pCefView_->callbackTable_.pfnAddressChanged(FrameIdC2X(frameId).c_str(), url.ToString().c_str());
+    pCefView_->callbackTable_.pfnAddressChanged(
+      browser->GetIdentifier(), FrameIdC2X(frameId).c_str(), url.ToString().c_str());
   }
 }
 
@@ -81,7 +82,7 @@ CCefClientDelegate::titleChanged(CefRefPtr<CefBrowser>& browser, const CefString
     return;
 
   if (pCefView_->callbackTable_.pfnTitleChanged)
-    pCefView_->callbackTable_.pfnTitleChanged(title.ToString().c_str());
+    pCefView_->callbackTable_.pfnTitleChanged(browser->GetIdentifier(), title.ToString().c_str());
 }
 
 void
@@ -105,7 +106,7 @@ CCefClientDelegate::fullscreenModeChanged(CefRefPtr<CefBrowser>& browser, bool f
     return;
 
   if (pCefView_->callbackTable_.pfnFullscreenModeChanged)
-    pCefView_->callbackTable_.pfnFullscreenModeChanged(fullscreen);
+    pCefView_->callbackTable_.pfnFullscreenModeChanged(browser->GetIdentifier(), fullscreen);
 }
 
 bool
@@ -122,7 +123,7 @@ CCefClientDelegate::statusMessage(CefRefPtr<CefBrowser>& browser, const CefStrin
     return;
 
   if (pCefView_->callbackTable_.pfnStatusMessage)
-    pCefView_->callbackTable_.pfnStatusMessage(value.ToString().c_str());
+    pCefView_->callbackTable_.pfnStatusMessage(browser->GetIdentifier(), value.ToString().c_str());
 }
 
 void
@@ -132,7 +133,7 @@ CCefClientDelegate::consoleMessage(CefRefPtr<CefBrowser>& browser, const CefStri
     return;
 
   if (pCefView_->callbackTable_.pfnConsoleMessage)
-    pCefView_->callbackTable_.pfnConsoleMessage(message.ToString().c_str(), level);
+    pCefView_->callbackTable_.pfnConsoleMessage(browser->GetIdentifier(), message.ToString().c_str(), level);
 }
 
 void
@@ -142,7 +143,7 @@ CCefClientDelegate::loadingProgressChanged(CefRefPtr<CefBrowser>& browser, doubl
     return;
 
   if (pCefView_->callbackTable_.pfnLoadingProgressChanged)
-    pCefView_->callbackTable_.pfnLoadingProgressChanged(progress);
+    pCefView_->callbackTable_.pfnLoadingProgressChanged(browser->GetIdentifier(), progress);
 }
 
 bool
@@ -155,7 +156,7 @@ CCefClientDelegate::cursorChanged(CefRefPtr<CefBrowser>& browser,
     return false;
 
   if (pCefView_->callbackTable_.pfnCursorChanged)
-    pCefView_->callbackTable_.pfnCursorChanged((void*)cursor, type, custom_cursor_info);
+    pCefView_->callbackTable_.pfnCursorChanged(browser->GetIdentifier(), (void*)cursor, type, custom_cursor_info);
 
   return true;
 }

@@ -65,6 +65,8 @@ set(CMAKE_VS_GLOBALS
   "EmbedUntrackedSources=false"
   "GeneratePackageOnBuild=true"
   "RuntimeIdentifiers=osx-x64;osx-arm64;linux-x64;linux-arm64;win-x64;win-arm64"
+  "AllowUnsafeBlocks=true"
+  "Nullable=enable"
 )
 
 # ###################################################################

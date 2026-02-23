@@ -362,9 +362,9 @@ namespace DNCefView.WPF
             UI_OnCefPopupSize(browserId, rect);
         }
 
-        void ICefViewDelegate.OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, byte[] imageBytes, int imageBytesCount, int width, int height)
+        void ICefViewDelegate.OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
         {
-            UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytes, imageBytesCount, width, height);
+            UI_OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytesBuffer, imageBytesCount, width, height);
         }
 
         void ICefViewDelegate.OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
@@ -372,9 +372,9 @@ namespace DNCefView.WPF
             UI_OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
         }
 
-        void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange range, CefViewRect[] characterBounds, int characterBoundsCount)
+        void ICefViewDelegate.OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount)
         {
-            UI_OnCefImeCompositionRangeChanged(browserId, range, characterBounds, characterBoundsCount);
+            UI_OnCefImeCompositionRangeChanged(browserId, selectedRange, characterBounds, characterBoundsCount);
         }
 
         public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)

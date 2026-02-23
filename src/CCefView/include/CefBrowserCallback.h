@@ -27,7 +27,6 @@ struct CefBrowserCallback
 public:
   //////////////////////////////////////////////////////////////////////////
   // CefView events
-
   void(STDCALL* pfnCefQueryRequest)(const int browserId, const char* frameId, const CCefQuery* query);
 
   void(STDCALL* pfnInvokeMethod)(const int browserId, const char* frameId, const char* method, const char* arguments);
@@ -40,47 +39,50 @@ public:
   void(STDCALL* pfnInputStateChanged)(const int browserId, const char* frameId, const bool editable);
 
   //////////////////////////////////////////////////////////////////////////
-  // LoadHandler
-
-  void(STDCALL* pfnLoadingStateChanged)(const int browserId,
-                                        const bool isLoading,
-                                        const bool canGoBack,
-                                        const bool canGoForward);
-
-  void(STDCALL* pfnLoadStart)(const int browserId,
-                              const char* frameId,
-                              const bool isMainFrame,
-                              const int transition_type);
-
-  void(STDCALL* pfnLoadEnd)(const int browserId, const char* frameId, const bool isMainFrame, const int httpStatusCode);
-
-  bool(STDCALL* pfnLoadError)(const int browserId,
-                              const char* frameId,
-                              const bool isMainFrame,
-                              const int errorCode,
-                              const char* errorMsg,
-                              const char* failedUrl);
+  // TODO: DialogHandler
 
   //////////////////////////////////////////////////////////////////////////
   // DisplayHandler
+  void(STDCALL* pfnAddressChanged)(const int browserId, const char* frameId, const char* url);
 
-  void(STDCALL* pfnDraggableRegionChanged)(const CefViewDraggableRegion draggableRegion[], const int count);
+  void(STDCALL* pfnTitleChanged)(const int browserId, const char* title);
 
-  void(STDCALL* pfnAddressChanged)(const char* frameId, const char* url);
+  void(STDCALL* pfnFullscreenModeChanged)(const int browserId, const bool fullscreen);
 
-  void(STDCALL* pfnTitleChanged)(const char* title);
+  void(STDCALL* pfnStatusMessage)(const int browserId, const char* message);
 
-  void(STDCALL* pfnFullscreenModeChanged)(const bool fullscreen);
+  void(STDCALL* pfnConsoleMessage)(const int browserId, const char* message, const int level);
 
-  void(STDCALL* pfnStatusMessage)(const char* message);
+  void(STDCALL* pfnLoadingProgressChanged)(const int browserId, double progress);
 
-  void(STDCALL* pfnConsoleMessage)(const char* message, const int level);
-
-  void(STDCALL* pfnLoadingProgressChanged)(double progress);
-
-  bool(STDCALL* pfnCursorChanged)(const void* cursor,
+  bool(STDCALL* pfnCursorChanged)(const int browserId,
+                                  const void* cursorHandle,
                                   const CefViewCursorType type,
                                   const CefViewCursorInfo customCursorInfo);
+
+  //////////////////////////////////////////////////////////////////////////
+  // TODO: DownloadHandler
+
+  //////////////////////////////////////////////////////////////////////////
+  // DragHandler
+  void(STDCALL* pfnDraggableRegionChanged)(const CefViewDraggableRegion draggableRegion[], const int count);
+
+  //////////////////////////////////////////////////////////////////////////
+  // TODO: FindHandler
+
+  //////////////////////////////////////////////////////////////////////////
+  // FocusHandler
+  void(STDCALL* pfnFocusReleasedByTabKey)(const int browserId, const bool next);
+
+  bool(STDCALL* pfnSetFocus)(const int browserId);
+
+  void(STDCALL* pfnGotFocus)(const int browserId);
+
+  //////////////////////////////////////////////////////////////////////////
+  // TODO: JSDialogHandler
+
+  //////////////////////////////////////////////////////////////////////////
+  // TODO: KeyboardHandler
 
   //////////////////////////////////////////////////////////////////////////
   // LifespanHandler
@@ -108,13 +110,25 @@ public:
   void(STDCALL* pfnOnBeforeClose)();
 
   //////////////////////////////////////////////////////////////////////////
-  // FocusHandler
+  // LoadHandler
+  void(STDCALL* pfnLoadingStateChanged)(const int browserId,
+                                        const bool isLoading,
+                                        const bool canGoBack,
+                                        const bool canGoForward);
 
-  void(STDCALL* pfnFocusReleasedByTabKey)(const int browserId, const bool next);
+  void(STDCALL* pfnLoadStart)(const int browserId,
+                              const char* frameId,
+                              const bool isMainFrame,
+                              const int transition_type);
 
-  bool(STDCALL* pfnSetFocus)(const int browserId);
+  void(STDCALL* pfnLoadEnd)(const int browserId, const char* frameId, const bool isMainFrame, const int httpStatusCode);
 
-  void(STDCALL* pfnGotFocus)(const int browserId);
+  bool(STDCALL* pfnLoadError)(const int browserId,
+                              const char* frameId,
+                              const bool isMainFrame,
+                              const int errorCode,
+                              const char* errorMsg,
+                              const char* failedUrl);
 
   //////////////////////////////////////////////////////////////////////////
   // RenderHandler
@@ -134,7 +148,7 @@ public:
                             const CefViewPaintElementType type,
                             const CefViewRect dirtyRects[],
                             const int dirtyRectCount,
-                            const unsigned char* imageBytes,
+                            const void* imageBytesBuffer,
                             const int imageBytesCount,
                             const int width,
                             const int height);

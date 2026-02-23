@@ -20,7 +20,6 @@ add_library(${PROJECT_NAME} SHARED
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     VS_GLOBAL_ROOTNAMESPACE "${PROJECT_NAME}"
-    VS_GLOBAL_Nullable "enable"
 
     VS_GLOBAL_PackageId ${PROJECT_NAME}
 )

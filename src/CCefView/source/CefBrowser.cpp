@@ -339,6 +339,8 @@ CCefBrowser::setFocus(bool focused)
     return;
 
   pCefBrowser_->GetHost()->SetFocus(focused);
+
+  hasCefGotFocus = focused;
 }
 
 void
@@ -458,7 +460,13 @@ CCefBrowser::imeSetComposition(const std::string& text,
 
   std::vector<CefCompositionUnderline> underlineBuffer;
   for (int i = 0; i < count; i++) {
-    CefViewCompositionUnderline ul = *(underlines + i);
+    auto& current = *(underlines + i);
+    CefViewCompositionUnderline ul;
+    ul.range = current.range;
+    ul.color = current.color;
+    ul.background_color = current.background_color;
+    ul.thick = current.thick;
+    ul.style = current.style;
     underlineBuffer.push_back(ul);
   }
   pCefBrowser_->GetHost()->ImeSetComposition(CefString(text), underlineBuffer, replacement_range, selection_range);
