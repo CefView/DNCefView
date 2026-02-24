@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Input.TextInput;
+using Avalonia.Threading;
 using System.Linq;
 
 
@@ -7,72 +8,50 @@ namespace DNCefView.Avalonia
 {
     internal sealed class CefViewTextInputMethodClient : TextInputMethodClient
     {
-        internal static readonly CefViewRange InvalidRange = new CefViewRange(0xFFFFFFFF, 0xFFFFFFFF);
-
         private readonly CefView? _owner;
 
-        private bool _isComposing = false;
-
         private Rect _cursorRectangle;
-
-        private TextSelection _selectedRange;
 
         internal CefViewTextInputMethodClient(CefView owner)
         {
             _owner = owner;
         }
 
-        internal bool IsComposing => _isComposing;
-
         internal void UpdateComposition(CefViewRange selectedRange, CefViewRect[] charBounds)
         {
             using var _ = this.LogM();
 
-            _selectedRange = new TextSelection((int)selectedRange.From, (int)selectedRange.To);
-            this.LogD($"new _selectedRange: {_selectedRange.Start} -> {_selectedRange.End}");
+            if (_owner == null)
+            {
+                return;
+            }
+
+            if (charBounds == null)
+            {
+                return;
+            }
 
             _cursorRectangle = charBounds
                 .Select(r => new Rect(r.X, r.Y, r.Width, r.Height))
                 .Aggregate((acc, r) => acc.Union(r));
-            this.LogD($"new _cursorRectangle: [{_cursorRectangle.X}, {_cursorRectangle.Y}] - [{_cursorRectangle.Width}, {_cursorRectangle.Height}]");
 
-            RaiseCursorRectangleChanged();
-            RaiseSelectionChanged();
+            this.LogD($"new _cursorRectangle: ({_cursorRectangle.X}, {_cursorRectangle.Y}) - [{_cursorRectangle.Width}, {_cursorRectangle.Height}]");
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                RaiseCursorRectangleChanged();
+            });
         }
 
-        internal void ResetCompositionState()
+        internal Rect GetCursorRectangle()
         {
-            _isComposing = false;
-            _cursorRectangle = new();
-            _selectedRange = new();
+            return _cursorRectangle;
         }
 
         #region TextInputMethodClient
         public override Visual TextViewVisual => _owner!;
-
+        public override Rect CursorRectangle => GetCursorRectangle();
         public override bool SupportsPreedit => true;
-
-        public override bool SupportsSurroundingText => false;
-
-        public override string SurroundingText => string.Empty;
-
-        public override Rect CursorRectangle => _cursorRectangle;
-
-        public override TextSelection Selection
-        {
-            get => _selectedRange;
-
-            set
-            {
-                using var _ = this.LogM($"range:{value.Start} -> {value.End}");
-
-                if (_isComposing)
-                {
-                    _selectedRange = value;
-                }
-            }
-        }
-
         public override void SetPreeditText(string? text)
         {
             using var _ = this.LogM($"text={text}");
@@ -82,49 +61,30 @@ namespace DNCefView.Avalonia
                 return;
             }
 
-            if (string.IsNullOrEmpty(text))
-            {
-                if (_isComposing)
-                {
-                    // composing ends 
-                    this.LogI("---- IME composing ends");
-                    _isComposing = false;
-
-                    _owner.ImeCancelComposition();
-                }
-                else
-                {
-                    // composing begins
-                    this.LogI("---- IME composing begins");
-                    _isComposing = true;
-
-                }
-
-                return;
-            }
-
             var underline = new CefViewCompositionUnderline()
             {
                 BackgroundColor = 0,
-                Range = new CefViewRange(0, (uint)text.Length),
+                Range = new CefViewRange(0, (uint)(text?.Length ?? 0)),
                 Style = CefViewCompositionUnderlineStyle.CEF_CUS_DOT,
             };
 
-            var replacementRange = new CefViewRange()
+            if (!string.IsNullOrEmpty(text))
             {
-                From = InvalidRange.From,
-                To = InvalidRange.To,
-            };
-
-            var selectedRange = new CefViewRange()
+                // in composing
+                this.LogD($"composing update");
+                _owner.ImeSetComposition(text, [underline], new(uint.MaxValue, uint.MaxValue), new((uint)text.Length, (uint)text.Length));
+            }
+            else
             {
-                From = (uint)text.Length,
-                To = (uint)text.Length,
-            };
-
-            this.LogD($"update cef composition, selected range:{selectedRange.From} -> {selectedRange.To}");
-            _owner.ImeSetComposition(text, [underline], replacementRange, selectedRange);
+                // composing end
+                this.LogD($"composing end");
+                _owner.ImeCancelComposition();
+            }
         }
+
+        public override TextSelection Selection { get; set; } = new();
+        public override bool SupportsSurroundingText => false;
+        public override string SurroundingText => string.Empty;
         #endregion
     }
 }

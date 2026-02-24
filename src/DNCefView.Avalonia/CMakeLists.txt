@@ -16,7 +16,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 string(JOIN ";" NUGET_PACKAGES
-    "Avalonia_11.0.0"
+    "Avalonia_11.0.6"
 )
 
 # Set CLR assembly properties.

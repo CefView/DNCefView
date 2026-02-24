@@ -51,7 +51,7 @@ set(CMAKE_DOTNET_TARGET_FRAMEWORK "net8.0")
 set(CMAKE_VS_GLOBALS
   "Authors=CefView"
   "Company=CefView"
-  "Version=1.0.4"
+  "Version=1.0.6"
   "Copyright=Copyright © 2026 CefView"
   "Description=.NET Implementation of CefView"
   "PackageTags=CefView CEF"
@@ -64,7 +64,6 @@ set(CMAKE_VS_GLOBALS
   "PublishRepositoryUrl=true"
   "EmbedUntrackedSources=false"
   "GeneratePackageOnBuild=true"
-  "RuntimeIdentifiers=osx-x64;osx-arm64;linux-x64;linux-arm64;win-x64;win-arm64"
   "AllowUnsafeBlocks=true"
   "Nullable=enable"
 )

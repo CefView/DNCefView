@@ -82,9 +82,9 @@ namespace DNCefView.Avalonia
 
             RunInUIThread(() =>
             {
-                RaiseEvent(new TextInputMethodClientRequestedEventArgs()
+                RaiseEvent(new TextInputMethodClientRequeryRequestedEventArgs()
                 {
-                    RoutedEvent = InputElement.TextInputMethodClientRequestedEvent,
+                    RoutedEvent = InputMethod.TextInputMethodClientRequeryRequestedEvent,
                 });
             },
             block: false);
@@ -258,11 +258,7 @@ namespace DNCefView.Avalonia
                 return;
             }
 
-            RunInUIThread(() =>
-            {
-                imeClient.UpdateComposition(selectedRange, characterBounds);
-            },
-            block: true);
+            imeClient.UpdateComposition(selectedRange, characterBounds);
         }
 
         void UI_OnCefImeTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
@@ -295,11 +291,16 @@ namespace DNCefView.Avalonia
             {
                 e.Client = _imClient;
                 this.LogI("set IME client to _imeClient");
+
+                // tricky code to trigger CEF updating of caret rect
+                ImeSetComposition(" ", [], new(uint.MaxValue, uint.MaxValue), new(1, 1));
+                ImeCancelComposition();
             }
             else
             {
                 e.Client = null;
                 this.LogI("set IME client to null");
+                ImeCancelComposition();
             }
 
             e.Handled = true;
@@ -307,6 +308,8 @@ namespace DNCefView.Avalonia
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
+            base.OnPointerPressed(e);
+
             var p = e.GetPosition(this);
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
             var mouseButton = e.GetCurrentPoint(this).Properties.PointerUpdateKind switch
@@ -317,14 +320,13 @@ namespace DNCefView.Avalonia
                 _ => CefViewMouseButtonType.MBT_LEFT
             };
 
-            Focus();
-
             _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, false, 1);
-            base.OnPointerPressed(e);
         }
 
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
+            base.OnPointerReleased(e);
+
             var p = e.GetPosition(this);
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
             var mouseButton = e.GetCurrentPoint(this).Properties.PointerUpdateKind switch
@@ -336,25 +338,26 @@ namespace DNCefView.Avalonia
             };
 
             _cefBrowser?.SendMouseClickEvent((int)p.X, (int)p.Y, (uint)modifiers, mouseButton, true, 1);
-            base.OnPointerReleased(e);
         }
 
         protected override void OnPointerMoved(PointerEventArgs e)
         {
+            base.OnPointerMoved(e);
+
             var p = e.GetPosition(this);
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
             _cefBrowser?.SendMouseMoveEvent((int)p.X, (int)p.Y, (uint)modifiers, false);
-            base.OnPointerMoved(e);
         }
 
         protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
         {
+            base.OnPointerWheelChanged(e);
+
             var p = e.GetPosition(this);
             var modifiers = GetModifiers(e.KeyModifiers, e.GetCurrentPoint(this).Properties);
             int deltaX = (int)(e.Delta.X * 100);
             int deltaY = (int)(e.Delta.Y * 100);
             _cefBrowser?.SendWheelEvent((int)p.X, (int)p.Y, (uint)modifiers, deltaX, deltaY);
-            base.OnPointerWheelChanged(e);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -395,47 +398,53 @@ namespace DNCefView.Avalonia
 
         protected override void OnTextInput(TextInputEventArgs e)
         {
-            using var _ = this.LogM();
+            if (!_isCefFocusedNodeEditable)
+            {
+                return;
+            }
 
+            if (e.Handled)
+            {
+                return;
+            }
             e.Handled = true;
+
+            this.LogM($"text: {e.Text}");
 
             if (string.IsNullOrEmpty(e.Text))
             {
                 return;
             }
 
-            ImeCommitText(e.Text, CefViewTextInputMethodClient.InvalidRange, 0);
-            _imClient?.ResetCompositionState();
+            ImeCommitText(e.Text, new(uint.MaxValue, uint.MaxValue), 0);
         }
 
         protected override void OnGotFocus(GotFocusEventArgs e)
         {
+            base.OnGotFocus(e);
+
             if (!_hasCefGotFocus)
             {
                 _cefBrowser?.SetFocus(true);
             }
-
-            base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(RoutedEventArgs e)
         {
-            // clear IME composition
-            _imClient?.ResetCompositionState();
+            base.OnLostFocus(e);
 
             // cancel context menu: TODO
 
             _hasCefGotFocus = false;
             _cefBrowser?.SetFocus(false);
-
-            base.OnLostFocus(e);
         }
 
         protected override void OnSizeChanged(SizeChangedEventArgs e)
         {
+            base.OnSizeChanged(e);
+
             _cefBrowser?.WasResized();
             _cefBrowser?.NotifyMoveOrResizeStarted();
-            base.OnSizeChanged(e);
         }
 
         public override void Render(DrawingContext context)

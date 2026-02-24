@@ -1,7 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Labs.Controls;
+using Avalonia.Input;
+using Avalonia.Logging;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using System.IO;
@@ -15,6 +16,10 @@ namespace DNCefView.Avalonia.Demo
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
+            InputElement.GotFocusEvent.AddClassHandler<Control>((control, args) =>
+            {
+                Logger.TryGet(LogEventLevel.Information, LogArea.Control)?.Log(control, $"---- Focus changed to: {control.Name} ({control.GetType().Name})");
+            });
 
             if (!Design.IsDesignMode)
             {

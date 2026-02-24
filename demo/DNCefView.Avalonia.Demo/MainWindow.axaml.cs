@@ -14,6 +14,8 @@ namespace DNCefView.Avalonia.Demo
         public MainWindow()
         {
             InitializeComponent();
+
+
         }
 
         private void OnCefQueryRequest(int browserId, string frameId, CefQuery query)
