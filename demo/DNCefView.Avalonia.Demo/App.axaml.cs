@@ -27,7 +27,6 @@ namespace DNCefView.Avalonia.Demo
                 config.SetMultiThreadedMessageLoop(true);
                 config.SetLogLevel(CefViewLogLevel.LOGSEVERITY_DEFAULT);
                 config.SetRemoteDebuggingPort(9222);
-                config.SetUserAgent("DNCefView");
                 config.SetBridgeObjectName("CallBridge");
 
                 _context = new CefContext(config);

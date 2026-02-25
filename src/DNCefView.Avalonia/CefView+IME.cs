@@ -14,6 +14,8 @@ namespace DNCefView.Avalonia
             TextInputMethodClientRequestedEvent.AddClassHandler<CefView>((s, e) => s.OnTextInputMethodClientRequested(e));
         }
 
+        private bool _isCefFocusedNodeEditable = false;
+
         private CefViewTextInputMethodClient? _imClient;
 
         void InitializeIME()
@@ -86,7 +88,7 @@ namespace DNCefView.Avalonia
             }
             e.Handled = true;
 
-            this.LogM($"text: {e.Text}");
+            using var _ = this.LogM($"text: {e.Text}");
 
             if (string.IsNullOrEmpty(e.Text))
             {

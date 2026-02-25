@@ -13,7 +13,6 @@ namespace DNCefView.Avalonia
         {
         }
 
-        #region UIElement Override And Event Handler
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             base.OnPointerPressed(e);
@@ -105,7 +104,6 @@ namespace DNCefView.Avalonia
             e.Handled = e.Key == Key.Tab;
             base.OnKeyUp(e);
         }
-        #endregion
 
         private CefViewEventFlag GetModifiers(KeyModifiers? keys, PointerPointProperties? mouse)
         {

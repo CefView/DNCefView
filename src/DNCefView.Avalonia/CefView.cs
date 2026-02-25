@@ -9,39 +9,15 @@ namespace DNCefView.Avalonia
     /// </summary>
     public partial class CefView : ICefViewDelegate
     {
-        /// <summary>
-        /// 
-        /// </summary>
         protected CefSetting? _cefSetting;
         public CefSetting? Setting
         {
             get { return _cefSetting; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private bool _hasCefGotFocus = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected bool _isCefFocusedNodeEditable = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
         protected CefBrowser? _cefBrowser;
 
-        /// <summary>
-        /// 
-        /// </summary>
         protected bool _isCreated = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected bool _isShowPopup = false;
 
         #region Events
         public delegate void CefQueryRequestCallback(int browserId, string frameId, CefQuery query);
@@ -304,12 +280,12 @@ namespace DNCefView.Avalonia
 
         bool ICefViewDelegate.OnCefSetFocus(int browserId)
         {
-            return false;
+            return UI_OnCefSetFocus(browserId);
         }
 
         void ICefViewDelegate.OnCefGotFocus(int browserId)
         {
-            _hasCefGotFocus = true;
+            UI_OnCefGotFocus(browserId);
         }
         #endregion
 
@@ -368,7 +344,7 @@ namespace DNCefView.Avalonia
 
         void ICefViewDelegate.OnCefPopupShow(int browserId, bool show)
         {
-            _isShowPopup = show;
+            UI_OnCefPopupShow(browserId, show);
         }
 
         void ICefViewDelegate.OnCefPopupSize(int browserId, CefViewRect rect)

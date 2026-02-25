@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -11,6 +10,8 @@ namespace DNCefView.Avalonia
         static void ClassInitializeFocus()
         {
         }
+
+        private bool _hasCefGotFocus = false;
 
         void InitializeFocus()
         {
@@ -26,48 +27,56 @@ namespace DNCefView.Avalonia
             });
         }
 
-        private void OnSourceChanged(AvaloniaPropertyChangedEventArgs e)
+        bool UI_OnCefSetFocus(int browserId)
         {
-            if (_isCreated && e.NewValue is string source)
-            {
-                _cefBrowser?.NavigateToUrl(source);
-            }
+            using var _ = this.LogM();
+
+            return false;
         }
 
-        private void OnVisibleChanged(AvaloniaPropertyChangedEventArgs e)
+        void UI_OnCefGotFocus(int browserId)
         {
-            if (e.NewValue is bool isVisible)
+            using var _ = this.LogM();
+
+            _hasCefGotFocus = true;
+
+            RunInUIThread(() =>
             {
-                _cefBrowser?.WasHidden(!isVisible);
-            }
+                if (!IsFocused)
+                {
+                    Focus();
+                }
+            },
+            block: false);
         }
 
         protected override void OnGotFocus(GotFocusEventArgs e)
         {
+            using var _ = this.LogM();
+
             base.OnGotFocus(e);
 
             if (!_hasCefGotFocus)
             {
+                this.LogD("set cef focus");
                 _cefBrowser?.SetFocus(true);
+            }
+            else
+            {
+                this.LogD("cef has got focus already, skip setting focus to avoid infinite loop.");
             }
         }
 
         protected override void OnLostFocus(RoutedEventArgs e)
         {
+            using var _ = this.LogM();
+
             base.OnLostFocus(e);
 
             // cancel context menu: TODO
 
             _hasCefGotFocus = false;
             _cefBrowser?.SetFocus(false);
-        }
-
-        protected override void OnSizeChanged(SizeChangedEventArgs e)
-        {
-            base.OnSizeChanged(e);
-
-            _cefBrowser?.WasResized();
-            _cefBrowser?.NotifyMoveOrResizeStarted();
         }
     }
 }

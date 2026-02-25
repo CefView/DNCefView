@@ -8,7 +8,6 @@ CCefConfig::CCefConfig()
 {
   backgroundColor_ = 0xFFFFFFFF;
   logLevel_ = LOGSEVERITY_DEFAULT;
-  userAgent_ = kCefViewDefaultUserAgent;
 }
 
 CCefConfig::~CCefConfig() {}

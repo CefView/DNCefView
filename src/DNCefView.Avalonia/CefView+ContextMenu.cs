@@ -6,6 +6,8 @@
         {
         }
 
+        bool _isShowContextMenu = false;
+
         void InitializeContextMenu()
         {
         }

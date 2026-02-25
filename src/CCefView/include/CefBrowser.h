@@ -294,7 +294,7 @@ private:
   /// <summary>
   ///
   /// </summary>
-  bool transparentPaintingEnabled = false;
+  bool transparentPaintingEnabled_ = false;
 
   /// <summary>
   ///
@@ -340,7 +340,7 @@ private:
   /// focus status by ourself, and at every loadEnd callback
   /// we need to sync the status to CEF browser.
   /// </summary>
-  bool hasCefGotFocus = false;
+  bool hasCefGotFocus_ = false;
 };
 
 #endif

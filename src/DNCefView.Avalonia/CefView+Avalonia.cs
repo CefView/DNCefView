@@ -7,7 +7,7 @@ namespace DNCefView.Avalonia
     public partial class CefView : Control
     {
         public static readonly StyledProperty<string> SourceProperty =
-            AvaloniaProperty.Register<CefView, string>(nameof(Source));
+            AvaloniaProperty.Register<CefView, string>(nameof(Source), defaultValue: string.Empty);
 
         static void ClassInitialize()
         {
@@ -32,11 +32,11 @@ namespace DNCefView.Avalonia
             ClassInitializeRender();
         }
 
-        public CefView() : this(null, "")
+        public CefView() : this(null, string.Empty)
         {
         }
 
-        public CefView(CefSetting? setting) : this(setting, "")
+        public CefView(CefSetting? setting) : this(setting, string.Empty)
         {
         }
 
@@ -66,14 +66,14 @@ namespace DNCefView.Avalonia
 
         void Initialize(CefSetting? setting, string? source)
         {
-            if (string.IsNullOrEmpty(source))
-            {
-                source = "about:blank";
-            }
-            SetCurrentValue(SourceProperty, source);
-            SetCurrentValue(FocusAdornerProperty, null);
+            SetValue(FocusAdornerProperty, null);
 
-            CreateNativeBrowser(source, setting);
+            if (!string.IsNullOrEmpty(source))
+            {
+                Source = source;
+            }
+
+            CreateNativeBrowser(Source, setting);
         }
 
         void UI_OnCefAfterCreated()
@@ -86,6 +86,30 @@ namespace DNCefView.Avalonia
                 _cefBrowser?.NavigateToUrl(Source);
             },
             block: false);
+        }
+
+        private void OnSourceChanged(AvaloniaPropertyChangedEventArgs e)
+        {
+            if (_isCreated && e.NewValue is string source)
+            {
+                _cefBrowser?.NavigateToUrl(source);
+            }
+        }
+
+        private void OnVisibleChanged(AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is bool isVisible)
+            {
+                _cefBrowser?.WasHidden(!isVisible);
+            }
+        }
+
+        protected override void OnSizeChanged(SizeChangedEventArgs e)
+        {
+            base.OnSizeChanged(e);
+
+            _cefBrowser?.WasResized();
+            _cefBrowser?.NotifyMoveOrResizeStarted();
         }
     }
 }

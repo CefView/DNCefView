@@ -16,6 +16,7 @@ namespace DNCefView.Avalonia
         private Rect _cefViewRect = new Rect(0, 0, 1, 1);
         private WriteableBitmap? _cefViewImage;
 
+        private bool _isShowPopup = false;
         private Rect _cefPopupRect = new Rect(0, 0, 1, 1);
         private WriteableBitmap? _cefPopupImage;
 
@@ -99,6 +100,16 @@ namespace DNCefView.Avalonia
             info.DeviceScaleFactor = (float)scale;
 
             return true;
+        }
+
+        void UI_OnCefPopupShow(int browserId, bool show)
+        {
+            _isShowPopup = show;
+            if (!show)
+            {
+                _cefPopupImage?.Dispose();
+                _cefPopupImage = null;
+            }
         }
 
         void UI_OnCefPopupSize(int browserId, CefViewRect rect)

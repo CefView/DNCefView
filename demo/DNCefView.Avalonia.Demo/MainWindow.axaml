@@ -25,8 +25,9 @@
 				</StackPanel>
 			</Border>
 		</Grid>
-		<dncefviewavalonia:CefView x:Name="LocalCefview" Grid.Column="1" Source="https://demo.dncefview.com/index.html" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />
+		<!--<dncefviewavalonia:CefView x:Name="LocalCefview" Grid.Column="1" Source="https://demo.dncefview.com/index.html" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />-->
+		<dncefviewavalonia:CefView x:Name="LocalCefview" Grid.Column="1" Source="https://www.google.com" InvokeMethod="OnInvokeMethod" CefQueryRequest="OnCefQueryRequest" />
 		<GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="4" Background="Gray" Grid.Column="2" ShowsPreview="True" IsTabStop="False" />
-		<dncefviewavalonia:CefView x:Name="RemoteCefView" Grid.Column="3" Source="https://www.google.com" />
+		<!--<dncefviewavalonia:CefView x:Name="RemoteCefView" Grid.Column="3" Source="https://www.google.com" />-->
 	</Grid>
 </Window>

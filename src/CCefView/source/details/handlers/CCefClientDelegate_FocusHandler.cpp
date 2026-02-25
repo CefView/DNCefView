@@ -10,7 +10,7 @@ CCefClientDelegate::takeFocus(CefRefPtr<CefBrowser>& browser, bool next)
 
   if (pCefView_->callbackTable_.pfnFocusReleasedByTabKey) {
     pCefView_->callbackTable_.pfnFocusReleasedByTabKey(browser->GetIdentifier(), next);
-    pCefView_->hasCefGotFocus = false;
+    pCefView_->hasCefGotFocus_ = false;
   }
 }
 
@@ -29,6 +29,6 @@ CCefClientDelegate::gotFocus(CefRefPtr<CefBrowser>& browser)
 
   if (pCefView_->callbackTable_.pfnGotFocus) {
     pCefView_->callbackTable_.pfnGotFocus(browser->GetIdentifier());
-    pCefView_->hasCefGotFocus = true;
+    pCefView_->hasCefGotFocus_ = true;
   }
 }

@@ -68,6 +68,19 @@ CCefClientDelegate::addressChanged(CefRefPtr<CefBrowser>& browser, CefRefPtr<Cef
   if (!IsValidBrowser(browser))
     return;
 
+  //// workaround for:
+  //// https://github.com/chromiumembedded/cef/issues/3870
+  //// after navigation CEF resets the browser focus status
+  //// without any callback notification (AKA, released the
+  //// focus silently), so we need to update the CEF browser
+  //// focus status according to the one we have kept
+  // if (true                          //
+  //     && pCefView_->hasCefGotFocus_ //
+  //     && browser->GetHost()         //
+  //) {
+  //   browser->GetHost()->SetFocus(true);
+  // }
+
   if (pCefView_->callbackTable_.pfnAddressChanged) {
     auto frameId = frame->GetIdentifier();
     pCefView_->callbackTable_.pfnAddressChanged(

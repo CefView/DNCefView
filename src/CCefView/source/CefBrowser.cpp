@@ -39,7 +39,7 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
   window_info.shared_texture_enabled = (setting && setting->hardwareAcceleration_);
 
   if (CefColorGetA(browserSettings.background_color) == 0)
-    transparentPaintingEnabled = true;
+    transparentPaintingEnabled_ = true;
 
   // create browser object
   bool success = CefBrowserHost::CreateBrowser(window_info,     // window info
@@ -340,7 +340,7 @@ CCefBrowser::setFocus(bool focused)
 
   pCefBrowser_->GetHost()->SetFocus(focused);
 
-  hasCefGotFocus = focused;
+  hasCefGotFocus_ = focused;
 }
 
 void
