@@ -18,7 +18,7 @@ namespace DNCefView
         CEF_WOD_IGNORE_ACTION = 9,
         CEF_WOD_SWITCH_TO_TAB = 10,
         CEF_WOD_NEW_PICTURE_IN_PICTURE = 11,
-        CEF_WOD_NUM_VALUES = 12,
+        CEF_WOD_MAX_VALUE = 11,
     };
 
     public enum CefViewMouseButtonType
@@ -65,7 +65,7 @@ namespace DNCefView
         CEF_TEXT_INPUT_MODE_NUMERIC = 6,
         CEF_TEXT_INPUT_MODE_DECIMAL = 7,
         CEF_TEXT_INPUT_MODE_SEARCH = 8,
-        CEF_TEXT_INPUT_MODE_NUM_VALUES = 9,
+        CEF_TEXT_INPUT_MODE_MAX = 8,
     };
 
     public enum CefViewCursorType
@@ -120,7 +120,6 @@ namespace DNCefView
         CT_DND_MOVE = 47,
         CT_DND_COPY = 48,
         CT_DND_LINK = 49,
-        CT_NUM_VALUES = 50,
     };
 
     public enum CefViewLogLevel
@@ -159,8 +158,6 @@ namespace DNCefView
         EVENTFLAG_IS_RIGHT = 2048,
         EVENTFLAG_ALTGR_DOWN = 4096,
         EVENTFLAG_IS_REPEAT = 8192,
-        EVENTFLAG_PRECISION_SCROLLING_DELTA = 16384,
-        EVENTFLAG_SCROLL_BY_PAGE = 32768,
     };
 
     public enum CefViewCompositionUnderlineStyle
@@ -169,7 +166,6 @@ namespace DNCefView
         CEF_CUS_DOT = 1,
         CEF_CUS_DASH = 2,
         CEF_CUS_NONE = 3,
-        CEF_CUS_NUM_VALUES = 4,
     };
 
     // Source: CefViewPoint 
@@ -218,9 +214,6 @@ namespace DNCefView
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewScreenInfo
     {
-        // Source: size_t size
-        public ulong Size;
-
         // Source: float device_scale_factor
         public float DeviceScaleFactor;
 
@@ -287,9 +280,6 @@ namespace DNCefView
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewCompositionUnderline
     {
-        // Source: size_t size
-        public ulong Size;
-
         // Source: cef_range_t range
         public CefViewRange Range;
 

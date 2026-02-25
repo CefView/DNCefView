@@ -85,7 +85,7 @@ namespace DNCefView.Avalonia
         public event LoadingProgressChangedCallback? LoadingProgressChanged;
         #endregion
 
-        private void InitializeNative(string url, CefSetting? setting)
+        private void CreateNativeBrowser(string url, CefSetting? setting)
         {
             if (null != setting)
             {

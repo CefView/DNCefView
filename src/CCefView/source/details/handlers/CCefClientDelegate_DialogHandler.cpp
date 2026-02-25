@@ -15,7 +15,7 @@ CCefClientDelegate::onFileDialog(CefRefPtr<CefBrowser>& browser,
 #endif
                                  CefRefPtr<CefFileDialogCallback>& callback)
 {
-  bool handled = true;
+  bool handled = false;
   if (!IsValidBrowser(browser))
     return handled;
 
