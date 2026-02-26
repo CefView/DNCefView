@@ -71,11 +71,6 @@ namespace DNCefView.Avalonia
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (!_hasCefGotFocus)
-            {
-                return;
-            }
-
             int virtualKey = GetWindowsVirtualKey(e.Key);
             var modifiers = GetModifiers(e.KeyModifiers, null) | GetKeyEventFlags(e.Key);
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
@@ -84,16 +79,10 @@ namespace DNCefView.Avalonia
 
             // skip tab/shift+tab key
             e.Handled = e.Key == Key.Tab;
-            base.OnKeyDown(e);
         }
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
-            if (!_hasCefGotFocus)
-            {
-                return;
-            }
-
             int virtualKey = GetWindowsVirtualKey(e.Key);
             var modifiers = GetModifiers(e.KeyModifiers, null) | GetKeyEventFlags(e.Key);
             var isSystemKey = ((modifiers & CefViewEventFlag.EVENTFLAG_ALT_DOWN) != 0);
@@ -102,7 +91,6 @@ namespace DNCefView.Avalonia
 
             // skip tab/shift+tab key
             e.Handled = e.Key == Key.Tab;
-            base.OnKeyUp(e);
         }
 
         private CefViewEventFlag GetModifiers(KeyModifiers? keys, PointerPointProperties? mouse)

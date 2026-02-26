@@ -13,6 +13,13 @@ CCefClientDelegate::loadingStateChanged(CefRefPtr<CefBrowser>& browser,
   if (!IsValidBrowser(browser))
     return;
 
+  if (!isLoading) {
+    // loading complete
+    if (auto focusedFrame = browser->GetFocusedFrame()) {
+      browser->GetHost()->SetFocus(true);
+    }
+  }
+
   if (pCefView_->callbackTable_.pfnLoadingStateChanged) {
     pCefView_->callbackTable_.pfnLoadingStateChanged(browser->GetIdentifier(), isLoading, canGoBack, canGoForward);
   }

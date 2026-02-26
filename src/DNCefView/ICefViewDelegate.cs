@@ -23,7 +23,7 @@ namespace DNCefView
 
         #region FocusHandler
         void OnCefFocusReleasedByTabKey(int browserId, bool next);
-        bool OnCefSetFocus(int browserId);
+        bool OnCefRequestSetFocus(int browserId);
         void OnCefGotFocus(int browserId);
         #endregion
 

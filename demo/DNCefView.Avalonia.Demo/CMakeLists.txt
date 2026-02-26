@@ -10,7 +10,7 @@ configure_file(
 )
 
 file(GLOB_RECURSE _HTML_FILES
-    webres/*.html
+    webres/*.*
 )
 
 # Define the executable target

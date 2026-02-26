@@ -68,20 +68,20 @@ namespace DNCefView
         public delegate void DraggableRegionChangedCallback([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] CefViewDraggableRegion[] draggableRegion, int count);
         public DraggableRegionChangedCallback DraggableRegionChangedCb;
 
-        // Source: void pfnFocusReleasedByTabKey(int, bool)
+        // Source: void pfnOnFocusReleasedByTabKey(int, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void FocusReleasedByTabKeyCallback(int browserId, bool next);
-        public FocusReleasedByTabKeyCallback FocusReleasedByTabKeyCb;
+        public delegate void OnFocusReleasedByTabKeyCallback(int browserId, bool next);
+        public OnFocusReleasedByTabKeyCallback OnFocusReleasedByTabKeyCb;
 
-        // Source: bool pfnSetFocus(int)
+        // Source: bool pfnOnRequestSetFocus(int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate bool SetFocusCallback(int browserId);
-        public SetFocusCallback SetFocusCb;
+        public delegate bool OnRequestSetFocusCallback(int browserId);
+        public OnRequestSetFocusCallback OnRequestSetFocusCb;
 
-        // Source: void pfnGotFocus(int)
+        // Source: void pfnOnGotFocus(int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void GotFocusCallback(int browserId);
-        public GotFocusCallback GotFocusCb;
+        public delegate void OnGotFocusCallback(int browserId);
+        public OnGotFocusCallback OnGotFocusCb;
 
         // Source: bool pfnOnBeforeNewPopupCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t *, CCefSetting *, bool *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]

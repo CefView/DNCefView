@@ -339,8 +339,6 @@ CCefBrowser::setFocus(bool focused)
     return;
 
   pCefBrowser_->GetHost()->SetFocus(focused);
-
-  hasCefGotFocus_ = focused;
 }
 
 void

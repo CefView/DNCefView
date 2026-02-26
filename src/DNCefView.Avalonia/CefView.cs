@@ -278,9 +278,9 @@ namespace DNCefView.Avalonia
             UI_OnCefFocusReleasedByTabKey(browserId, next);
         }
 
-        bool ICefViewDelegate.OnCefSetFocus(int browserId)
+        bool ICefViewDelegate.OnCefRequestSetFocus(int browserId)
         {
-            return UI_OnCefSetFocus(browserId);
+            return UI_OnCefRequestSetFocus(browserId);
         }
 
         void ICefViewDelegate.OnCefGotFocus(int browserId)

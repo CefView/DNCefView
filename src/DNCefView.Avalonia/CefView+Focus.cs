@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 
 namespace DNCefView.Avalonia
 {
@@ -11,7 +10,9 @@ namespace DNCefView.Avalonia
         {
         }
 
-        private bool _hasCefGotFocus = false;
+        private bool _syncingFocusByCef = false;
+
+        private bool _syncingFocusByAva = false;
 
         void InitializeFocus()
         {
@@ -19,17 +20,30 @@ namespace DNCefView.Avalonia
 
         void UI_OnCefFocusReleasedByTabKey(int browserId, bool next)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
+            RunInUIThread(() =>
             {
                 var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
-                var nextElement = KeyboardNavigationHandler.GetNext(focusManager?.GetFocusedElement()!, next ? NavigationDirection.Next : NavigationDirection.Previous);
-                nextElement?.Focus(NavigationMethod.Tab);
+                if (focusManager != null)
+                {
+                    KeyboardNavigationHandler
+                    .GetNext(focusManager?.GetFocusedElement()!, next ? NavigationDirection.Next : NavigationDirection.Previous)?
+                    .Focus(NavigationMethod.Tab);
+                }
             });
         }
 
-        bool UI_OnCefSetFocus(int browserId)
+        bool UI_OnCefRequestSetFocus(int browserId)
         {
             using var _ = this.LogM();
+
+            if (_syncingFocusByAva || _syncingFocusByCef)
+            {
+                return false;
+            }
+
+            _syncingFocusByCef = true;
+            RunInUIThread(() => Focus());
+            _syncingFocusByCef = false;
 
             return false;
         }
@@ -37,17 +51,6 @@ namespace DNCefView.Avalonia
         void UI_OnCefGotFocus(int browserId)
         {
             using var _ = this.LogM();
-
-            _hasCefGotFocus = true;
-
-            RunInUIThread(() =>
-            {
-                if (!IsFocused)
-                {
-                    Focus();
-                }
-            },
-            block: false);
         }
 
         protected override void OnGotFocus(GotFocusEventArgs e)
@@ -56,15 +59,14 @@ namespace DNCefView.Avalonia
 
             base.OnGotFocus(e);
 
-            if (!_hasCefGotFocus)
+            if (_syncingFocusByAva || _syncingFocusByCef)
             {
-                this.LogD("set cef focus");
-                _cefBrowser?.SetFocus(true);
+                return;
             }
-            else
-            {
-                this.LogD("cef has got focus already, skip setting focus to avoid infinite loop.");
-            }
+
+            _syncingFocusByAva = true;
+            _cefBrowser?.SetFocus(true);
+            _syncingFocusByAva = false;
         }
 
         protected override void OnLostFocus(RoutedEventArgs e)
@@ -75,7 +77,6 @@ namespace DNCefView.Avalonia
 
             // cancel context menu: TODO
 
-            _hasCefGotFocus = false;
             _cefBrowser?.SetFocus(false);
         }
     }

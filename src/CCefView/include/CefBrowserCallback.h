@@ -72,11 +72,11 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
   // FocusHandler
-  void(STDCALL* pfnFocusReleasedByTabKey)(const int browserId, const bool next);
+  void(STDCALL* pfnOnFocusReleasedByTabKey)(const int browserId, const bool next);
 
-  bool(STDCALL* pfnSetFocus)(const int browserId);
+  bool(STDCALL* pfnOnRequestSetFocus)(const int browserId);
 
-  void(STDCALL* pfnGotFocus)(const int browserId);
+  void(STDCALL* pfnOnGotFocus)(const int browserId);
 
   //////////////////////////////////////////////////////////////////////////
   // TODO: JSDialogHandler

@@ -47,9 +47,9 @@ namespace DNCefView
             #endregion
 
             #region FocusHandler
-            _callbackTable.FocusReleasedByTabKeyCb = OnCefReleaseFocus;
-            _callbackTable.SetFocusCb = OnCefSetFocus;
-            _callbackTable.GotFocusCb = OnCefGotFocus;
+            _callbackTable.OnFocusReleasedByTabKeyCb = OnCefReleasedFocusByTabKey;
+            _callbackTable.OnRequestSetFocusCb = OnCefRequestSetFocus;
+            _callbackTable.OnGotFocusCb = OnCefGotFocus;
             #endregion
 
             #region LifespanHandler
@@ -193,7 +193,7 @@ namespace DNCefView
         #endregion
 
         #region FocusHandler
-        public void OnCefReleaseFocus(int browserId, bool next)
+        public void OnCefReleasedFocusByTabKey(int browserId, bool next)
         {
             var del = _dnCefViewDelegate.Target as ICefViewDelegate;
             if (null != del)
@@ -202,12 +202,12 @@ namespace DNCefView
             }
         }
 
-        bool OnCefSetFocus(int browserId)
+        bool OnCefRequestSetFocus(int browserId)
         {
             var del = _dnCefViewDelegate.Target as ICefViewDelegate;
             if (null != del)
             {
-                del.OnCefSetFocus(browserId);
+                del.OnCefRequestSetFocus(browserId);
             }
 
             return false;
