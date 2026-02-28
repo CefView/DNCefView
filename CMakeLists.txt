@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(DNCefView)
+project(DNCefView LANGUAGES CXX CSharp)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   message(STATUS "Target system is Windows")
@@ -71,17 +71,3 @@ set(CMAKE_VS_GLOBALS
 # ###################################################################
 # DNCefView projects
 add_subdirectory(src/DNCefView)
-add_subdirectory(src/DNCefView.Avalonia)
-
-if(OS_WINDOWS)
-  add_subdirectory(src/DNCefView.WPF)
-endif()
-
-# ###################################################################
-# Example projects
-set(CMAKE_FOLDER Examples)
-add_subdirectory(demo/DNCefView.Avalonia.Demo)
-
-if(OS_WINDOWS)
-  add_subdirectory(demo/DNCefView.WPF.Demo)
-endif()
