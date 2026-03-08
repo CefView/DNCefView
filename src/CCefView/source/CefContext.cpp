@@ -1,10 +1,11 @@
-﻿#include "CefContext.h"
+#include "CefContext.h"
 
 #include <list>
 
 CCefContext* CCefContext::instance_ = nullptr;
 
 CCefContext::CCefContext(const CCefConfig* config)
+  : config_(config)
 {
   instance_ = this;
   init(config);
@@ -54,6 +55,9 @@ CCefContext::doCefMessageLoopWork()
 bool
 CCefContext::isSafeToShutdown()
 {
+  if (!pApp_)
+    return true;
+
   return pApp_->IsSafeToExit();
 }
 
