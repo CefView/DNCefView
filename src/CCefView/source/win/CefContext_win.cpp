@@ -1,4 +1,4 @@
-﻿#include <CefContext.h>
+#include <CefContext.h>
 
 #undef OS_WINDOWS
 #include <Shlwapi.h>
@@ -15,6 +15,8 @@
 bool
 CCefContext::init(const CCefConfig* config)
 {
+  config_ = config;
+
   // get current dll handle
   HMODULE hCurrentModule = nullptr;
   ::GetModuleHandleEx(
@@ -108,12 +110,15 @@ CCefContext::init(const CCefConfig* config)
 void
 CCefContext::uninit()
 {
-  if (!pApp_)
+  if (!pApp_) {
+    config_ = nullptr;
     return;
+  }
 
   pAppDelegate_ = nullptr;
   pApp_ = nullptr;
 
   // shutdown the cef
   CefShutdown();
+  config_ = nullptr;
 }

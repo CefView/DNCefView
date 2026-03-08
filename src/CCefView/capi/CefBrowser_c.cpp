@@ -103,6 +103,10 @@ void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate) {
   thiz->setWindowlessFrameRate(rate);
 }
 
+void CCefBrowser_sendExternalBeginFrame(ccefbrowser_class * thiz) {
+  thiz->sendExternalBeginFrame();
+}
+
 void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused) {
   thiz->setFocus(focused);
 }

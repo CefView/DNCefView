@@ -1,4 +1,4 @@
-﻿#ifndef CCEFVIEW_H
+#ifndef CCEFVIEW_H
 #define CCEFVIEW_H
 
 #pragma once
@@ -228,6 +228,7 @@ public:
 
 #pragma region Control CEF
   void setWindowlessFrameRate(int rate);
+  void sendExternalBeginFrame();
   void setFocus(bool focused);
   void wasResized();
   void wasHidden(bool hidden);
