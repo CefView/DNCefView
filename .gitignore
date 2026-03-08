@@ -9,3 +9,5 @@ CMakeLists.txt.user
 out
 __pycache__
 obj/
+.agent/
+AGENTS.md

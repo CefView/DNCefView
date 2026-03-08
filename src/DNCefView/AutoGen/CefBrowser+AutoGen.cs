@@ -224,6 +224,14 @@ namespace DNCefView
             CCefBrowser_setWindowlessFrameRate(_native, rate);
         }
 
+        // Source: void sendExternalBeginFrame()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_sendExternalBeginFrame(IntPtr thiz);
+        public void SendExternalBeginFrame()
+        {
+            CCefBrowser_sendExternalBeginFrame(_native);
+        }
+
         // Source: void setFocus(bool)
         [DllImport("CCefView")]
         private static extern void CCefBrowser_setFocus(IntPtr thiz, bool focused);

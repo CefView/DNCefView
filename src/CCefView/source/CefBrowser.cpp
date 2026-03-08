@@ -1,4 +1,4 @@
-﻿#include "CefBrowser.h"
+#include "CefBrowser.h"
 
 #pragma region cef_headers
 #include <include/cef_browser.h>
@@ -33,10 +33,18 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
   CefBrowserSettings browserSettings;
   CCefSetting::CopyToCefBrowserSettings(setting, browserSettings);
 
-  // Set window info
+  // Set window info based on configured rendering mode.
   CefWindowInfo window_info;
-  window_info.SetAsWindowless(0);
-  window_info.shared_texture_enabled = (setting && setting->hardwareAcceleration_);
+  bool windowlessRenderingEnabled = false;
+  if (pContext && pContext->cefConfig()) {
+    windowlessRenderingEnabled = pContext->cefConfig()->windowlessRendering();
+  }
+
+  if (windowlessRenderingEnabled) {
+    window_info.SetAsWindowless(0);
+    window_info.shared_texture_enabled = (setting && setting->hardwareAcceleration_);
+    window_info.external_begin_frame_enabled = true;
+  }
 
   if (CefColorGetA(browserSettings.background_color) == 0)
     transparentPaintingEnabled_ = true;
@@ -330,6 +338,19 @@ CCefBrowser::setWindowlessFrameRate(int rate)
     return;
 
   pCefBrowser_->GetHost()->SetWindowlessFrameRate(rate);
+}
+
+void
+CCefBrowser::sendExternalBeginFrame()
+{
+  if (!pCefBrowser_)
+    return;
+
+  auto host = pCefBrowser_->GetHost();
+  if (!host || !host->IsWindowRenderingDisabled())
+    return;
+
+  host->SendExternalBeginFrame();
 }
 
 void

@@ -54,6 +54,7 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_setDisablePopupContextMenu(ccefbrowser_class * thiz, bool disable);
   CCEFVIEW_EXPORT bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate);
+  CCEFVIEW_EXPORT void CCefBrowser_sendExternalBeginFrame(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused);
   CCEFVIEW_EXPORT void CCefBrowser_wasResized(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_wasHidden(ccefbrowser_class * thiz, bool hidden);
