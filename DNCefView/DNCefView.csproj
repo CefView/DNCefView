@@ -1,0 +1,63 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F6D75850-196F-3C51-9A63-3A7DDDA44E8F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>DNCefView</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Authors>CefView</Authors>
+    <Company>CefView</Company>
+    <Copyright>Copyright © 2026 CefView</Copyright>
+    <Description>.NET Implementation of CefView</Description>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <Nullable>enable</Nullable>
+    <PackageId>DNCefView</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/CefView/DNCefView</PackageProjectUrl>
+    <PackageTags>CefView CEF</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Version>1.0.8</Version>
+    <Configurations>Debug;Release</Configurations>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <ManagedAssembly>true</ManagedAssembly>
+    <TargetFramework>net8.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\CCefView\output\compile\CefBrowser+AutoGen.cs" Link="AutoGen\CefBrowser+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefBrowserCallback+AutoGen.cs" Link="AutoGen\CefBrowserCallback+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefConfig+AutoGen.cs" Link="AutoGen\CefConfig+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefContext+AutoGen.cs" Link="AutoGen\CefContext+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefGlobal+AutoGen.cs" Link="AutoGen\CefGlobal+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefQuery+AutoGen.cs" Link="AutoGen\CefQuery+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefSetting+AutoGen.cs" Link="AutoGen\CefSetting+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefTypes+AutoGen.cs" Link="AutoGen\CefTypes+AutoGen.cs" />
+    <Compile Include="..\CCefView\output\compile\CefVersion+AutoGen.cs" Link="AutoGen\CefVersion+AutoGen.cs" />
+    <Compile Include="CefBrowser.cs" />
+    <Compile Include="CefBrowserCallback.cs" />
+    <Compile Include="CefConfig.cs" />
+    <Compile Include="CefContext.cs" />
+    <Compile Include="CefQuery.cs" />
+    <Compile Include="CefSetting.cs" />
+    <Compile Include="CefTypes.cs" />
+    <Compile Include="ICefViewDelegate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AutoGen\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\CCefView\output\runtime\**\*">
+      <Visible>true</Visible>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>runtime\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+	  <Link>runtime\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+</Project>

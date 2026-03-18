@@ -1,11 +1,3 @@
-.vscode
-.vs
-.build
-.build.*
-dep/cef
-output
-.DS_Store
-CMakeLists.txt.user
-out
-__pycache__
-obj/
+﻿.vs
+DNCefView/bin
+DNCefView/obj
