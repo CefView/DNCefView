@@ -37,7 +37,7 @@ CCefContext::init(const CCefConfig* config)
   CCefConfig::CopyToCefSettings(config, cef_settings);
 
 #if CEF_VERSION_MAJOR >= 125 && CEF_VERSION_MAJOR <= 127
-  //  https://github.com/chromiumembedded/cef/issues/3685
+  // https://github.com/chromiumembedded/cef/issues/3685
   cef_settings.chrome_runtime = true;
 #endif
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(DNCefView LANGUAGES CXX CSharp)
+project(DNCefView LANGUAGES CXX)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   message(STATUS "Target system is Windows")
@@ -70,4 +70,4 @@ set(CMAKE_VS_GLOBALS
 
 # ###################################################################
 # DNCefView projects
-add_subdirectory(src/DNCefView)
+#add_subdirectory(src/DNCefView)

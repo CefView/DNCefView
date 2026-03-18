@@ -1,4 +1,4 @@
-#include "../CefContext.h"
+#include <CefContext.h>
 
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
@@ -11,9 +11,7 @@
 
 #include <CefViewBrowserApp.h>
 
-#include "details/CCefAppDelegate.h"
-
-#include "CefContext_Impl.h"
+#include "details/handlers/CCefAppDelegate.h"
 
 #define CEF_BINARY_NAME "Chromium Embedded Framework"
 #define CEF_FRAMEWORK_NAME "Chromium Embedded Framework.framework"
@@ -21,23 +19,26 @@
 #define HELPER_BINARY_NAME "CefViewWing"
 
 @interface PathFactory : NSObject
-+ (NSString*) AppMainBundlePath;
-+ (NSString*) CefFrameworkPath;
-+ (NSString*) CefSubprocessPath;
++ (NSString*)AppMainBundlePath;
++ (NSString*)CefFrameworkPath;
++ (NSString*)CefSubprocessPath;
 @end
 
 @implementation PathFactory
-+ (NSString*) AppMainBundlePath {
++ (NSString*)AppMainBundlePath
+{
   return [[NSBundle mainBundle] bundlePath];
 }
 
-+ (NSString*) CefFrameworkPath {
++ (NSString*)CefFrameworkPath
+{
   NSString* path = [[NSBundle bundleForClass:[PathFactory class]] builtInPlugInsPath];
   path = [path stringByAppendingPathComponent:@CEF_FRAMEWORK_NAME];
   return path;
 }
 
-+ (NSString*) CefSubprocessPath {
++ (NSString*)CefSubprocessPath
+{
   NSString* path = [[NSBundle bundleForClass:[PathFactory class]] builtInPlugInsPath];
   path = [path stringByAppendingPathComponent:@HELPER_BUNDLE_NAME];
   path = [path stringByAppendingPathComponent:@"Contents"];
@@ -49,15 +50,18 @@
 
 bool g_handling_send_event = false;
 
-@interface NSApplication (CocoaCefApp) <CefAppProtocol>
-- (void)_swizzled_sendEvent:(NSEvent *)event;
+@interface
+NSApplication (CocoaCefApp)<CefAppProtocol>
+- (void)_swizzled_sendEvent:(NSEvent*)event;
 - (void)_swizzled_terminate:(id)sender;
 - (void)_swizzled_run;
 @end
 
-@implementation NSApplication (CocoaCefApp)
+@implementation
+NSApplication (CocoaCefApp)
 // wraps sendEvent, terminate and run
-+ (void)load {
++ (void)load
+{
   // swizzle the sendEvent method
   Method original_sendEvent = class_getInstanceMethod(self, @selector(sendEvent:));
   Method swizzled_sendEvent = class_getInstanceMethod(self, @selector(_swizzled_sendEvent:));
@@ -74,26 +78,31 @@ bool g_handling_send_event = false;
   // method_exchangeImplementations(original_run, swizzled_run);
 }
 
-- (BOOL)isHandlingSendEvent {
+- (BOOL)isHandlingSendEvent
+{
   return g_handling_send_event;
 }
 
-- (void)setHandlingSendEvent:(BOOL)handlingSendEvent {
+- (void)setHandlingSendEvent:(BOOL)handlingSendEvent
+{
   g_handling_send_event = handlingSendEvent;
 }
 
-- (void)_swizzled_sendEvent:(NSEvent *)event {
+- (void)_swizzled_sendEvent:(NSEvent*)event
+{
   CefScopedSendingEvent sendingEventScoper;
-  
+
   [self _swizzled_sendEvent:event];
 }
 
-- (void)_swizzled_terminate:(id)sender {
+- (void)_swizzled_terminate:(id)sender
+{
 
   [self _swizzled_terminate:sender];
 }
 
-- (void)_swizzled_run {
+- (void)_swizzled_run
+{
   Method original_run = class_getInstanceMethod(self.class, @selector(run));
   Method swizzled_run = class_getInstanceMethod(self.class, @selector(_swizzled_run));
   method_exchangeImplementations(original_run, swizzled_run);
@@ -175,39 +184,42 @@ CCefContext::init(const CCefConfig* config)
 
   // Build CefSettings
   CefSettings cef_settings;
-  CCefConfig::copyToCefSettings(config, cef_settings);
+  CCefConfig::CopyToCefSettings(config, cef_settings);
+
+#if CEF_VERSION_MAJOR >= 125 && CEF_VERSION_MAJOR <= 127
+  // https://github.com/chromiumembedded/cef/issues/3685
+  cef_settings.chrome_runtime = true;
+#endif
 
   // fixed values
-  CefString(&cef_settings.framework_dir_path) = cefFrameworkPath();
-  CefString(&cef_settings.browser_subprocess_path) = cefSubprocessPath();
+#if CEF_VERSION_MAJOR < 128
   cef_settings.pack_loading_disabled = false;
+#endif
+
+  // fixed values
   cef_settings.external_message_pump = true;
   cef_settings.multi_threaded_message_loop = false;
 
-#if !defined(CEF_USE_SANDBOX)
-  cef_settings.no_sandbox = true;
-#endif
+  // path values
+  CefString(&cef_settings.framework_dir_path) = cefFrameworkPath();
+  CefString(&cef_settings.browser_subprocess_path) = cefSubprocessPath();
+  CefString(&cef_settings.main_bundle_path) = appMainBundlePath();
 
   // Initialize CEF.
-  // 1. create app delegate
-  CCefConfig::ArgsMap cmdArgs;
-  copyCmdLineArgs(config, cmdArgs);
+  auto cmdArgs = CCefConfig::GetCommandLineArgs(config);
   auto appDelegate = std::make_shared<CCefAppDelegate>(this, cmdArgs);
-
-  // 2. create browser app
   auto bridgeObjectName = config ? config->bridgeObjectName() : std::string();
-  auto app = new CefViewBrowserApp(bridgeObjectName, appDelegate);
+  auto builtinSchemeName = config ? config->builtinSchemaName() : std::string();
+  auto app = new CefViewBrowserApp(builtinSchemeName, bridgeObjectName, appDelegate);
 
-
-  // 4. startup CEF
   CefMainArgs main_args;
   if (!CefInitialize(main_args, cef_settings, app, nullptr)) {
     assert(0);
     return false;
   }
 
-  pImpl_->pApp_ = app;
-  pImpl_->pAppDelegate_ = appDelegate;
+  pApp_ = app;
+  pAppDelegate_ = appDelegate;
 
   return true;
 }
@@ -215,11 +227,11 @@ CCefContext::init(const CCefConfig* config)
 void
 CCefContext::uninit()
 {
-  if (!pImpl_->pApp_)
+  if (!pApp_)
     return;
 
-  pImpl_->pAppDelegate_ = nullptr;
-  pImpl_->pApp_ = nullptr;
+  pAppDelegate_ = nullptr;
+  pApp_ = nullptr;
 
   // shutdown the cef
   CefShutdown();

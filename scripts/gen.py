@@ -18,10 +18,10 @@ class CTypeMapper(TypeMapper):
     def __init__(self) -> None:
         super().__init__()
         self.table = {
-            "std::string &": ("char *", ".c_str()"),
-            "const std::string &": ("const char *", ".c_str()"),
             "std::string": ("const char *", ""),
+            "std::string &": ("char *", ".c_str()"),
             "const std::string": ("const char *", ""),
+            "const std::string &": ("const char *", ".c_str()"),
         }
 
     def map_type(self, type):

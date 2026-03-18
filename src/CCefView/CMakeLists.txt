@@ -57,6 +57,7 @@ elseif(OS_MACOS)
   add_compile_options(
     "-g"
     "-fdeclspec"
+    "-Wno-error=overriding-t-option"
     "$<$<CONFIG:DEBUG>:-O0>"
     "$<$<CONFIG:RELEASE>:-O3>"
   )
@@ -69,19 +70,6 @@ elseif(OS_MACOS)
   else()
     set(CMAKE_OSX_ARCHITECTURES "i386")
   endif()
-
-  # detect minimum deployment target by CEF
-  # plese refer to: https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding.md
-  if(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 138)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
-  elseif(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 117)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
-  elseif(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 104)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
-  else()
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
-  endif()
-
 elseif(OS_LINUX)
   # #############################################################################
   # Linux specific settings
@@ -112,6 +100,20 @@ set(CCefView_LIB_TYPE SHARED)
 
 add_subdirectory(thirdparty/json)
 add_subdirectory(thirdparty/cefviewcore)
+
+if(OS_MACOS)
+  # detect minimum deployment target by CEF
+  # please refer to: https://bitbucket.org/chromiumembedded/cef/wiki/BranchesAndBuilding.md
+  if(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 138)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
+  elseif(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 117)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+  elseif(${CEF_VERSION_MAJOR} VERSION_GREATER_EQUAL 104)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
+  else()
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
+  endif()
+endif()
 
 # ## CCefView
 # ###############################################################################################
