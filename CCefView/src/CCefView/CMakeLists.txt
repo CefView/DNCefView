@@ -283,14 +283,14 @@ if(OS_MACOS)
 
   set_target_properties(${PROJECT_NAME}
     PROPERTIES
-    FRAMEWORK TRUE
+    # FRAMEWORK TRUE
 
     # compiler settings
     COMPILE_FLAGS "-fobjc-arc"
     CLANG_ENABLE_OBJC_ARC "YES"
 
     # xcode settings
-    PUBLIC_HEADER "${CCefView_INCLUDE_HEADERS}"
+    # PUBLIC_HEADER "${CCefView_INCLUDE_HEADERS}"
     MACOSX_FRAMEWORK_INFO_PLIST "${CCefView_INFO_PLIST_FILE}"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.cefview.ccefview"
     XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "gnu++11" # -std=gnu++11
@@ -306,22 +306,22 @@ if(OS_MACOS)
 
     # create plugins directory
     COMMAND mkdir -p
-    "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Resources/CefView/"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/CefView/"
 
     # copy the CefViewCore binaries to resource directory
     COMMAND cp -a
     "$<TARGET_BUNDLE_DIR:CefViewWing>/../"
-    "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Resources/CefView/"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/CefView/"
 
     # adjust file permission
     COMMAND
-    cd "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Resources/CefView/Chromium Embedded Framework.framework/Resources" && chmod +rw *.bin
+    cd "$<TARGET_FILE_DIR:${PROJECT_NAME}>/CefView/Chromium Embedded Framework.framework/Resources" && chmod +rw *.bin
 
     # sign the cef framework
     COMMAND codesign
     --force
     --sign -
-    "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Resources/CefView/Chromium Embedded Framework.framework"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/CefView/Chromium Embedded Framework.framework"
   )
 endif() # OS_MACOS
 

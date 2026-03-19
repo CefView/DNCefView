@@ -38,7 +38,7 @@
 
 + (NSString*)CefFrameworkPath
 {
-  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] resourcePath];
+  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] bundlePath];
   path = [path stringByAppendingPathComponent:@CEFVIEW_FOLDER_NAME];
   path = [path stringByAppendingPathComponent:@CEF_FRAMEWORK_NAME];
   NSLog(@"CefFrameworkPath %@", path);
@@ -47,7 +47,7 @@
 
 + (NSString*)CefSubprocessPath
 {
-  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] resourcePath];
+  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] bundlePath];
   path = [path stringByAppendingPathComponent:@CEFVIEW_FOLDER_NAME];
   path = [path stringByAppendingPathComponent:@HELPER_BUNDLE_NAME];
   path = [path stringByAppendingPathComponent:@"Contents"];

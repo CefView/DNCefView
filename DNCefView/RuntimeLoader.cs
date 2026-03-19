@@ -40,8 +40,7 @@ namespace DNCefView
                         "runtimes",
                         $"osx-{arc}",
                         "native",
-                        "CCefView.framework",
-                        "CCefView"
+                        "libCCefView.dylib"
                         );
 
                     NativeLibrary.TryLoad(binaryPath, out handle);
