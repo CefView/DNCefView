@@ -1,6 +1,7 @@
 #include <CefContext.h>
 
 #import <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
 #pragma region cef_headers
@@ -10,13 +11,15 @@
 #pragma endregion cef_headers
 
 #include <CefViewBrowserApp.h>
+#include <CefViewCoreProtocol.h>
 
 #include "details/handlers/CCefAppDelegate.h"
 
 #define CEF_BINARY_NAME "Chromium Embedded Framework"
 #define CEF_FRAMEWORK_NAME "Chromium Embedded Framework.framework"
-#define HELPER_BUNDLE_NAME "CefViewWing.app"
-#define HELPER_BINARY_NAME "CefViewWing"
+#define HELPER_BINARY_NAME kCefViewRenderProcessName
+#define HELPER_BUNDLE_NAME HELPER_BINARY_NAME ".app"
+#define CEFVIEW_FOLDER_NAME "CefView"
 
 @interface PathFactory : NSObject
 + (NSString*)AppMainBundlePath;
@@ -27,23 +30,29 @@
 @implementation PathFactory
 + (NSString*)AppMainBundlePath
 {
-  return [[NSBundle mainBundle] bundlePath];
+  NSString* path = [[NSBundle mainBundle] bundlePath];
+  NSLog(@"AppMainBundlePath %@", path);
+  return path;
 }
 
 + (NSString*)CefFrameworkPath
 {
-  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] builtInPlugInsPath];
+  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] resourcePath];
+  path = [path stringByAppendingPathComponent:@CEFVIEW_FOLDER_NAME];
   path = [path stringByAppendingPathComponent:@CEF_FRAMEWORK_NAME];
+  NSLog(@"CefFrameworkPath %@", path);
   return path;
 }
 
 + (NSString*)CefSubprocessPath
 {
-  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] builtInPlugInsPath];
+  NSString* path = [[NSBundle bundleForClass:[PathFactory class]] resourcePath];
+  path = [path stringByAppendingPathComponent:@CEFVIEW_FOLDER_NAME];
   path = [path stringByAppendingPathComponent:@HELPER_BUNDLE_NAME];
   path = [path stringByAppendingPathComponent:@"Contents"];
   path = [path stringByAppendingPathComponent:@"MacOS"];
   path = [path stringByAppendingPathComponent:@HELPER_BINARY_NAME];
+  NSLog(@"CefSubprocessPath %@", path);
   return path;
 }
 @end

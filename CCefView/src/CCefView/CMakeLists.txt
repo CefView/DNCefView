@@ -27,9 +27,6 @@ endif()
 
 set(DOTNET_RID "${DOTNET_RID_OS}-${DOTNET_RID_ARCH}")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native")
-
 if(OS_WINDOWS)
   # #############################################################################
   # Windows specific settings
@@ -349,8 +346,8 @@ target_link_libraries(${PROJECT_NAME}
 
 set_target_properties(${PROJECT_NAME}
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native"
-  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native"
-  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native"
-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_BASE_DIR}/runtime/${DOTNET_RID}/native"
+  RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_BASE_DIR}/runtimes/${DOTNET_RID}/native"
+  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_BASE_DIR}/runtimes/${DOTNET_RID}/native"
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_BASE_DIR}/runtimes/${DOTNET_RID}/native"
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_BASE_DIR}/runtimes/${DOTNET_RID}/native"
 )
