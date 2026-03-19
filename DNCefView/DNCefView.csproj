@@ -20,7 +20,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <Configurations>Debug;Release</Configurations>
     <EnableDefaultItems>false</EnableDefaultItems>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
@@ -50,6 +50,7 @@
     <Compile Include="CefSetting.cs" />
     <Compile Include="CefTypes.cs" />
     <Compile Include="ICefViewDelegate.cs" />
+    <Compile Include="RunteimLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AutoGen\" />
