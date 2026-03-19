@@ -1,0 +1,15 @@
+<Project>
+  <Target Name="ApplyRidSpecificPermissions" AfterTargets="CopyFilesToOutputDirectory;Publish" Condition="$([MSBuild]::IsOSUnixLike())">
+
+    <PropertyGroup>
+      <CurrentRID Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</CurrentRID>
+      <CurrentRID Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</CurrentRID>
+      <TargetFolderPath>$(OutDir)runtimes/$(CurrentRID)/native/CefView</TargetFolderPath>
+    </PropertyGroup>
+
+    <Message Importance="high" Text="Detected RID: $(CurrentRID)" />
+    <Message Importance="high" Text="Setting permissions for: $(TargetFolderPath)" Condition="Exists('$(TargetFolderPath)')" />
+    
+    <Exec Command="chmod -R +x &quot;$(TargetFolderPath)&quot;" Condition="Exists('$(TargetFolderPath)')" />
+  </Target>
+</Project>

@@ -56,12 +56,15 @@
     <Folder Include="AutoGen\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\CCefView\output\runtimes\**\*">
+    <None Include="..\CCefView\output\runtimes\**\*">
       <Visible>true</Visible>
+      <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+
       <Pack>true</Pack>
-      <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-	  <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Content>
+      <PackagePath>runtimes\</PackagePath>
+    </None>
+    <None Include="DNCefView.targets" Pack="true"  PackagePath="build/" />
+    <None Include="DNCefView.targets" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
 </Project>
