@@ -29,6 +29,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputType>Library</OutputType>
   </PropertyGroup>
+  <PropertyGroup>
+    <RuntimeIdentifiers>win-x64;osx-arm64;linux-x64</RuntimeIdentifiers>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CCefView\output\compile\CefBrowser+AutoGen.cs" Link="AutoGen\CefBrowser+AutoGen.cs" />
     <Compile Include="..\CCefView\output\compile\CefBrowserCallback+AutoGen.cs" Link="AutoGen\CefBrowserCallback+AutoGen.cs" />

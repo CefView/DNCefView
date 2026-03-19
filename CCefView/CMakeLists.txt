@@ -10,21 +10,19 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   message(STATUS "Target system is Apple (macOS/iOS)")
   set(OS_MACOS TRUE)
   set(DOTNET_RID_OS "osx")
+
+  add_compile_options(
+    "-g"
+    "-fdeclspec"
+    "-Wno-error=overriding-t-option"
+    "$<$<CONFIG:DEBUG>:-O0>"
+    "$<$<CONFIG:RELEASE>:-O3>"
+  )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   message(STATUS "Target system is Linux")
   set(OS_LINUX TRUE)
   set(DOTNET_RID_OS "linux")
 endif()
-
-if(OS_WINDOWS AND "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "arm64")
-  set(DOTNET_RID_ARCH "arm64")
-elseif(CMAKE_SIZEOF_VOID_P MATCHES 8)
-  set(DOTNET_RID_ARCH "x64")
-else()
-  set(DOTNET_RID_ARCH "x86")
-endif()
-
-set(DOTNET_RID "${DOTNET_RID_OS}-${DOTNET_RID_ARCH}")
 
 set(OUTPUT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/output)
 
