@@ -232,6 +232,45 @@ namespace DNCefView
             CCefBrowser_sendExternalBeginFrame(_native);
         }
 
+        // Source: void showDevTools()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_showDevTools(IntPtr thiz);
+        public void ShowDevTools()
+        {
+            CCefBrowser_showDevTools(_native);
+        }
+
+        // Source: void closeDevTools()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_closeDevTools(IntPtr thiz);
+        public void CloseDevTools()
+        {
+            CCefBrowser_closeDevTools(_native);
+        }
+
+        // Source: bool hasDevTools()
+        [DllImport("CCefView")]
+        private static extern bool CCefBrowser_hasDevTools(IntPtr thiz);
+        public bool HasDevTools()
+        {
+            return CCefBrowser_hasDevTools(_native);
+        }
+
+        // Source: void closeBrowser(bool)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_closeBrowser(IntPtr thiz, bool forceClose);
+        public void CloseBrowser(bool forceClose)
+        {
+            CCefBrowser_closeBrowser(_native, forceClose);
+        }
+
+        // Source: bool continueJSDialog(int64_t, bool, const std::string &)
+        [DllImport("CCefView")]
+        private static extern bool CCefBrowser_continueJSDialog(IntPtr thiz, long requestId, bool success, [MarshalAs(UnmanagedType.LPUTF8Str)] string userInput);
+        public bool ContinueJSDialog(long requestId, bool success, string userInput)
+        {
+            return CCefBrowser_continueJSDialog(_native, requestId, success, userInput);
+        }
         // Source: void setFocus(bool)
         [DllImport("CCefView")]
         private static extern void CCefBrowser_setFocus(IntPtr thiz, bool focused);
@@ -278,6 +317,69 @@ namespace DNCefView
         public void SendWheelEvent(int x, int y, UInt32 modifiers, int deltaX, int deltaY)
         {
             CCefBrowser_sendWheelEvent(_native, x, y, modifiers, deltaX, deltaY);
+        }
+        // Source: void dragTargetDragEnterText(int, int, uint32_t, const std::string &, const std::string &, const std::string &, CefViewDragOperation)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragTargetDragEnterText(IntPtr thiz, int x, int y, UInt32 modifiers, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string html, [MarshalAs(UnmanagedType.LPUTF8Str)] string baseUrl, CefViewDragOperation allowedOps);
+        public void DragTargetDragEnterText(int x, int y, UInt32 modifiers, string text, string html, string baseUrl, CefViewDragOperation allowedOps)
+        {
+            CCefBrowser_dragTargetDragEnterText(_native, x, y, modifiers, text, html, baseUrl, allowedOps);
+        }
+
+        // Source: void dragTargetDragEnterFiles(int, int, uint32_t, const std::string &, CefViewDragOperation)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragTargetDragEnterFiles(IntPtr thiz, int x, int y, UInt32 modifiers, [MarshalAs(UnmanagedType.LPUTF8Str)] string filePaths, CefViewDragOperation allowedOps);
+        public void DragTargetDragEnterFiles(int x, int y, UInt32 modifiers, string filePaths, CefViewDragOperation allowedOps)
+        {
+            CCefBrowser_dragTargetDragEnterFiles(_native, x, y, modifiers, filePaths, allowedOps);
+        }
+
+        // Source: void dragTargetDragOver(int, int, uint32_t, CefViewDragOperation)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragTargetDragOver(IntPtr thiz, int x, int y, UInt32 modifiers, CefViewDragOperation allowedOps);
+        public void DragTargetDragOver(int x, int y, UInt32 modifiers, CefViewDragOperation allowedOps)
+        {
+            CCefBrowser_dragTargetDragOver(_native, x, y, modifiers, allowedOps);
+        }
+
+        // Source: void dragTargetDragLeave()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragTargetDragLeave(IntPtr thiz);
+        public void DragTargetDragLeave()
+        {
+            CCefBrowser_dragTargetDragLeave(_native);
+        }
+
+        // Source: void dragTargetDrop(int, int, uint32_t)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragTargetDrop(IntPtr thiz, int x, int y, UInt32 modifiers);
+        public void DragTargetDrop(int x, int y, UInt32 modifiers)
+        {
+            CCefBrowser_dragTargetDrop(_native, x, y, modifiers);
+        }
+
+        // Source: void dragSourceEndedAt(int, int, CefViewDragOperation)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragSourceEndedAt(IntPtr thiz, int x, int y, CefViewDragOperation operation);
+        public void DragSourceEndedAt(int x, int y, CefViewDragOperation operation)
+        {
+            CCefBrowser_dragSourceEndedAt(_native, x, y, operation);
+        }
+
+        // Source: void dragSourceSystemDragEnded()
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_dragSourceSystemDragEnded(IntPtr thiz);
+        public void DragSourceSystemDragEnded()
+        {
+            CCefBrowser_dragSourceSystemDragEnded(_native);
+        }
+
+        // Source: void sendTouchEvent(int, float, float, float, float, float, float, int, uint32_t, int)
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_sendTouchEvent(IntPtr thiz, int touchId, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, int touchEventType, UInt32 modifiers, int pointerType);
+        public void SendTouchEvent(int touchId, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, int touchEventType, UInt32 modifiers, int pointerType)
+        {
+            CCefBrowser_sendTouchEvent(_native, touchId, x, y, radiusX, radiusY, rotationAngle, pressure, touchEventType, modifiers, pointerType);
         }
 
         // Source: void sendKeyEvent(CefViewKeyEventType, uint32_t, int, int, bool, uint16_t, uint16_t, bool)

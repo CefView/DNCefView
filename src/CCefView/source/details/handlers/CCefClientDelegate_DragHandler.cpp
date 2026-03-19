@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -9,7 +9,7 @@ CCefClientDelegate::onDragEnter(CefRefPtr<CefBrowser>& browser,
                                 CefRefPtr<CefDragData>& dragData,
                                 CefDragHandler::DragOperationsMask mask)
 {
-  return true;
+  return false;
 }
 
 void

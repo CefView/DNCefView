@@ -1,8 +1,7 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
-#include "details/utils/ValueConvertor.h"
 
 bool
 CCefClientDelegate::onJSDialog(CefRefPtr<CefBrowser>& browser,
@@ -13,7 +12,23 @@ CCefClientDelegate::onJSDialog(CefRefPtr<CefBrowser>& browser,
                                CefRefPtr<CefJSDialogCallback>& callback,
                                bool& suppress_message)
 {
-  return false;
+  if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnJSDialog)
+    return false;
+
+  const int64_t requestId = pCefView_->reserveJSDialogRequestId();
+  const bool handled = pCefView_->callbackTable_.pfnOnJSDialog(browser->GetIdentifier(),
+                                                               requestId,
+                                                               origin_url.ToString().c_str(),
+                                                               static_cast<int>(dialog_type),
+                                                               message_text.ToString().c_str(),
+                                                               default_prompt_text.ToString().c_str(),
+                                                               suppress_message);
+
+  if (handled && callback) {
+    pCefView_->storeJSDialogCallback(requestId, callback);
+  }
+
+  return handled;
 }
 
 bool
@@ -28,9 +43,17 @@ CCefClientDelegate::onBeforeUnloadDialog(CefRefPtr<CefBrowser>& browser,
 void
 CCefClientDelegate::onResetDialogState(CefRefPtr<CefBrowser>& browser)
 {
+  if (!IsValidBrowser(browser))
+    return;
+
+  pCefView_->clearJSDialogCallbacks();
 }
 
 void
 CCefClientDelegate::onDialogClosed(CefRefPtr<CefBrowser>& browser)
 {
+  if (!IsValidBrowser(browser))
+    return;
+
+  pCefView_->clearJSDialogCallbacks();
 }

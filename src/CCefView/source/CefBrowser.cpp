@@ -3,8 +3,13 @@
 #pragma region cef_headers
 #include <include/cef_browser.h>
 #include <include/cef_frame.h>
+#include <include/cef_jsdialog_handler.h>
+#include <include/cef_drag_data.h>
 #include <include/cef_parser.h>
 #pragma endregion cef_headers
+
+#include <algorithm>
+#include <sstream>
 
 #include <CefViewBrowserClient.h>
 #include <CefViewCoreProtocol.h>
@@ -17,6 +22,51 @@
 
 const std::string CCefBrowser::MainFrameID = "0";
 const std::string CCefBrowser::AllFrameID = "-1";
+
+namespace {
+inline CefRefPtr<CefBrowserHost> GetWindowlessHost(const CefRefPtr<CefBrowser>& browser)
+{
+  if (!browser)
+    return nullptr;
+
+  auto host = browser->GetHost();
+  if (!host || !host->IsWindowRenderingDisabled())
+    return nullptr;
+
+  return host;
+}
+
+inline CefMouseEvent BuildMouseEvent(int x, int y, uint32_t modifiers)
+{
+  CefMouseEvent event;
+  event.x = x;
+  event.y = y;
+  event.modifiers = modifiers;
+  return event;
+}
+
+std::vector<std::string> SplitFilePaths(const std::string& filePaths)
+{
+  std::vector<std::string> paths;
+  std::stringstream stream(filePaths);
+  std::string line;
+  while (std::getline(stream, line)) {
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    if (!line.empty())
+      paths.push_back(line);
+  }
+  return paths;
+}
+
+std::string ExtractFileName(const std::string& path)
+{
+  auto splitPos = path.find_last_of("\\/");
+  if (splitPos == std::string::npos)
+    return path;
+
+  return path.substr(splitPos + 1);
+}
+} // namespace
 
 CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, const CCefSetting* setting)
   : callbackTable_(callback)
@@ -33,17 +83,16 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
   CefBrowserSettings browserSettings;
   CCefSetting::CopyToCefBrowserSettings(setting, browserSettings);
 
-  // Set window info based on configured rendering mode.
+  // DNCefView defaults to OSR. Creation mode and begin-frame driving are controlled per browser setting.
   CefWindowInfo window_info;
-  bool windowlessRenderingEnabled = false;
-  if (pContext && pContext->cefConfig()) {
-    windowlessRenderingEnabled = pContext->cefConfig()->windowlessRendering();
-  }
+  const bool windowlessRenderingEnabled = setting ? setting->windowlessRenderingEnabled() : true;
+  const bool hardwareAccelerationEnabled = setting ? setting->hardwareAccelerationEnabled() : false;
+  const bool externalBeginFrameEnabled = setting ? setting->externalBeginFrameEnabled() : false;
 
   if (windowlessRenderingEnabled) {
     window_info.SetAsWindowless(0);
-    window_info.shared_texture_enabled = (setting && setting->hardwareAcceleration_);
-    window_info.external_begin_frame_enabled = true;
+    window_info.shared_texture_enabled = hardwareAccelerationEnabled;
+    window_info.external_begin_frame_enabled = externalBeginFrameEnabled;
   }
 
   if (CefColorGetA(browserSettings.background_color) == 0)
@@ -67,8 +116,14 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
 
 CCefBrowser::~CCefBrowser()
 {
+  resetSourceDragState();
+  clearJSDialogCallbacks();
+
   // clean all browsers
-  pClient_->CloseAllBrowsers();
+  if (pClient_) {
+    pClient_->CloseAllBrowsers();
+  }
+
   pClient_ = nullptr;
   pCefBrowser_ = nullptr;
 }
@@ -354,6 +409,66 @@ CCefBrowser::sendExternalBeginFrame()
 }
 
 void
+CCefBrowser::showDevTools()
+{
+  if (!pCefBrowser_)
+    return;
+
+  auto host = pCefBrowser_->GetHost();
+  if (!host || host->HasDevTools())
+    return;
+
+  CefWindowInfo windowInfo;
+#if defined(OS_WIN)
+  windowInfo.SetAsPopup(nullptr, L"UCefView DevTools");
+#else
+  windowInfo.SetAsPopup(nullptr, "UCefView DevTools");
+#endif
+
+  CefBrowserSettings browserSettings;
+  host->ShowDevTools(windowInfo, nullptr, browserSettings, CefPoint());
+}
+
+void
+CCefBrowser::closeDevTools()
+{
+  if (!pCefBrowser_)
+    return;
+
+  auto host = pCefBrowser_->GetHost();
+  if (!host || !host->HasDevTools())
+    return;
+
+  host->CloseDevTools();
+}
+
+bool
+CCefBrowser::hasDevTools()
+{
+  if (!pCefBrowser_)
+    return false;
+
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return false;
+
+  return host->HasDevTools();
+}
+
+void
+CCefBrowser::closeBrowser(bool forceClose)
+{
+  if (!pCefBrowser_)
+    return;
+
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return;
+
+  host->CloseBrowser(forceClose);
+}
+
+void
 CCefBrowser::setFocus(bool focused)
 {
   if (!pCefBrowser_)
@@ -377,7 +492,13 @@ CCefBrowser::wasHidden(bool hidden)
   if (!pCefBrowser_)
     return;
 
-  pCefBrowser_->GetHost()->WasHidden(hidden);
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return;
+
+  host->WasHidden(hidden);
+  if (hidden && sourceDragActive_)
+    endSourceDrag(0, 0, 0, true);
 }
 
 void
@@ -386,11 +507,20 @@ CCefBrowser::sendMouseMoveEvent(int x, int y, uint32_t modifiers, bool leave)
   if (!pCefBrowser_)
     return;
 
-  CefMouseEvent e;
-  e.x = x;
-  e.y = y;
-  e.modifiers = modifiers;
-  pCefBrowser_->GetHost()->SendMouseMoveEvent(e, leave);
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return;
+
+  CefMouseEvent event = BuildMouseEvent(x, y, modifiers);
+  host->SendMouseMoveEvent(event, leave);
+
+  if (sourceDragActive_) {
+    if (leave) {
+      endSourceDrag(x, y, modifiers, true);
+    } else {
+      updateSourceDragTarget(x, y, modifiers);
+    }
+  }
 }
 
 void
@@ -404,11 +534,16 @@ CCefBrowser::sendMouseClickEvent(int x,
   if (!pCefBrowser_)
     return;
 
-  CefMouseEvent e;
-  e.x = x;
-  e.y = y;
-  e.modifiers = modifiers;
-  pCefBrowser_->GetHost()->SendMouseClickEvent(e, (CefBrowserHost::MouseButtonType)type, mouseUp, clickCount);
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return;
+
+  CefMouseEvent event = BuildMouseEvent(x, y, modifiers);
+  host->SendMouseClickEvent(event, (CefBrowserHost::MouseButtonType)type, mouseUp, clickCount);
+
+  if (sourceDragActive_ && type == MBT_LEFT && mouseUp) {
+    endSourceDrag(x, y, modifiers, false);
+  }
 }
 
 void
@@ -417,11 +552,138 @@ CCefBrowser::sendWheelEvent(int x, int y, uint32_t modifiers, int deltaX, int de
   if (!pCefBrowser_)
     return;
 
-  CefMouseEvent e;
+  auto host = pCefBrowser_->GetHost();
+  if (!host)
+    return;
+
+  CefMouseEvent event = BuildMouseEvent(x, y, modifiers);
+  host->SendMouseWheelEvent(event, deltaX, deltaY);
+}
+
+void
+CCefBrowser::dragTargetDragEnterText(int x,
+                                     int y,
+                                     uint32_t modifiers,
+                                     const std::string& text,
+                                     const std::string& html,
+                                     const std::string& baseUrl,
+                                     CefViewDragOperation allowedOps)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  auto dragData = CefDragData::Create();
+  if (!text.empty())
+    dragData->SetFragmentText(text);
+  if (!html.empty())
+    dragData->SetFragmentHtml(html);
+  if (!baseUrl.empty())
+    dragData->SetFragmentBaseURL(baseUrl);
+
+  host->DragTargetDragEnter(dragData, BuildMouseEvent(x, y, modifiers),
+                            static_cast<CefBrowserHost::DragOperationsMask>(allowedOps));
+}
+
+void
+CCefBrowser::dragTargetDragEnterFiles(int x,
+                                      int y,
+                                      uint32_t modifiers,
+                                      const std::string& filePaths,
+                                      CefViewDragOperation allowedOps)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  auto dragData = CefDragData::Create();
+  auto paths = SplitFilePaths(filePaths);
+  for (const auto& path : paths) {
+    dragData->AddFile(path, ExtractFileName(path));
+  }
+
+  host->DragTargetDragEnter(dragData, BuildMouseEvent(x, y, modifiers),
+                            static_cast<CefBrowserHost::DragOperationsMask>(allowedOps));
+}
+
+void
+CCefBrowser::dragTargetDragOver(int x, int y, uint32_t modifiers, CefViewDragOperation allowedOps)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  host->DragTargetDragOver(BuildMouseEvent(x, y, modifiers),
+                           static_cast<CefBrowserHost::DragOperationsMask>(allowedOps));
+}
+
+void
+CCefBrowser::dragTargetDragLeave()
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  host->DragTargetDragLeave();
+}
+
+void
+CCefBrowser::dragTargetDrop(int x, int y, uint32_t modifiers)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  host->DragTargetDrop(BuildMouseEvent(x, y, modifiers));
+}
+
+void
+CCefBrowser::dragSourceEndedAt(int x, int y, CefViewDragOperation operation)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  host->DragSourceEndedAt(x, y, static_cast<CefBrowserHost::DragOperationsMask>(operation));
+}
+
+void
+CCefBrowser::dragSourceSystemDragEnded()
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host)
+    return;
+
+  host->DragSourceSystemDragEnded();
+  resetSourceDragState();
+}
+void
+CCefBrowser::sendTouchEvent(int touchId,
+                            float x,
+                            float y,
+                            float radiusX,
+                            float radiusY,
+                            float rotationAngle,
+                            float pressure,
+                            int touchEventType,
+                            uint32_t modifiers,
+                            int pointerType)
+{
+  if (!pCefBrowser_)
+    return;
+
+  CefTouchEvent e;
+  e.id = touchId;
   e.x = x;
   e.y = y;
+  e.radius_x = radiusX;
+  e.radius_y = radiusY;
+  e.rotation_angle = rotationAngle;
+  e.pressure = pressure;
+  e.type = (cef_touch_event_type_t)touchEventType;
   e.modifiers = modifiers;
-  pCefBrowser_->GetHost()->SendMouseWheelEvent(e, deltaX, deltaY);
+  e.pointer_type = (cef_pointer_type_t)pointerType;
+  pCefBrowser_->GetHost()->SendTouchEvent(e);
 }
 
 void
@@ -519,6 +781,51 @@ CCefBrowser::imeCancelComposition()
   pCefBrowser_->GetHost()->ImeCancelComposition();
 }
 
+int64_t
+CCefBrowser::reserveJSDialogRequestId()
+{
+  std::lock_guard<std::mutex> lock(jsDialogCallbacksMutex_);
+  return nextJSDialogRequestId_++;
+}
+
+void
+CCefBrowser::storeJSDialogCallback(int64_t requestId, CefRefPtr<CefJSDialogCallback> callback)
+{
+  if (requestId <= 0 || !callback)
+    return;
+
+  std::lock_guard<std::mutex> lock(jsDialogCallbacksMutex_);
+  jsDialogCallbacks_[requestId] = callback;
+}
+
+bool
+CCefBrowser::continueJSDialog(int64_t requestId, bool success, const std::string& userInput)
+{
+  CefRefPtr<CefJSDialogCallback> callback = nullptr;
+  {
+    std::lock_guard<std::mutex> lock(jsDialogCallbacksMutex_);
+    const auto it = jsDialogCallbacks_.find(requestId);
+    if (it == jsDialogCallbacks_.end())
+      return false;
+
+    callback = it->second;
+    jsDialogCallbacks_.erase(it);
+  }
+
+  if (!callback)
+    return false;
+
+  callback->Continue(success, userInput);
+  return true;
+}
+
+void
+CCefBrowser::clearJSDialogCallbacks()
+{
+  std::lock_guard<std::mutex> lock(jsDialogCallbacksMutex_);
+  jsDialogCallbacks_.clear();
+}
+
 void
 CCefBrowser::cefQueryRequest(int browserId, const std::string& frameId, const CCefQuery* query)
 {
@@ -551,6 +858,91 @@ CCefBrowser::inputStateChanged(int browserId, const std::string& frameId, bool e
 {
   if (callbackTable_.pfnInputStateChanged)
     callbackTable_.pfnInputStateChanged(browserId, frameId.c_str(), editable);
+}
+
+bool
+CCefBrowser::startDragging(CefRefPtr<CefDragData>& dragData, CefViewDragOperation allowedOps, int x, int y)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host || !dragData)
+    return false;
+
+  sourceDragData_ = dragData->Clone();
+  if (!sourceDragData_)
+    return false;
+
+  // DragTargetDragEnter does not accept embedded file contents.
+  sourceDragData_->ResetFileContents();
+  sourceDragAllowedOps_ = allowedOps;
+  sourceDragActive_ = true;
+  sourceDragEntered_ = false;
+
+  if (callbackTable_.pfnStartDragging &&
+      !callbackTable_.pfnStartDragging(browserId(), allowedOps, x, y)) {
+    resetSourceDragState();
+    return false;
+  }
+
+  return true;
+}
+
+void
+CCefBrowser::updateSourceDragTarget(int x, int y, uint32_t modifiers)
+{
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host || !sourceDragData_)
+    return;
+
+  CefMouseEvent event = BuildMouseEvent(x, y, modifiers);
+  if (!sourceDragEntered_) {
+    host->DragTargetDragEnter(sourceDragData_, event,
+                              static_cast<CefBrowserHost::DragOperationsMask>(sourceDragAllowedOps_));
+    sourceDragEntered_ = true;
+  } else {
+    host->DragTargetDragOver(event,
+                             static_cast<CefBrowserHost::DragOperationsMask>(sourceDragAllowedOps_));
+  }
+}
+
+void
+CCefBrowser::endSourceDrag(int x, int y, uint32_t modifiers, bool canceled)
+{
+  if (!sourceDragActive_) {
+    resetSourceDragState();
+    return;
+  }
+
+  auto host = GetWindowlessHost(pCefBrowser_);
+  if (!host) {
+    resetSourceDragState();
+    return;
+  }
+
+  if (sourceDragEntered_) {
+    CefMouseEvent event = BuildMouseEvent(x, y, modifiers);
+    if (canceled) {
+      host->DragTargetDragLeave();
+    } else {
+      host->DragTargetDragOver(event,
+                               static_cast<CefBrowserHost::DragOperationsMask>(sourceDragAllowedOps_));
+      host->DragTargetDrop(event);
+    }
+  }
+
+  const auto endOp = canceled ? static_cast<CefBrowserHost::DragOperationsMask>(DRAG_OPERATION_NONE)
+                              : static_cast<CefBrowserHost::DragOperationsMask>(sourceDragAllowedOps_);
+  host->DragSourceEndedAt(x, y, endOp);
+  host->DragSourceSystemDragEnded();
+  resetSourceDragState();
+}
+
+void
+CCefBrowser::resetSourceDragState()
+{
+  sourceDragActive_ = false;
+  sourceDragEntered_ = false;
+  sourceDragData_ = nullptr;
+  sourceDragAllowedOps_ = DRAG_OPERATION_NONE;
 }
 
 bool

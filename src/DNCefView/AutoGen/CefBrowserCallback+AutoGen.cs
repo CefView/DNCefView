@@ -58,6 +58,11 @@ namespace DNCefView
         public delegate void LoadingProgressChangedCallback(int browserId, double progress);
         public LoadingProgressChangedCallback LoadingProgressChangedCb;
 
+        // Source: void pfnFaviconUrlChanged(int, const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void FaviconUrlChangedCallback(int browserId, string faviconUrl);
+        public FaviconUrlChangedCallback FaviconUrlChangedCb;
+
         // Source: bool pfnCursorChanged(int, const void *, cef_cursor_type_t, _cef_cursor_info_t)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate bool CursorChangedCallback(int browserId, IntPtr cursorHandle, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
@@ -82,6 +87,11 @@ namespace DNCefView
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void OnGotFocusCallback(int browserId);
         public OnGotFocusCallback OnGotFocusCb;
+
+        // Source: bool pfnOnJSDialog(int, int64_t, const char *, int, const char *, const char *, bool)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool OnJSDialogCallback(int browserId, long requestId, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage);
+        public OnJSDialogCallback OnJSDialogCb;
 
         // Source: bool pfnOnBeforeNewPopupCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t *, CCefSetting *, bool *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -173,6 +183,10 @@ namespace DNCefView
         public delegate void OnAcceleratedPaintCallback(int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
         public OnAcceleratedPaintCallback OnAcceleratedPaintCb;
 
+        // Source: bool pfnStartDragging(int, cef_drag_operations_mask_t, int, int)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool StartDraggingCallback(int browserId, CefViewDragOperation allowedOps, int x, int y);
+        public StartDraggingCallback StartDraggingCb;
         // Source: void pfnUpdateDragCursor(int, cef_drag_operations_mask_t)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void UpdateDragCursorCallback(int browserId, CefViewDragOperation operation);

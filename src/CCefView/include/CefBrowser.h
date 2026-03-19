@@ -5,7 +5,9 @@
 // stl
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <unordered_map>
 
 // cef
 #include <include/cef_app.h>
@@ -22,6 +24,9 @@
 
 // details
 #include "details/handlers/CCefClientDelegate.h"
+
+class CefDragData;
+class CefJSDialogCallback;
 
 /// <summary>
 ///
@@ -229,12 +234,43 @@ public:
 #pragma region Control CEF
   void setWindowlessFrameRate(int rate);
   void sendExternalBeginFrame();
+  void showDevTools();
+  void closeDevTools();
+  bool hasDevTools();
+  void closeBrowser(bool forceClose);
   void setFocus(bool focused);
   void wasResized();
   void wasHidden(bool hidden);
   void sendMouseMoveEvent(int x, int y, uint32_t modifiers, bool leave);
   void sendMouseClickEvent(int x, int y, uint32_t modifiers, CefViewMouseButtonType type, bool mouseUp, int clickCount);
   void sendWheelEvent(int x, int y, uint32_t modifiers, int deltaX, int deltaY);
+  void dragTargetDragEnterText(int x,
+                               int y,
+                               uint32_t modifiers,
+                               const std::string& text,
+                               const std::string& html,
+                               const std::string& baseUrl,
+                               CefViewDragOperation allowedOps);
+  void dragTargetDragEnterFiles(int x,
+                                int y,
+                                uint32_t modifiers,
+                                const std::string& filePaths,
+                                CefViewDragOperation allowedOps);
+  void dragTargetDragOver(int x, int y, uint32_t modifiers, CefViewDragOperation allowedOps);
+  void dragTargetDragLeave();
+  void dragTargetDrop(int x, int y, uint32_t modifiers);
+  void dragSourceEndedAt(int x, int y, CefViewDragOperation operation);
+  void dragSourceSystemDragEnded();
+  void sendTouchEvent(int touchId,
+                      float x,
+                      float y,
+                      float radiusX,
+                      float radiusY,
+                      float rotationAngle,
+                      float pressure,
+                      int touchEventType,
+                      uint32_t modifiers,
+                      int pointerType);
   void sendKeyEvent(CefViewKeyEventType type,
                     uint32_t modifiers,
                     int windowsKeyCode,
@@ -253,6 +289,7 @@ public:
   void imeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos);
   void imeFinishComposingText(bool keep_selection);
   void imeCancelComposition();
+  bool continueJSDialog(int64_t requestId, bool success, const std::string& userInput);
 #pragma endregion
 
 #pragma region CEF Callbacks
@@ -274,7 +311,14 @@ protected:
   void inputStateChanged(int browserId, //
                          const std::string& frameId,
                          bool editable);
+
+  bool startDragging(CefRefPtr<CefDragData>& dragData, CefViewDragOperation allowedOps, int x, int y);
 #pragma endregion
+
+private:
+  int64_t reserveJSDialogRequestId();
+  void storeJSDialogCallback(int64_t requestId, CefRefPtr<CefJSDialogCallback> callback);
+  void clearJSDialogCallbacks();
 
 private:
   /// <summary>
@@ -331,6 +375,19 @@ private:
   ///
   /// </summary>
   CefBrowserCallback callbackTable_;
+
+  bool sourceDragActive_ = false;
+  bool sourceDragEntered_ = false;
+  CefRefPtr<CefDragData> sourceDragData_ = nullptr;
+  CefViewDragOperation sourceDragAllowedOps_ = DRAG_OPERATION_NONE;
+  std::mutex jsDialogCallbacksMutex_;
+  std::unordered_map<int64_t, CefRefPtr<CefJSDialogCallback>> jsDialogCallbacks_;
+  int64_t nextJSDialogRequestId_ = 1;
+
+private:
+  void updateSourceDragTarget(int x, int y, uint32_t modifiers);
+  void endSourceDrag(int x, int y, uint32_t modifiers, bool canceled);
+  void resetSourceDragState();
 };
 
 #endif

@@ -64,6 +64,61 @@ namespace DNCefView
             return CCefContext_addCookie(_native, name, value, domain, url);
         }
 
+        // Source: bool deleteCookie(const std::string &, const std::string &)
+        [DllImport("CCefView")]
+        private static extern bool CCefContext_deleteCookie(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        public bool DeleteCookie(string url, string name)
+        {
+            return CCefContext_deleteCookie(_native, url, name);
+        }
+
+        // Source: bool deleteAllCookies()
+        [DllImport("CCefView")]
+        private static extern bool CCefContext_deleteAllCookies(IntPtr thiz);
+        public bool DeleteAllCookies()
+        {
+            return CCefContext_deleteAllCookies(_native);
+        }
+
+        // Source: bool addCrossOriginWhitelistEntry(const std::string &, const std::string &, const std::string &, bool)
+        [DllImport("CCefView")]
+        private static extern bool CCefContext_addCrossOriginWhitelistEntry(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string sourceOrigin, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetProtocol, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetDomain, bool allowTargetSubdomains);
+        public bool AddCrossOriginWhitelistEntry(string sourceOrigin, string targetProtocol, string targetDomain, bool allowTargetSubdomains)
+        {
+            return CCefContext_addCrossOriginWhitelistEntry(_native, sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        }
+
+        // Source: bool removeCrossOriginWhitelistEntry(const std::string &, const std::string &, const std::string &, bool)
+        [DllImport("CCefView")]
+        private static extern bool CCefContext_removeCrossOriginWhitelistEntry(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string sourceOrigin, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetProtocol, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetDomain, bool allowTargetSubdomains);
+        public bool RemoveCrossOriginWhitelistEntry(string sourceOrigin, string targetProtocol, string targetDomain, bool allowTargetSubdomains)
+        {
+            return CCefContext_removeCrossOriginWhitelistEntry(_native, sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        }
+
+        // Source: bool clearCrossOriginWhitelist()
+        [DllImport("CCefView")]
+        private static extern bool CCefContext_clearCrossOriginWhitelist(IntPtr thiz);
+        public bool ClearCrossOriginWhitelist()
+        {
+            return CCefContext_clearCrossOriginWhitelist(_native);
+        }
+
+        // Source: const char * visitAllCookiesJson(int)
+        [DllImport("CCefView")]
+        private static extern IntPtr CCefContext_visitAllCookiesJson(IntPtr thiz, int timeoutMs);
+        public string VisitAllCookiesJson(int timeoutMs = 3000)
+        {
+            return Marshal.PtrToStringUTF8(CCefContext_visitAllCookiesJson(_native, timeoutMs));
+        }
+
+        // Source: const char * visitUrlCookiesJson(const std::string &, bool, int)
+        [DllImport("CCefView")]
+        private static extern IntPtr CCefContext_visitUrlCookiesJson(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, bool includeHttpOnly, int timeoutMs);
+        public string VisitUrlCookiesJson(string url, bool includeHttpOnly, int timeoutMs = 3000)
+        {
+            return Marshal.PtrToStringUTF8(CCefContext_visitUrlCookiesJson(_native, url, includeHttpOnly, timeoutMs));
+        }
         // Source: void doCefMessageLoopWork()
         [DllImport("CCefView")]
         private static extern void CCefContext_doCefMessageLoopWork(IntPtr thiz);

@@ -10,4 +10,5 @@ out
 __pycache__
 obj/
 .agent/
+.AGENT/
 AGENTS.md

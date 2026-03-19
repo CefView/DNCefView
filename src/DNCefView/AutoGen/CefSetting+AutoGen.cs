@@ -183,6 +183,21 @@ namespace DNCefView
         {
             return CCefSetting_windowlessFrameRate(_native);
         }
+        // Source: void setWindowlessRenderingEnabled(bool)
+        [DllImport("CCefView")]
+        private static extern void CCefSetting_setWindowlessRenderingEnabled(IntPtr thiz, bool enabled);
+        public void SetWindowlessRenderingEnabled(bool enabled)
+        {
+            CCefSetting_setWindowlessRenderingEnabled(_native, enabled);
+        }
+
+        // Source: bool windowlessRenderingEnabled()
+        [DllImport("CCefView")]
+        private static extern bool CCefSetting_windowlessRenderingEnabled(IntPtr thiz);
+        public bool WindowlessRenderingEnabled()
+        {
+            return CCefSetting_windowlessRenderingEnabled(_native);
+        }
 
         // Source: void setDefaultFontSize(const int)
         [DllImport("CCefView")]
@@ -486,6 +501,21 @@ namespace DNCefView
         public bool HardwareAccelerationEnabled()
         {
             return CCefSetting_hardwareAccelerationEnabled(_native);
+        }
+        // Source: void setExternalBeginFrameEnabled(bool)
+        [DllImport("CCefView")]
+        private static extern void CCefSetting_setExternalBeginFrameEnabled(IntPtr thiz, bool enabled);
+        public void SetExternalBeginFrameEnabled(bool enabled)
+        {
+            CCefSetting_setExternalBeginFrameEnabled(_native, enabled);
+        }
+
+        // Source: bool externalBeginFrameEnabled()
+        [DllImport("CCefView")]
+        private static extern bool CCefSetting_externalBeginFrameEnabled(IntPtr thiz);
+        public bool ExternalBeginFrameEnabled()
+        {
+            return CCefSetting_externalBeginFrameEnabled(_native);
         }
 
     }

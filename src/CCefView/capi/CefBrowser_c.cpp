@@ -107,6 +107,27 @@ void CCefBrowser_sendExternalBeginFrame(ccefbrowser_class * thiz) {
   thiz->sendExternalBeginFrame();
 }
 
+void CCefBrowser_showDevTools(ccefbrowser_class * thiz) {
+  thiz->showDevTools();
+}
+
+void CCefBrowser_closeDevTools(ccefbrowser_class * thiz) {
+  thiz->closeDevTools();
+}
+
+bool CCefBrowser_hasDevTools(ccefbrowser_class * thiz) {
+  return thiz->hasDevTools();
+}
+
+void CCefBrowser_closeBrowser(ccefbrowser_class * thiz, bool forceClose) {
+  thiz->closeBrowser(forceClose);
+}
+
+bool CCefBrowser_continueJSDialog(ccefbrowser_class * thiz, int64_t requestId, bool success, const char * userInput) {
+  const char * safeInput = userInput ? userInput : "";
+  return thiz->continueJSDialog(requestId, success, safeInput);
+}
+
 void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused) {
   thiz->setFocus(focused);
 }
@@ -129,6 +150,37 @@ void CCefBrowser_sendMouseClickEvent(ccefbrowser_class * thiz, int x, int y, uin
 
 void CCefBrowser_sendWheelEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, int deltaX, int deltaY) {
   thiz->sendWheelEvent(x, y, modifiers, deltaX, deltaY);
+}
+
+void CCefBrowser_dragTargetDragEnterText(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * text, const char * html, const char * baseUrl, cefviewdragoperation_enum allowedOps) {
+  thiz->dragTargetDragEnterText(x, y, modifiers, text, html, baseUrl, (cef_drag_operations_mask_t)allowedOps);
+}
+
+void CCefBrowser_dragTargetDragEnterFiles(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * filePaths, cefviewdragoperation_enum allowedOps) {
+  thiz->dragTargetDragEnterFiles(x, y, modifiers, filePaths, (cef_drag_operations_mask_t)allowedOps);
+}
+
+void CCefBrowser_dragTargetDragOver(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, cefviewdragoperation_enum allowedOps) {
+  thiz->dragTargetDragOver(x, y, modifiers, (cef_drag_operations_mask_t)allowedOps);
+}
+
+void CCefBrowser_dragTargetDragLeave(ccefbrowser_class * thiz) {
+  thiz->dragTargetDragLeave();
+}
+
+void CCefBrowser_dragTargetDrop(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers) {
+  thiz->dragTargetDrop(x, y, modifiers);
+}
+
+void CCefBrowser_dragSourceEndedAt(ccefbrowser_class * thiz, int x, int y, cefviewdragoperation_enum operation) {
+  thiz->dragSourceEndedAt(x, y, (cef_drag_operations_mask_t)operation);
+}
+
+void CCefBrowser_dragSourceSystemDragEnded(ccefbrowser_class * thiz) {
+  thiz->dragSourceSystemDragEnded();
+}
+void CCefBrowser_sendTouchEvent(ccefbrowser_class * thiz, int touchId, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, int touchEventType, uint32_t modifiers, int pointerType) {
+  thiz->sendTouchEvent(touchId, x, y, radiusX, radiusY, rotationAngle, pressure, touchEventType, modifiers, pointerType);
 }
 
 void CCefBrowser_sendKeyEvent(ccefbrowser_class * thiz, cefviewkeyeventtype_enum type, uint32_t modifiers, int windowsKeyCode, int nativeKeyCode, bool isSysKey, uint16_t character, uint16_t umodifiedCharacter, bool isFocusOnEditableField) {
@@ -158,4 +210,3 @@ void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_sele
 void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz) {
   thiz->imeCancelComposition();
 }
-

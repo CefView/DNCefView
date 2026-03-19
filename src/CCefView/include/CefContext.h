@@ -1,4 +1,4 @@
-﻿#ifndef CCEFCONTEXT_H
+#ifndef CCEFCONTEXT_H
 #define CCEFCONTEXT_H
 
 #pragma once
@@ -10,6 +10,7 @@
 // stl
 #include <memory>
 #include <string>
+#include <vector>
 
 // cefviewcore
 #include <CefViewBrowserApp.h>
@@ -87,6 +88,54 @@ public:
   /// <param name="url">The applicable url</param>
   /// <returns>True on success; otherwise false</returns>
   bool addCookie(const std::string& name, const std::string& value, const std::string& domain, const std::string& url);
+
+  /// <summary>
+  /// Deletes a specific cookie matching |url| and |name|.
+  /// </summary>
+  /// <returns>True on success; otherwise false</returns>
+  bool deleteCookie(const std::string& url, const std::string& name);
+
+  /// <summary>
+  /// Deletes all cookies in the global cookie manager.
+  /// </summary>
+  /// <returns>True on success; otherwise false</returns>
+  bool deleteAllCookies();
+
+  /// <summary>
+  /// Adds a cross-origin access whitelist entry.
+  /// </summary>
+  bool addCrossOriginWhitelistEntry(const std::string& sourceOrigin,
+                                    const std::string& targetProtocol,
+                                    const std::string& targetDomain,
+                                    bool allowTargetSubdomains);
+
+  /// <summary>
+  /// Removes a cross-origin access whitelist entry.
+  /// </summary>
+  bool removeCrossOriginWhitelistEntry(const std::string& sourceOrigin,
+                                       const std::string& targetProtocol,
+                                       const std::string& targetDomain,
+                                       bool allowTargetSubdomains);
+
+  /// <summary>
+  /// Clears all cross-origin whitelist entries.
+  /// </summary>
+  bool clearCrossOriginWhitelist();
+  /// <summary>
+  /// Visits all cookies from the global cookie manager and returns a JSON snapshot.
+  /// </summary>
+  /// <param name="timeoutMs">Maximum wait time in milliseconds.</param>
+  /// <returns>JSON payload with "cookies", "started", and "timedOut".</returns>
+  std::string visitAllCookiesJson(int timeoutMs = 3000);
+
+  /// <summary>
+  /// Visits URL-scoped cookies from the global cookie manager and returns a JSON snapshot.
+  /// </summary>
+  /// <param name="url">The target URL used for filtering.</param>
+  /// <param name="includeHttpOnly">Whether HTTP-only cookies should be included.</param>
+  /// <param name="timeoutMs">Maximum wait time in milliseconds.</param>
+  /// <returns>JSON payload with "cookies", "started", and "timedOut".</returns>
+  std::string visitUrlCookiesJson(const std::string& url, bool includeHttpOnly, int timeoutMs = 3000);
 
   /// <summary>
   ///
