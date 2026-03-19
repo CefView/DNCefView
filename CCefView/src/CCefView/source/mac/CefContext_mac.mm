@@ -2,6 +2,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
+#include <cstdbool>
 #import <objc/runtime.h>
 
 #pragma region cef_headers
@@ -82,9 +83,9 @@ NSApplication (CocoaCefApp)
   method_exchangeImplementations(original_terminate, swizzled_terminate);
 
   // swizzle the run method
-  // Method original_run = class_getInstanceMethod(self, @selector(run));
-  // Method swizzled_run = class_getInstanceMethod(self, @selector(_swizzled_run));
-  // method_exchangeImplementations(original_run, swizzled_run);
+  Method original_run = class_getInstanceMethod(self, @selector(run));
+  Method swizzled_run = class_getInstanceMethod(self, @selector(_swizzled_run));
+  method_exchangeImplementations(original_run, swizzled_run);
 }
 
 - (BOOL)isHandlingSendEvent
@@ -112,10 +113,18 @@ NSApplication (CocoaCefApp)
 
 - (void)_swizzled_run
 {
+  // CefRunMessageLoop needs to call original NSRunLoop so we need to restore it
   Method original_run = class_getInstanceMethod(self.class, @selector(run));
   Method swizzled_run = class_getInstanceMethod(self.class, @selector(_swizzled_run));
   method_exchangeImplementations(original_run, swizzled_run);
+
+  // enter cef run loop
   CefRunMessageLoop();
+
+  // shutdown the cef
+  CefShutdown();
+
+  cef_unload_library();
 }
 @end
 
@@ -206,7 +215,7 @@ CCefContext::init(const CCefConfig* config)
 #endif
 
   // fixed values
-  cef_settings.external_message_pump = true;
+  cef_settings.external_message_pump = false;
   cef_settings.multi_threaded_message_loop = false;
 
   // path values
@@ -242,8 +251,6 @@ CCefContext::uninit()
   pAppDelegate_ = nullptr;
   pApp_ = nullptr;
 
-  // shutdown the cef
-  CefShutdown();
-
-  freeCefLibrary();
+  // exit the CEF message loop
+  CefQuitMessageLoop();
 }
