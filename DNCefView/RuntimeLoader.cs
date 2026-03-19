@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace DNCefView
 {
 #pragma warning disable CA2255
-    internal static class RunteimLoader
+    internal static class RuntimeLoader
     {
         const string CCEFVIEW_DLL_NAME = "CCefView";
 

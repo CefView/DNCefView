@@ -30,7 +30,7 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <RuntimeIdentifiers>win-x64;osx-arm64;linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;osx-arm64;osx-x64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CCefView\output\compile\CefBrowser+AutoGen.cs" Link="AutoGen\CefBrowser+AutoGen.cs" />
@@ -50,7 +50,7 @@
     <Compile Include="CefSetting.cs" />
     <Compile Include="CefTypes.cs" />
     <Compile Include="ICefViewDelegate.cs" />
-    <Compile Include="RunteimLoader.cs" />
+    <Compile Include="RuntimeLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AutoGen\" />
