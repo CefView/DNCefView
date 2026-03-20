@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{CAEECDA1-5683-390E-BA92-31DB19E2AAB7}</ProjectGuid>
+		<Keyword>Win32Proj</Keyword>
+		<RootNamespace>DNCefView.Avalonia.Demo</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Authors>CefView</Authors>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<Company>CefView</Company>
+		<Copyright>Copyright © 2026 CefView</Copyright>
+		<Description>.NET Implementation of CefView</Description>
+		<EmbedUntrackedSources>false</EmbedUntrackedSources>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<Nullable>enable</Nullable>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/CefView/DNCefView</PackageProjectUrl>
+		<PackageTags>CefView CEF</PackageTags>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<Configurations>Debug;Release</Configurations>
+		<EnableDefaultItems>false</EnableDefaultItems>
+		<VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+		<ManagedAssembly>true</ManagedAssembly>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputType>WinExe</OutputType>
+	</PropertyGroup>
+	<PropertyGroup>
+		<UseAppHost>true</UseAppHost>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+	  <OutputPath>bin\Debug\DNCefView.Avalonia.Demo.app\Contents\MacOS\</OutputPath>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+	  <OutputPath>bin\Release\DNCefView.Avalonia.Demo.app\Contents\MacOS\</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<AvaloniaXaml Include="App.axaml">
+			<SubType>Designer</SubType>
+		</AvaloniaXaml>
+		<AvaloniaXaml Include="MainWindow.axaml">
+			<SubType>Designer</SubType>
+		</AvaloniaXaml>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="App.axaml.cs" />
+		<Compile Include="MainWindow.axaml.cs" />
+		<Compile Include="Program.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Info.plist" />
+		<Content Include="webres\iframe.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="webres\index.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="app.manifest" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Fonts.Inter" />
+		<PackageReference Include="Avalonia.Labs.Controls" />
+		<PackageReference Include="Avalonia.Themes.Fluent" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DNCefView.Avalonia\DNCefView.Avalonia.csproj" />
+	</ItemGroup>
+	<Target Name="CopyInfoPlist" AfterTargets="Build">
+		<ItemGroup>
+			<InfoPlistFile Include="Info.plist" />
+		</ItemGroup>
+		<Copy SourceFiles="@(InfoPlistFile)" 
+			  DestinationFiles="@(InfoPlistFile->'$(OutputPath)../%(Filename)%(Extension)')" 
+			  SkipUnchangedFiles="true"/>
+	</Target>
+</Project>

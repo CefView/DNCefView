@@ -1,3 +1,11 @@
 <Solution>
+  <Folder Name="/Avalonia/">
+    <Project Path="DNCefView.Avalonia.Demo/DNCefView.Avalonia.Demo.csproj" Id="caeecda1-5683-390e-ba92-31db19e2aab7" />
+    <Project Path="DNCefView.Avalonia/DNCefView.Avalonia.csproj" />
+  </Folder>
+  <Folder Name="/Runtime/">
+    <Project Path="DNCefView.Runtime.macOS/DNCefView.Runtime.macOS.csproj" Id="406f19ce-9f57-4cb5-9aed-8da75dfa0846" />
+    <Project Path="DNCefView.Runtime.Windows/DNCefView.Runtime.Windows.csproj" />
+  </Folder>
   <Project Path="DNCefView/DNCefView.csproj" />
 </Solution>

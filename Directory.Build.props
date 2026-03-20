@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <!-- .NET Version  -->
+    <TargetFramework>net8.0</TargetFramework>
+
+    <!-- Override SolutionDir  -->
+    <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
+    
+    <!-- Build settings-->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory).artifacts\</ArtifactsPath>
+    <ArtifactsPivots>$(Configuration)\$(TargetFramework)\</ArtifactsPivots>
+    <BaseOutputPath>$(ArtifactsPath)\bin\</BaseOutputPath>
+
+    <!-- Publish settings -->
+    <PublishDir>$(ArtifactsPath)\publish\$(Configuration)\$(TargetFramework)\</PublishDir>
+
+    <!-- Disable NuGet vulnerability audit (NU1900) to avoid cache permission issues -->
+    <NuGetAudit>false</NuGetAudit>
+
+    <Version>1.0.9</Version>
+  </PropertyGroup>
+</Project>

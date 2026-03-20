@@ -20,12 +20,9 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.0.9</Version>
     <Configurations>Debug;Release</Configurations>
     <EnableDefaultItems>false</EnableDefaultItems>
-    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
     <ManagedAssembly>true</ManagedAssembly>
-    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputType>Library</OutputType>
   </PropertyGroup>
@@ -56,15 +53,17 @@
     <Folder Include="AutoGen\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\CCefView\output\runtimes\**\*">
-      <Visible>true</Visible>
-      <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-
-      <Pack>true</Pack>
-      <PackagePath>runtimes\</PackagePath>
-    </None>
-    <None Include="DNCefView.targets" Pack="true"  PackagePath="build/" />
+    <None Include="DNCefView.targets" Pack="true" PackagePath="build/" />
     <None Include="DNCefView.targets" Pack="true" PackagePath="buildTransitive/" />
+  </ItemGroup>
+  <ItemGroup>
+	 <ProjectReference Include="..\DNCefView.Runtime.macOS\DNCefView.Runtime.macOS.csproj">
+		<IncludeAssets>all</IncludeAssets>
+        <PrivateAssets>none</PrivateAssets>
+	  </ProjectReference>
+	  <ProjectReference Include="..\DNCefView.Runtime.Windows\DNCefView.Runtime.Windows.csproj" >
+		<IncludeAssets>all</IncludeAssets>
+		<PrivateAssets>none</PrivateAssets>
+	  </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<IncludeBuildOutput>false</IncludeBuildOutput>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  
+    <Authors>CefView</Authors>
+    <Company>CefView</Company>
+    <Copyright>Copyright © 2026 CefView</Copyright>
+    <Description>.NET Implementation of CefView</Description>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <Nullable>enable</Nullable>
+    <PackageId>DNCefView.Runtime.macOS</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/CefView/DNCefView</PackageProjectUrl>
+    <PackageTags>CefView CEF</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
+	<IncludeSymbols>false</IncludeSymbols>
+	<SymbolPackageFormat></SymbolPackageFormat>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <None Include="..\CCefView\output\runtimes\osx-arm64\**\*">
+      <Visible>true</Visible>
+      <Link>runtimes\osx-arm64\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>runtimes\osx-arm64\</PackagePath>
+    </None>
+    <None Include="..\CCefView\output\runtimes\osx-x64\**\*">
+      <Visible>true</Visible>
+      <Link>runtimes\osx-x64\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>runtimes\osx-x64\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
