@@ -1,10 +1,12 @@
-﻿#ifndef CCEFCONTEXT_H
+#ifndef CCEFCONTEXT_H
 #define CCEFCONTEXT_H
 
 #pragma once
 // platform
 #if defined(OS_WINDOWS)
 #include <windows.h>
+#elif defined(OS_MACOS)
+#include <dispatch/dispatch.h>
 #endif
 
 // stl
@@ -39,6 +41,9 @@ private:
 #if defined(OS_WINDOWS)
   std::string windowsJobName_;
   HANDLE windowsJobHandle_ = nullptr;
+#elif defined(OS_MACOS)
+  dispatch_source_t scheduleTimer_ = nullptr;
+  int64_t kCefWorkerIntervalMs = (1000 / 60); // 60 fps
 #endif
 
 public:

@@ -5,17 +5,17 @@ namespace DNCefView
 {
     public partial class CefBrowser
     {
-        internal static HashSet<WeakReference> LiveInstances = new HashSet<WeakReference>();
+        internal static readonly HashSet<WeakReference> LiveInstances = new HashSet<WeakReference>();
 
-        private WeakReference _weakSelf;
+        private readonly WeakReference _weakSelf;
 
-        private WeakReference _dnCefViewDelegate;
+        private readonly WeakReference _dnCefViewDelegate;
 
-        private CefBrowserCallback _callbackTable;
+        private readonly CefBrowserCallback _callbackTable;
 
-        public const string MainFrameID = "0";
+        public const string MainFrameId = "0";
 
-        public const string AllFrameID = "-1";
+        public const string AllFrameId = "-1";
 
         public CefBrowser(ICefViewDelegate del, string url, CefSetting setting)
         {
@@ -90,8 +90,7 @@ namespace DNCefView
         #region CefView events
         public void OnCefQueryRequest(int browserId, string frameId, IntPtr query)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefQueryRequest(browserId, frameId, new CefQuery(query));
             }
@@ -99,8 +98,7 @@ namespace DNCefView
 
         public void OnCefInvokeMethod(int browserId, string frameId, string method, string arguments)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefInvokeMethod(browserId, frameId, method, arguments);
             }
@@ -108,8 +106,7 @@ namespace DNCefView
 
         public void OnCefReportJavascriptResult(int browserId, string frameId, string context, string result)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefReportJavascriptResult(browserId, frameId, context, result);
             }
@@ -117,8 +114,7 @@ namespace DNCefView
 
         public void OnCefInputStateChanged(int browserId, string frameId, bool editable)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefInputStateChanged(browserId, frameId, editable);
             }
@@ -128,8 +124,7 @@ namespace DNCefView
         #region DisplayHandler
         public void OnCefAddressChanged(int browserId, string frameId, string url)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefAddressChanged(browserId, frameId, url);
             }
@@ -137,8 +132,7 @@ namespace DNCefView
 
         public void OnCefTitleChanged(int browserId, string title)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefTitleChanged(browserId, title);
             }
@@ -146,8 +140,7 @@ namespace DNCefView
 
         public void OnCefFullScreenModeChanged(int browserId, bool fullscreen)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefFullScreenModeChanged(browserId, fullscreen);
             }
@@ -155,8 +148,7 @@ namespace DNCefView
 
         public void OnCefStatusMessage(int browserId, string message)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefStatusMessage(browserId, message);
             }
@@ -164,8 +156,7 @@ namespace DNCefView
 
         public void OnCefConsoleMessage(int browserId, string message, int level)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefConsoleMessage(browserId, message, level);
             }
@@ -173,8 +164,7 @@ namespace DNCefView
 
         public void OnCefLoadingProgressChanged(int browserId, double progress)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefLoadingProgressChanged(browserId, progress);
             }
@@ -182,8 +172,7 @@ namespace DNCefView
 
         public bool OnCefCursorChanged(int browserId, IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefCursorChanged(browserId, type, customCursorInfo);
                 return true;
@@ -195,8 +184,7 @@ namespace DNCefView
         #region FocusHandler
         public void OnCefReleasedFocusByTabKey(int browserId, bool next)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefFocusReleasedByTabKey(browserId, next);
             }
@@ -204,8 +192,7 @@ namespace DNCefView
 
         bool OnCefRequestSetFocus(int browserId)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefRequestSetFocus(browserId);
             }
@@ -215,8 +202,7 @@ namespace DNCefView
 
         public void OnCefGotFocus(int browserId)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefGotFocus(browserId);
             }
@@ -226,8 +212,7 @@ namespace DNCefView
         #region LifespanHandler
         public void OnCefAfterCreated()
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefAfterCreated();
             }
@@ -237,26 +222,23 @@ namespace DNCefView
         #region LoadHandler
         public void OnCefLoadingStateChanged(int browserId, bool isLoading, bool canGoBack, bool canGoForward)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefLoadingStateChanged(browserId, isLoading, canGoBack, canGoForward);
             }
         }
 
-        public void OnCefLoadStart(int browserId, string frameId, bool isMainFrame, int transition_type)
+        public void OnCefLoadStart(int browserId, string frameId, bool isMainFrame, int transitionType)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
-                del.OnCefLoadStart(browserId, frameId, isMainFrame, transition_type);
+                del.OnCefLoadStart(browserId, frameId, isMainFrame, transitionType);
             }
         }
 
         public void OnCefLoadEnd(int browserId, string frameId, bool isMainFrame, int httpStatusCode)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefLoadEnd(browserId, frameId, isMainFrame, httpStatusCode);
             }
@@ -264,8 +246,7 @@ namespace DNCefView
 
         bool OnCefLoadError(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefLoadError(browserId, frameId, isMainFrame, errorCode, errorMsg, failedUrl);
             }
@@ -277,8 +258,7 @@ namespace DNCefView
         #region RenderHandler
         public void OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefGetRootScreenRect(browserId, ref rect);
             }
@@ -286,8 +266,7 @@ namespace DNCefView
 
         public void OnCefGetViewRect(int browserId, ref CefViewRect rect)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefGetViewRect(browserId, ref rect);
             }
@@ -295,8 +274,7 @@ namespace DNCefView
 
         bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 return del.OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
             }
@@ -308,8 +286,7 @@ namespace DNCefView
 
         bool OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 return del.OnCefGetScreenInfo(browserId, ref info);
             }
@@ -319,8 +296,7 @@ namespace DNCefView
 
         public void OnCefPopupShow(int browserId, bool show)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefPopupShow(browserId, show);
             }
@@ -328,8 +304,7 @@ namespace DNCefView
 
         public void OnCefPopupSize(int browserId, CefViewRect rect)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefPopupSize(browserId, rect);
             }
@@ -337,8 +312,7 @@ namespace DNCefView
 
         public void OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytesBuffer, imageBytesCount, width, height);
             }
@@ -346,8 +320,7 @@ namespace DNCefView
 
         public void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
             }
@@ -355,8 +328,7 @@ namespace DNCefView
 
         public void OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefImeCompositionRangeChanged(browserId, selectedRange, characterBounds, characterBoundsCount);
             }
@@ -364,8 +336,7 @@ namespace DNCefView
 
         public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
         {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefTextSelectionChanged(browserId, selectedText, selectedRange);
             }

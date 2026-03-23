@@ -2,82 +2,82 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace DNCefView.Avalonia
+namespace DNCefView.Avalonia;
+
+public partial class CefView
 {
-    public partial class CefView
+    static void ClassInitializeFocus()
     {
-        static void ClassInitializeFocus()
+    }
+
+    private bool _syncingFocusByCef;
+
+    private bool _syncingFocusByAva;
+
+    void InitializeFocus()
+    {
+    }
+
+    void UI_OnCefFocusReleasedByTabKey(int browserId, bool next)
+    {
+        RunInUIThread(() =>
         {
-        }
-
-        private bool _syncingFocusByCef = false;
-
-        private bool _syncingFocusByAva = false;
-
-        void InitializeFocus()
-        {
-        }
-
-        void UI_OnCefFocusReleasedByTabKey(int browserId, bool next)
-        {
-            RunInUIThread(() =>
+            var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
+            if (focusManager != null)
             {
-                var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
-                if (focusManager != null)
-                {
-                    KeyboardNavigationHandler
-                    .GetNext(focusManager?.GetFocusedElement()!, next ? NavigationDirection.Next : NavigationDirection.Previous)?
+                KeyboardNavigationHandler
+                    .GetNext(focusManager.GetFocusedElement()!,
+                        next ? NavigationDirection.Next : NavigationDirection.Previous)?
                     .Focus(NavigationMethod.Tab);
-                }
-            });
-        }
-
-        bool UI_OnCefRequestSetFocus(int browserId)
-        {
-            using var _ = this.LogM();
-
-            if (_syncingFocusByAva || _syncingFocusByCef)
-            {
-                return false;
             }
+        });
+    }
 
-            _syncingFocusByCef = true;
-            RunInUIThread(() => Focus());
-            _syncingFocusByCef = false;
+    bool UI_OnCefRequestSetFocus(int browserId)
+    {
+        using var _ = this.LogM();
 
+        if (_syncingFocusByAva || _syncingFocusByCef)
+        {
             return false;
         }
 
-        void UI_OnCefGotFocus(int browserId)
+        _syncingFocusByCef = true;
+        RunInUIThread(() => Focus());
+        _syncingFocusByCef = false;
+
+        return false;
+    }
+
+    void UI_OnCefGotFocus(int browserId)
+    {
+        using var _ = this.LogM();
+    }
+
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        using var _ = this.LogM();
+
+        base.OnGotFocus(e);
+
+        if (_syncingFocusByAva || _syncingFocusByCef)
         {
-            using var _ = this.LogM();
+            return;
         }
 
-        protected override void OnGotFocus(GotFocusEventArgs e)
-        {
-            using var _ = this.LogM();
+        _syncingFocusByAva = true;
+        _cefBrowser?.SetFocus(true);
+        _syncingFocusByAva = false;
+    }
 
-            base.OnGotFocus(e);
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        using var _ = this.LogM();
 
-            if (_syncingFocusByAva || _syncingFocusByCef)
-            {
-                return;
-            }
+        base.OnLostFocus(e);
 
-            _syncingFocusByAva = true;
-            _cefBrowser?.SetFocus(true);
-            _syncingFocusByAva = false;
-        }
+        // cancel context menu: TODO
 
-        protected override void OnLostFocus(RoutedEventArgs e)
-        {
-            using var _ = this.LogM();
-
-            base.OnLostFocus(e);
-
-            // cancel context menu: TODO
-
-            _cefBrowser?.SetFocus(false);
-        }
+        _cefBrowser?.SetFocus(false);
     }
 }

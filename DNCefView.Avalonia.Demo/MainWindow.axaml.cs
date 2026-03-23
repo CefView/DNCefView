@@ -66,7 +66,7 @@ namespace DNCefView.Avalonia.Demo
             arguments.Add(0);
 
             //broadcast the event to all frames in all browsers created by this QCefView widget
-            LocalCefview.TriggerEvent("colorChange", arguments, CefBrowser.AllFrameID);
+            LocalCefview.TriggerEvent("colorChange", arguments, CefBrowser.AllFrameId);
         }
     }
 }

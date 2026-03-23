@@ -1,9 +1,9 @@
 #include <CefContext.h>
 
+#import <objc/runtime.h>
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 #include <cstdbool>
-#import <objc/runtime.h>
 
 #pragma region cef_headers
 #include <include/cef_application_mac.h>
@@ -58,75 +58,75 @@
 }
 @end
 
-bool g_handling_send_event = false;
-
-@interface
-NSApplication (CocoaCefApp)<CefAppProtocol>
-- (void)_swizzled_sendEvent:(NSEvent*)event;
-- (void)_swizzled_terminate:(id)sender;
-- (void)_swizzled_run;
-@end
-
-@implementation
-NSApplication (CocoaCefApp)
-// wraps sendEvent, terminate and run
-+ (void)load
-{
-  // swizzle the sendEvent method
-  Method original_sendEvent = class_getInstanceMethod(self, @selector(sendEvent:));
-  Method swizzled_sendEvent = class_getInstanceMethod(self, @selector(_swizzled_sendEvent:));
-  method_exchangeImplementations(original_sendEvent, swizzled_sendEvent);
-
-  // swizzle the terminate method
-  Method original_terminate = class_getInstanceMethod(self, @selector(terminate:));
-  Method swizzled_terminate = class_getInstanceMethod(self, @selector(_swizzled_terminate:));
-  method_exchangeImplementations(original_terminate, swizzled_terminate);
-
-  // swizzle the run method
-  Method original_run = class_getInstanceMethod(self, @selector(run));
-  Method swizzled_run = class_getInstanceMethod(self, @selector(_swizzled_run));
-  method_exchangeImplementations(original_run, swizzled_run);
-}
-
-- (BOOL)isHandlingSendEvent
-{
-  return g_handling_send_event;
-}
-
-- (void)setHandlingSendEvent:(BOOL)handlingSendEvent
-{
-  g_handling_send_event = handlingSendEvent;
-}
-
-- (void)_swizzled_sendEvent:(NSEvent*)event
-{
-  CefScopedSendingEvent sendingEventScoper;
-
-  [self _swizzled_sendEvent:event];
-}
-
-- (void)_swizzled_terminate:(id)sender
-{
-
-  [self _swizzled_terminate:sender];
-}
-
-- (void)_swizzled_run
-{
-  // CefRunMessageLoop needs to call original NSRunLoop so we need to restore it
-  Method original_run = class_getInstanceMethod(self.class, @selector(run));
-  Method swizzled_run = class_getInstanceMethod(self.class, @selector(_swizzled_run));
-  method_exchangeImplementations(original_run, swizzled_run);
-
-  // enter cef run loop
-  CefRunMessageLoop();
-
-  // shutdown the cef
-  CefShutdown();
-
-  cef_unload_library();
-}
-@end
+//bool g_handling_send_event = false;
+//
+//@interface
+//NSApplication (CocoaCefApp)<CefAppProtocol>
+//- (void)_swizzled_sendEvent:(NSEvent*)event;
+//- (void)_swizzled_terminate:(id)sender;
+//- (void)_swizzled_run;
+//@end
+//
+//@implementation
+//NSApplication (CocoaCefApp)
+//// wraps sendEvent, terminate and run
+//+ (void)load
+//{
+//  // swizzle the sendEvent method
+//  Method original_sendEvent = class_getInstanceMethod(self, @selector(sendEvent:));
+//  Method swizzled_sendEvent = class_getInstanceMethod(self, @selector(_swizzled_sendEvent:));
+//  method_exchangeImplementations(original_sendEvent, swizzled_sendEvent);
+//
+//  // swizzle the terminate method
+//  Method original_terminate = class_getInstanceMethod(self, @selector(terminate:));
+//  Method swizzled_terminate = class_getInstanceMethod(self, @selector(_swizzled_terminate:));
+//  method_exchangeImplementations(original_terminate, swizzled_terminate);
+//
+//  // swizzle the run method
+//  // Method original_run = class_getInstanceMethod(self, @selector(run));
+//  // Method swizzled_run = class_getInstanceMethod(self, @selector(_swizzled_run));
+//  // method_exchangeImplementations(original_run, swizzled_run);
+//}
+//
+//- (BOOL)isHandlingSendEvent
+//{
+//  return g_handling_send_event;
+//}
+//
+//- (void)setHandlingSendEvent:(BOOL)handlingSendEvent
+//{
+//  g_handling_send_event = handlingSendEvent;
+//}
+//
+//- (void)_swizzled_sendEvent:(NSEvent*)event
+//{
+//  CefScopedSendingEvent sendingEventScoper;
+//
+//  [self _swizzled_sendEvent:event];
+//}
+//
+//- (void)_swizzled_terminate:(id)sender
+//{
+//
+//  [self _swizzled_terminate:sender];
+//}
+//
+//- (void)_swizzled_run
+//{
+//  // CefRunMessageLoop needs to call original NSRunLoop so we need to restore it
+//  Method original_run = class_getInstanceMethod(self.class, @selector(run));
+//  Method swizzled_run = class_getInstanceMethod(self.class, @selector(_swizzled_run));
+//  method_exchangeImplementations(original_run, swizzled_run);
+//
+//  // enter cef run loop
+//  CefRunMessageLoop();
+//
+//  // shutdown the cef
+//  CefShutdown();
+//
+//  cef_unload_library();
+//}
+//@end
 
 const char*
 appMainBundlePath()
@@ -199,7 +199,22 @@ CCefContext::init(const CCefConfig* config)
   if (!loadCefLibrary()) {
     return false;
   }
-
+  
+  // create schedule timer
+  auto scheduleTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+  if (!scheduleTimer) {
+    return false;
+  }
+  dispatch_source_set_timer(scheduleTimer,
+                            dispatch_time(DISPATCH_TIME_NOW, kCefWorkerIntervalMs * NSEC_PER_MSEC),
+                            kCefWorkerIntervalMs * NSEC_PER_MSEC,
+                            100 * MSEC_PER_SEC);
+  dispatch_source_set_event_handler(scheduleTimer, ^{
+    if (instance_) {
+      instance_->doCefMessageLoopWork();
+    }
+  });
+  
   // Build CefSettings
   CefSettings cef_settings;
   CCefConfig::CopyToCefSettings(config, cef_settings);
@@ -215,7 +230,7 @@ CCefContext::init(const CCefConfig* config)
 #endif
 
   // fixed values
-  cef_settings.external_message_pump = false;
+  cef_settings.external_message_pump = true;
   cef_settings.multi_threaded_message_loop = false;
 
   // path values
@@ -223,7 +238,7 @@ CCefContext::init(const CCefConfig* config)
   CefString(&cef_settings.browser_subprocess_path) = cefSubprocessPath();
   CefString(&cef_settings.main_bundle_path) = appMainBundlePath();
 
-  // Initialize CEF.
+  // Initialize CEF
   auto cmdArgs = CCefConfig::GetCommandLineArgs(config);
   auto appDelegate = std::make_shared<CCefAppDelegate>(this, cmdArgs);
   auto bridgeObjectName = config ? config->bridgeObjectName() : std::string();
@@ -235,9 +250,13 @@ CCefContext::init(const CCefConfig* config)
     assert(0);
     return false;
   }
-
+  
+  // start schedule timer
+  dispatch_resume(scheduleTimer);
+  
   pApp_ = app;
   pAppDelegate_ = appDelegate;
+  scheduleTimer_ = scheduleTimer;
 
   return true;
 }
@@ -250,7 +269,16 @@ CCefContext::uninit()
 
   pAppDelegate_ = nullptr;
   pApp_ = nullptr;
+  
+  // shutdown the cef
+  CefShutdown();
+  
+  // stop the schedule timer
+  if (scheduleTimer_) {
+    dispatch_source_cancel(scheduleTimer_);
+    scheduleTimer_ = nullptr;
+  }
 
-  // exit the CEF message loop
-  CefQuitMessageLoop();
+  // unload the cef library
+  cef_unload_library();
 }

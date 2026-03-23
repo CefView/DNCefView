@@ -14,7 +14,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   add_compile_options(
     "-g"
     "-fdeclspec"
-    "-Wno-error=overriding-t-option"
+    "-Wno-overriding-option"
+    "-Wno-overriding-t-option"
+    "-Wno-unknown-warning-option"
     "$<$<CONFIG:DEBUG>:-O0>"
     "$<$<CONFIG:RELEASE>:-O3>"
   )

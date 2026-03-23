@@ -1,6 +1,7 @@
-﻿#include "CefContext.h"
+#include "CefContext.h"
 
 #include <list>
+#include <algorithm>
 
 CCefContext* CCefContext::instance_ = nullptr;
 
@@ -72,5 +73,15 @@ CCefContext::cefConfig() const
 void
 CCefContext::scheduleCefLoopWork(int64_t delayMs)
 {
-  return;
+#if defined(OS_MACOS)
+  if (delayMs < kCefWorkerIntervalMs) {
+    // disaptch call to doCefMessageLoopWork
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delayMs * NSEC_PER_MSEC),
+                   dispatch_get_main_queue(), ^{
+                    if (instance_) {
+                      instance_->doCefMessageLoopWork();
+                    }
+                  });
+  }
+#endif
 }

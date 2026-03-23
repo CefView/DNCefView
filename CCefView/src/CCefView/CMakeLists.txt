@@ -4,7 +4,7 @@ set(CMAKE_C_STANDARD 11)
 
 # C++ standard
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_definitions(-D_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING=1)
 
@@ -61,7 +61,9 @@ elseif(OS_MACOS)
   add_compile_options(
     "-g"
     "-fdeclspec"
-    "-Wno-error=overriding-t-option"
+    "-Wno-overriding-option"
+    "-Wno-overriding-t-option"
+    "-Wno-unknown-warning-option"
     "$<$<CONFIG:DEBUG>:-O0>"
     "$<$<CONFIG:RELEASE>:-O3>"
   )

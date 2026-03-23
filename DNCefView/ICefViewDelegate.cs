@@ -33,7 +33,7 @@ namespace DNCefView
 
         #region LoadHandler
         void OnCefLoadingStateChanged(int browserId, bool isLoading, bool canGoBack, bool canGoForward);
-        void OnCefLoadStart(int browserId, string frameId, bool isMainFrame, int transition_type);
+        void OnCefLoadStart(int browserId, string frameId, bool isMainFrame, int transitionType);
         void OnCefLoadEnd(int browserId, string frameId, bool isMainFrame, int httpStatusCode);
         bool OnCefLoadError(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl);
         #endregion

@@ -4,30 +4,15 @@ namespace DNCefView
 {
     public partial class CefQuery
     {
-        public long Id
-        {
-            get { return GetId(); }
-        }
+        public long Id => GetId();
 
-        public string Request
-        {
-            get { return GetRequest(); }
-        }
+        public string Request => GetRequest();
 
-        public string Response
-        {
-            get { return GetResponse(); }
-        }
+        public string Response => GetResponse();
 
-        public bool Result
-        {
-            get { return GetResult(); }
-        }
+        public bool Result => GetResult();
 
-        public int Error
-        {
-            get { return GetError(); }
-        }
+        public int Error => GetError();
 
         internal CefQuery(IntPtr query)
         {

@@ -9,7 +9,7 @@ namespace DNCefView
 #pragma warning disable CA2255
     internal static class RuntimeLoader
     {
-        const string CCEFVIEW_DLL_NAME = "CCefView";
+        private const string CCefViewDllName = "CCefView";
 
         [ModuleInitializer]
         internal static void SetCCefViewResolver()
@@ -18,7 +18,7 @@ namespace DNCefView
             {
                 var handle = IntPtr.Zero;
 
-                if (name != CCEFVIEW_DLL_NAME)
+                if (name != CCefViewDllName)
                 {
                     return handle;
                 }

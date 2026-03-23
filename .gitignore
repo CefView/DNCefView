@@ -3,3 +3,5 @@ DNCefView/bin
 DNCefView/obj
 .DS_Store
 .artifacts
+CCefView/output/runtimes
+DNCefView.Avalonia.Demo/bin

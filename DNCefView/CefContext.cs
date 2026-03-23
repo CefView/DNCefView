@@ -4,11 +4,8 @@ namespace DNCefView
 {
     public partial class CefContext
     {
-        private CefConfig _config;
-        public CefConfig Config
-        {
-            get { return _config; }
-        }
+        private readonly CefConfig _config;
+        public CefConfig Config => _config;
 
         private static WeakReference? _instance;
 
@@ -28,7 +25,7 @@ namespace DNCefView
 
         public CefContext(CefConfig config)
         {
-            if (null != _instance && null != _instance.Target)
+            if (_instance is { Target: not null })
             {
                 throw new Exception("Only 1 DNCefContext instance is allowed");
             }
@@ -42,8 +39,7 @@ namespace DNCefView
         {
             foreach (var weakRef in CefBrowser.LiveInstances)
             {
-                var cefView = weakRef.Target as CefBrowser;
-                if (null != cefView)
+                if (weakRef.Target is CefBrowser cefView)
                 {
                     cefView.Dispose();
                 }

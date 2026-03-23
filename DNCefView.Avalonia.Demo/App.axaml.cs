@@ -38,7 +38,7 @@ namespace DNCefView.Avalonia.Demo
                 config.SetCachePath(cefCachePath);
                 
                 _context = new CefContext(config);
-                var webresDir = Path.Combine(Directory.GetCurrentDirectory(), "webres");
+                var webresDir = Path.Combine(AppContext.BaseDirectory, "webres");
                 _context.AddFolderResource(webresDir, "https://demo.dncefview.com", 0);
                 _context.AddCookie("test", "value", "dncefview.com", "path");
             }

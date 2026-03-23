@@ -1,13 +1,12 @@
-﻿namespace DNCefView.Avalonia
-{
-    public partial class CefView
-    {
-        static void ClassInitializeContextMenu()
-        {
-        }
+﻿namespace DNCefView.Avalonia;
 
-        void InitializeContextMenu()
-        {
-        }
+public partial class CefView
+{
+    static void ClassInitializeContextMenu()
+    {
+    }
+
+    void InitializeContextMenu()
+    {
     }
 }

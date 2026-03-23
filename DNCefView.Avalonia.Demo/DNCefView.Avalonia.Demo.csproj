@@ -30,11 +30,11 @@
 	<PropertyGroup>
 		<UseAppHost>true</UseAppHost>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-	  <OutputPath>bin\Debug\DNCefView.Avalonia.Demo.app\Contents\MacOS\</OutputPath>
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+		<OutputPath>bin\$(Configuration)\DNCefView.Avalonia.Demo.app\Contents\MacOS\</OutputPath>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-	  <OutputPath>bin\Release\DNCefView.Avalonia.Demo.app\Contents\MacOS\</OutputPath>
+	<PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('OSX'))">
+		<OutputPath>bin\$(Configuration)\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<AvaloniaXaml Include="App.axaml">
@@ -71,7 +71,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DNCefView.Avalonia\DNCefView.Avalonia.csproj" />
 	</ItemGroup>
-	<Target Name="CopyInfoPlist" AfterTargets="Build">
+	<Target Name="CopyInfoPlist" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
 		<ItemGroup>
 			<InfoPlistFile Include="Info.plist" />
 		</ItemGroup>

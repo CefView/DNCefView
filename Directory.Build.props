@@ -18,6 +18,6 @@
     <!-- Disable NuGet vulnerability audit (NU1900) to avoid cache permission issues -->
     <NuGetAudit>false</NuGetAudit>
 
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 </Project>
