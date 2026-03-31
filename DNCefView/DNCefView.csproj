@@ -20,6 +20,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/CefView/DNCefView</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Configurations>Debug;Release</Configurations>
     <EnableDefaultItems>false</EnableDefaultItems>
     <ManagedAssembly>true</ManagedAssembly>
@@ -55,6 +56,7 @@
   <ItemGroup>
     <None Include="DNCefView.targets" Pack="true" PackagePath="build/" />
     <None Include="DNCefView.targets" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
 	 <ProjectReference Include="..\DNCefView.Runtime.macOS\DNCefView.Runtime.macOS.csproj">
