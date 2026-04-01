@@ -1,4 +1,4 @@
-﻿#include "CefBrowser.h"
+#include "CefBrowser.h"
 
 #pragma region cef_headers
 #include <include/cef_browser.h>
@@ -418,9 +418,10 @@ CCefBrowser::showDevTools()
 
   CefWindowInfo windowInfo;
 #if defined(OS_WIN)
-  windowInfo.SetAsPopup(nullptr, L"UCefView DevTools");
+  windowInfo.SetAsPopup(nullptr, "CefView DevTools");
 #else
-  windowInfo.SetAsPopup(nullptr, "UCefView DevTools");
+  CefString(&windowInfo.window_name) = "CefView DevTools";
+  windowInfo.SetAsChild(nullptr, {100, 100, 800, 600});
 #endif
 
   CefBrowserSettings browserSettings;
