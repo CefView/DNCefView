@@ -67,6 +67,51 @@ namespace DNCefView
             return CCefContext_addCookie(_native, name, value, domain, url);
         }
 
+        // Source: bool deleteCookie(const std::string &, const std::string &)
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefContext_deleteCookie(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        public bool DeleteCookie(string url, string name)
+        {
+            return CCefContext_deleteCookie(_native, url, name);
+        }
+
+        // Source: bool deleteAllCookies()
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefContext_deleteAllCookies(IntPtr thiz);
+        public bool DeleteAllCookies()
+        {
+            return CCefContext_deleteAllCookies(_native);
+        }
+
+        // Source: bool addCrossOriginWhitelistEntry(const std::string &, const std::string &, const std::string &, bool)
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefContext_addCrossOriginWhitelistEntry(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string sourceOrigin, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetProtocol, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetDomain, [MarshalAs(UnmanagedType.Bool)] bool allowTargetSubdomains);
+        public bool AddCrossOriginWhitelistEntry(string sourceOrigin, string targetProtocol, string targetDomain, bool allowTargetSubdomains)
+        {
+            return CCefContext_addCrossOriginWhitelistEntry(_native, sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        }
+
+        // Source: bool removeCrossOriginWhitelistEntry(const std::string &, const std::string &, const std::string &, bool)
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefContext_removeCrossOriginWhitelistEntry(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string sourceOrigin, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetProtocol, [MarshalAs(UnmanagedType.LPUTF8Str)] string targetDomain, [MarshalAs(UnmanagedType.Bool)] bool allowTargetSubdomains);
+        public bool RemoveCrossOriginWhitelistEntry(string sourceOrigin, string targetProtocol, string targetDomain, bool allowTargetSubdomains)
+        {
+            return CCefContext_removeCrossOriginWhitelistEntry(_native, sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+        }
+
+        // Source: bool clearCrossOriginWhitelist()
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefContext_clearCrossOriginWhitelist(IntPtr thiz);
+        public bool ClearCrossOriginWhitelist()
+        {
+            return CCefContext_clearCrossOriginWhitelist(_native);
+        }
+
         // Source: void doCefMessageLoopWork()
         [DllImport("CCefView")]
         // No Return Value

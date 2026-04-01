@@ -328,23 +328,5 @@ namespace DNCefView
             return CCefConfig_remoteDebuggingPort(_native);
         }
 
-        // Source: void setWindowlessRendering(bool)
-        [DllImport("CCefView")]
-        // No Return Value
-        internal static extern void CCefConfig_setWindowlessRendering(IntPtr thiz, [MarshalAs(UnmanagedType.Bool)] bool enable);
-        public void SetWindowlessRendering(bool enable)
-        {
-            CCefConfig_setWindowlessRendering(_native, enable);
-        }
-
-        // Source: bool windowlessRendering()
-        [DllImport("CCefView")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool CCefConfig_windowlessRendering(IntPtr thiz);
-        public bool WindowlessRendering()
-        {
-            return CCefConfig_windowlessRendering(_native);
-        }
-
     }
 }

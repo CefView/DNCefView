@@ -20,7 +20,8 @@
 		<Grid HorizontalAlignment="Center" Width="200" Background="BurlyWood">
 			<Border BorderThickness="1" Padding="16, 16">
 				<StackPanel Spacing="20">
-					<Button x:Name="BtnChangeBGColor" Content="Change Background Color" HorizontalAlignment="Center" VerticalAlignment="Top"  Click="BtnChangeBGColor_Click" />
+					<Button x:Name="ShowLeftDevTool" Content="Show Left DevTools" HorizontalAlignment="Center" VerticalAlignment="Top"  Click="BtnShowLeftDevTools_Click" />
+					<Button x:Name="BtnChangeBGColor" Content="Change BG Color" HorizontalAlignment="Center" VerticalAlignment="Top"  Click="BtnChangeBGColor_Click" />
 					<TextBox x:Name="TextBoxUseless"/>
 				</StackPanel>
 			</Border>

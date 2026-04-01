@@ -47,26 +47,40 @@ extern "C"
   CCEFVIEW_EXPORT bool CCefBrowser_triggerEventOnFrame(ccefbrowser_class * thiz, const char * evtName, const char * evtArgs, const char * frameId);
   CCEFVIEW_EXPORT bool CCefBrowser_broadcastEvent(ccefbrowser_class * thiz, const char * evtName, const char * evtArgs);
   CCEFVIEW_EXPORT bool CCefBrowser_triggerEvent(ccefbrowser_class * thiz, const char * name, const char * args, const char * frameId);
-  CCEFVIEW_EXPORT bool CCefBrowser_responseQCefQuery(ccefbrowser_class * thiz, const ccefquery_class * query);
+  CCEFVIEW_EXPORT bool CCefBrowser_replyCefQuery(ccefbrowser_class * thiz, const ccefquery_class * query);
   CCEFVIEW_EXPORT bool CCefBrowser_executeJavascript(ccefbrowser_class * thiz, const char * frameId, const char * code, const char * url);
   CCEFVIEW_EXPORT bool CCefBrowser_executeJavascriptWithResult(ccefbrowser_class * thiz, const char * frameId, const char * code, const char * url, const char * context);
   CCEFVIEW_EXPORT bool CCefBrowser_setPreference(ccefbrowser_class * thiz, const char * name, const char * value);
   CCEFVIEW_EXPORT void CCefBrowser_setDisablePopupContextMenu(ccefbrowser_class * thiz, bool disable);
   CCEFVIEW_EXPORT bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate);
+  CCEFVIEW_EXPORT void CCefBrowser_sendExternalBeginFrame(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_showDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_closeDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT bool CCefBrowser_hasDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_closeBrowser(ccefbrowser_class * thiz, bool forceClose);
   CCEFVIEW_EXPORT void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused);
   CCEFVIEW_EXPORT void CCefBrowser_wasResized(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_wasHidden(ccefbrowser_class * thiz, bool hidden);
   CCEFVIEW_EXPORT void CCefBrowser_sendMouseMoveEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, bool leave);
   CCEFVIEW_EXPORT void CCefBrowser_sendMouseClickEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, cefviewmousebuttontype_enum type, bool mouseUp, int clickCount);
   CCEFVIEW_EXPORT void CCefBrowser_sendWheelEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, int deltaX, int deltaY);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragEnterText(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * text, const char * html, const char * baseUrl, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragEnterFiles(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * filePaths, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragOver(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragLeave(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDrop(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers);
+  CCEFVIEW_EXPORT void CCefBrowser_dragSourceEndedAt(ccefbrowser_class * thiz, int x, int y, cefviewdragoperation_enum operation);
+  CCEFVIEW_EXPORT void CCefBrowser_dragSourceSystemDragEnded(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_sendTouchEvent(ccefbrowser_class * thiz, int touchId, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, int touchEventType, uint32_t modifiers, int pointerType);
   CCEFVIEW_EXPORT void CCefBrowser_sendKeyEvent(ccefbrowser_class * thiz, cefviewkeyeventtype_enum type, uint32_t modifiers, int windowsKeyCode, int nativeKeyCode, bool isSysKey, uint16_t character, uint16_t umodifiedCharacter, bool isFocusOnEditableField);
   CCEFVIEW_EXPORT void CCefBrowser_notifyMoveOrResizeStarted(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz);
-  CCEFVIEW_EXPORT void CCefBrowser_imeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacement_range, cefviewrange_struct selection_range);
-  CCEFVIEW_EXPORT void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos);
-  CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
+  CCEFVIEW_EXPORT void CCefBrowser_imeSetComposition(ccefbrowser_class * thiz, const char * text, cefviewcompositionunderline_struct underlines[], int count, cefviewrange_struct replacementRange, cefviewrange_struct selectionRange);
+  CCEFVIEW_EXPORT void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacementRange, int relativeCursorPos);
+  CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keepSelection);
   CCEFVIEW_EXPORT void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueJSDialog(ccefbrowser_class * thiz, void * dialogHandle, bool success, const char * userInput);
 
 #if defined(__cplusplus)
 }

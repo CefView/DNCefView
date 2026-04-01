@@ -544,5 +544,23 @@ namespace DNCefView
             return CCefSetting_hardwareAccelerationEnabled(_native);
         }
 
+        // Source: void setExternalBeginFrameEnabled(bool)
+        [DllImport("CCefView")]
+        // No Return Value
+        internal static extern void CCefSetting_setExternalBeginFrameEnabled(IntPtr thiz, [MarshalAs(UnmanagedType.Bool)] bool enabled);
+        public void SetExternalBeginFrameEnabled(bool enabled)
+        {
+            CCefSetting_setExternalBeginFrameEnabled(_native, enabled);
+        }
+
+        // Source: bool externalBeginFrameEnabled()
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool CCefSetting_externalBeginFrameEnabled(IntPtr thiz);
+        public bool ExternalBeginFrameEnabled()
+        {
+            return CCefSetting_externalBeginFrameEnabled(_native);
+        }
+
     }
 }

@@ -370,6 +370,18 @@ public:
   /// <returns></returns>
   bool hardwareAccelerationEnabled() const;
 
+  /// <summary>
+  /// Sets whether to enable external begin frame driving in OSR mode.
+  /// </summary>
+  /// <param name="enabled">True to drive rendering via SendExternalBeginFrame().</param>
+  void setExternalBeginFrameEnabled(bool enabled);
+
+  /// <summary>
+  /// Gets whether external begin frame driving is enabled.
+  /// </summary>
+  /// <returns></returns>
+  bool externalBeginFrameEnabled() const;
+
 protected:
   static void CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs);
 
@@ -386,6 +398,7 @@ private:
   std::string acceptLanguageList_;
 
   bool hardwareAcceleration_ = false;
+  bool externalBeginFrame_ = false;
 
   std::optional<uint32_t> backgroundColor_;
   std::optional<int> windowlessFrameRate_;

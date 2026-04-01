@@ -86,6 +86,8 @@ extern "C"
   CCEFVIEW_EXPORT uint32_t CCefSetting_backgroundColor(ccefsetting_class * thiz);
   CCEFVIEW_EXPORT void CCefSetting_setHardwareAccelerationEnabled(ccefsetting_class * thiz, bool enabled);
   CCEFVIEW_EXPORT bool CCefSetting_hardwareAccelerationEnabled(ccefsetting_class * thiz);
+  CCEFVIEW_EXPORT void CCefSetting_setExternalBeginFrameEnabled(ccefsetting_class * thiz, bool enabled);
+  CCEFVIEW_EXPORT bool CCefSetting_externalBeginFrameEnabled(ccefsetting_class * thiz);
 
 #if defined(__cplusplus)
 }

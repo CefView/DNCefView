@@ -43,17 +43,25 @@ namespace DNCefView
             _callbackTable.StatusMessageCb = OnCefStatusMessage;
             _callbackTable.ConsoleMessageCb = OnCefConsoleMessage;
             _callbackTable.LoadingProgressChangedCb = OnCefLoadingProgressChanged;
+            _callbackTable.FaviconUrlChangedCb = OnCefFaviconUrlChanged;
             _callbackTable.CursorChangedCb = OnCefCursorChanged;
+            _callbackTable.DraggableRegionChangedCb = OnCefDraggableRegionChanged;
             #endregion
 
             #region FocusHandler
             _callbackTable.OnFocusReleasedByTabKeyCb = OnCefReleasedFocusByTabKey;
             _callbackTable.OnRequestSetFocusCb = OnCefRequestSetFocus;
             _callbackTable.OnGotFocusCb = OnCefGotFocus;
+            _callbackTable.OnJSDialogCb = OnCefJSDialog;
             #endregion
 
             #region LifespanHandler
+            _callbackTable.OnBeforeNewPopupCreateCb = OnCefBeforeNewPopupCreate;
+            _callbackTable.OnBeforeNewBrowserCreateCb = OnCefBeforeNewBrowserCreate;
+            _callbackTable.DoCloseCb = OnCefDoClose;
+            _callbackTable.RequestCloseCb = OnCefRequestClose;
             _callbackTable.OnAfterCreatedCb = OnCefAfterCreated;
+            _callbackTable.OnBeforeCloseCb = OnCefBeforeClose;
             #endregion
 
             #region LoadHandler
@@ -72,6 +80,8 @@ namespace DNCefView
             _callbackTable.OnPopupSizeCb = OnCefPopupSize;
             _callbackTable.OnPaintCb = OnCefPaint;
             _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
+            _callbackTable.StartDraggingCb = OnCefStartDragging;
+            _callbackTable.UpdateDragCursorCb = OnCefUpdateDragCursor;
             _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
             _callbackTable.OnTextSelectionChangedCb = OnCefTextSelectionChanged;
             #endregion
@@ -170,6 +180,15 @@ namespace DNCefView
             }
         }
 
+        public void OnCefFaviconUrlChanged(int browserId, string faviconUrl)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefFaviconUrlChanged(browserId, faviconUrl);
+            }
+        }
+
         public bool OnCefCursorChanged(int browserId, IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
         {
             if (_dnCefViewDelegate.Target is ICefViewDelegate del)
@@ -178,6 +197,15 @@ namespace DNCefView
                 return true;
             }
             return false;
+        }
+
+        public void OnCefDraggableRegionChanged(CefViewDraggableRegion[] draggableRegion, int count)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefDraggableRegionChanged(draggableRegion, count);
+            }
         }
         #endregion
 
@@ -194,7 +222,7 @@ namespace DNCefView
         {
             if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
-                del.OnCefRequestSetFocus(browserId);
+                return del.OnCefRequestSetFocus(browserId);
             }
 
             return false;
@@ -209,12 +237,78 @@ namespace DNCefView
         }
         #endregion
 
+        #region JSDialogHandler
+        public bool OnCefJSDialog(int browserId, IntPtr dialogHandle, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefJSDialog(browserId, dialogHandle, originUrl, dialogType, messageText, defaultPromptText, suppressMessage);
+            }
+
+            return false;
+        }
+        #endregion
+
         #region LifespanHandler
+        public bool OnCefBeforeNewPopupCreate(string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, ref CefViewRect rect, IntPtr settings, ref bool disableJavascriptAccess)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefBeforeNewPopupCreate(frameId, targetUrl, targetFrameName, targetDisposition, ref rect, settings, ref disableJavascriptAccess);
+            }
+
+            return true;
+        }
+
+        public bool OnCefBeforeNewBrowserCreate(string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, CefViewRect rect, IntPtr settings)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefBeforeNewBrowserCreate(frameId, targetUrl, targetFrameName, targetDisposition, rect, settings);
+            }
+
+            return true;
+        }
+
         public void OnCefAfterCreated()
         {
             if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefAfterCreated();
+            }
+        }
+
+        public bool OnCefDoClose()
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefDoClose();
+            }
+
+            return false;
+        }
+
+        public bool OnCefRequestClose()
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefRequestClose();
+            }
+
+            return true;
+        }
+
+        public void OnCefBeforeClose()
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefBeforeClose();
             }
         }
         #endregion
@@ -248,7 +342,7 @@ namespace DNCefView
         {
             if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
-                del.OnCefLoadError(browserId, frameId, isMainFrame, errorCode, errorMsg, failedUrl);
+                return del.OnCefLoadError(browserId, frameId, isMainFrame, errorCode, errorMsg, failedUrl);
             }
 
             return false;
@@ -323,6 +417,26 @@ namespace DNCefView
             if (_dnCefViewDelegate.Target is ICefViewDelegate del)
             {
                 del.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
+            }
+        }
+
+        public bool OnCefStartDragging(int browserId, CefViewDragOperation allowedOps, int x, int y)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                return del.OnCefStartDragging(browserId, allowedOps, x, y);
+            }
+
+            return true;
+        }
+
+        public void OnCefUpdateDragCursor(int browserId, CefViewDragOperation operation)
+        {
+            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+            if (null != del)
+            {
+                del.OnCefUpdateDragCursor(browserId, operation);
             }
         }
 

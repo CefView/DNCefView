@@ -1,9 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Input;
 using Avalonia.Input.TextInput;
 using Avalonia.Threading;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DNCefView.Avalonia;
 
@@ -129,27 +129,26 @@ public partial class CefView
                 return;
             }
 
-            if (!string.IsNullOrEmpty(text))
-            {
-                var underline = new CefViewCompositionUnderline()
-                {
-                    BackgroundColor = 0,
-                    Range = new CefViewRange(0, (uint)(text?.Length ?? 0)),
-                    Style = CefViewCompositionUnderlineStyle.CEF_CUS_DOT,
-                };
-
-                // in composing
-                this.LogD($"composing update");
-                _owner.ImeSetComposition(text, [underline],
-                    new(uint.MaxValue, uint.MaxValue),
-                    new((uint)text.Length, (uint)text.Length));
-            }
-            else
+            if (text == null || text.Length == 0)
             {
                 // composing end
                 this.LogD($"composing end");
                 Dispatcher.UIThread.Post(() => { _owner?.ImeCancelComposition(); }, DispatcherPriority.Input);
+                return;
             }
+
+            var underline = new CefViewCompositionUnderline()
+            {
+                BackgroundColor = 0,
+                Range = new CefViewRange(0, (uint)(text?.Length ?? 0)),
+                Style = CefViewCompositionUnderlineStyle.CEF_CUS_DOT,
+            };
+
+            // in composing
+            this.LogD($"composing update");
+            _owner.ImeSetComposition(text!, [underline],
+                new(uint.MaxValue, uint.MaxValue),
+                new((uint)text!.Length, (uint)text!.Length));
         }
 
         public override TextSelection Selection { get; set; } = new();
@@ -163,7 +162,7 @@ public partial class CefView
     {
         if (OperatingSystem.IsMacOS())
             AvnViewPatch.Setup();
-        
+
         TextInputMethodClientRequestedEvent.AddClassHandler<CefView>((s, e) => s.OnTextInputMethodClientRequested(e));
     }
 

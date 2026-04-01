@@ -231,18 +231,6 @@ CCefConfig::remoteDebuggingPort() const
   return remoteDebuggingPort_.value_or(-1);
 }
 
-void
-CCefConfig::setWindowlessRendering(bool enable)
-{
-  windowLessRendering_ = enable;
-}
-
-bool
-CCefConfig::windowlessRendering() const
-{
-  return windowLessRendering_;
-}
-
 const CCefConfig::CCefConfig::ArgsMap&
 CCefConfig::GetCommandLineArgs(const CCefConfig* config)
 {
@@ -271,8 +259,8 @@ CCefConfig::CopyToCefSettings(const CCefConfig* config, CefSettings& settings)
     return;
   }
 
+  settings.windowless_rendering_enabled = true;
   settings.command_line_args_disabled = config->commandLinePassthroughDisabled_;
-  settings.windowless_rendering_enabled = config->windowlessRendering();
   settings.log_severity = (cef_log_severity_t)config->logLevel();
 
   if (!config->userAgent().empty())

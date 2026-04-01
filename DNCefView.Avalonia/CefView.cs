@@ -70,6 +70,11 @@ public partial class CefView : ICefViewDelegate
 
     public event LoadingProgressChangedCallback? LoadingProgressChanged;
 
+    public delegate void FaviconUrlChangedCallback(int browserId, string faviconUrl);
+
+    public event FaviconUrlChangedCallback? FaviconUrlChanged;
+
+
     #endregion
 
     private void CreateNativeBrowser(string url, CefSetting? setting)
@@ -174,9 +179,9 @@ public partial class CefView : ICefViewDelegate
         return _cefBrowser?.TriggerEvent(name, argsString, frameId) ?? false;
     }
 
-    public bool ResponseQCefQuery(CefQuery query)
+    public bool ReplyCefQuery(CefQuery query)
     {
-        return _cefBrowser?.ResponseQCefQuery(query) ?? false;
+        return _cefBrowser?.ReplyCefQuery(query) ?? false;
     }
 
     public bool ExecuteJavascript(string frameId, string code, string url)
@@ -213,6 +218,16 @@ public partial class CefView : ICefViewDelegate
     public void ImeCancelComposition()
     {
         _cefBrowser?.ImeCancelComposition();
+    }
+
+    public void ShowDevTools()
+    {
+        _cefBrowser?.ShowDevTools();
+    }
+
+    public void CloseDevTools()
+    {
+        _cefBrowser?.CloseDevTools();
     }
 
     #endregion
@@ -285,9 +300,21 @@ public partial class CefView : ICefViewDelegate
         LoadingProgressChanged?.Invoke(browserId, progress);
     }
 
+    void ICefViewDelegate.OnCefFaviconUrlChanged(int browserId, string faviconUrl)
+    {
+        FaviconUrlChanged?.Invoke(browserId, faviconUrl);
+    }
+
     void ICefViewDelegate.OnCefCursorChanged(int browserId, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
     {
         UI_OnCefCursorChanged(browserId, type, customCursorInfo);
+    }
+
+    #endregion
+
+    #region DragHandler
+    void ICefViewDelegate.OnCefDraggableRegionChanged(CefViewDraggableRegion[] draggableRegion, int count)
+    {
     }
 
     #endregion
@@ -311,11 +338,54 @@ public partial class CefView : ICefViewDelegate
 
     #endregion
 
+    #region JSDialogHandler
+    bool ICefViewDelegate.OnCefJSDialog(int browserId, IntPtr dialogHandle, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage)
+    {
+        return true;
+    }
+    #endregion
+
     #region LifespanHandler
+
+    bool ICefViewDelegate.OnCefBeforeNewPopupCreate(string frameId,
+                               string targetUrl,
+                               string targetFrameName,
+                               CefViewWindowOpenDisposition targetDisposition,
+                               ref CefViewRect rect,
+                               IntPtr settings,
+                               ref bool disableJavascriptAccess)
+    {
+        return false;
+    }
+
+    bool ICefViewDelegate.OnCefBeforeNewBrowserCreate(string frameId,
+                                     string targetUrl,
+                                     string targetFrameName,
+                                     CefViewWindowOpenDisposition targetDisposition,
+                                     CefViewRect rect,
+                                     IntPtr settings)
+    {
+        return false;
+    }
 
     void ICefViewDelegate.OnCefAfterCreated()
     {
         UI_OnCefAfterCreated();
+    }
+
+    bool ICefViewDelegate.OnCefDoClose()
+    {
+        return false;
+    }
+
+    bool ICefViewDelegate.OnCefRequestClose()
+    {
+        return true;
+    }
+
+    void ICefViewDelegate.OnCefBeforeClose()
+    {
+
     }
 
     #endregion
@@ -390,6 +460,16 @@ public partial class CefView : ICefViewDelegate
         int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
     {
         UI_OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
+    }
+
+    bool ICefViewDelegate.OnCefStartDragging(int browserId, CefViewDragOperation allowedOps, int x, int y)
+    {
+        return false;
+    }
+
+    void ICefViewDelegate.OnCefUpdateDragCursor(int browserId, CefViewDragOperation operation)
+    {
+
     }
 
     void ICefViewDelegate.OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)

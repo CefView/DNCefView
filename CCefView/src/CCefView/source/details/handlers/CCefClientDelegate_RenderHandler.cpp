@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -170,13 +170,22 @@ CCefClientDelegate::startDragging(CefRefPtr<CefBrowser>& browser,
                                   int x,
                                   int y)
 {
-  return false;
+  if (!IsValidBrowser(browser))
+    return false;
+
+  return pCefView_->startDragging(drag_data, static_cast<CefViewDragOperation>(allowed_ops), x, y);
 }
 
 void
 CCefClientDelegate::updateDragCursor(CefRefPtr<CefBrowser>& browser, CefRenderHandler::DragOperation operation)
 {
-  return;
+  if (!IsValidBrowser(browser))
+    return;
+
+  if (pCefView_->callbackTable_.pfnUpdateDragCursor) {
+    pCefView_->callbackTable_.pfnUpdateDragCursor(browser->GetIdentifier(),
+                                                  static_cast<CefViewDragOperation>(operation));
+  }
 }
 
 void

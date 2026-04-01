@@ -278,19 +278,6 @@ public:
   /// </summary>
   short remoteDebuggingPort() const;
 
-  /// <summary>
-  /// Set windowlesss rendering, only work for cef version >= 125
-  /// </summary>
-  /// <param name="enable">enable</param>
-  void setWindowlessRendering(bool enable);
-
-  /// <summary>
-  ///
-  /// </summary>
-  /// <param name="enable"></param>
-  /// <returns></returns>
-  bool windowlessRendering() const;
-
 protected:
   /// <summary>
   ///
@@ -310,7 +297,6 @@ private:
   ArgsMap commandLineArgs_;
 
   bool commandLinePassthroughDisabled_ = true;
-  bool windowLessRendering_ = true;
 
   std::string locale_;
   std::string userAgent_;

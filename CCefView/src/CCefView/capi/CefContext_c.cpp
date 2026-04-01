@@ -23,6 +23,26 @@ bool CCefContext_addCookie(ccefcontext_class * thiz, const char * name, const ch
   return thiz->addCookie(name, value, domain, url);
 }
 
+bool CCefContext_deleteCookie(ccefcontext_class * thiz, const char * url, const char * name) {
+  return thiz->deleteCookie(url, name);
+}
+
+bool CCefContext_deleteAllCookies(ccefcontext_class * thiz) {
+  return thiz->deleteAllCookies();
+}
+
+bool CCefContext_addCrossOriginWhitelistEntry(ccefcontext_class * thiz, const char * sourceOrigin, const char * targetProtocol, const char * targetDomain, bool allowTargetSubdomains) {
+  return thiz->addCrossOriginWhitelistEntry(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+}
+
+bool CCefContext_removeCrossOriginWhitelistEntry(ccefcontext_class * thiz, const char * sourceOrigin, const char * targetProtocol, const char * targetDomain, bool allowTargetSubdomains) {
+  return thiz->removeCrossOriginWhitelistEntry(sourceOrigin, targetProtocol, targetDomain, allowTargetSubdomains);
+}
+
+bool CCefContext_clearCrossOriginWhitelist(ccefcontext_class * thiz) {
+  return thiz->clearCrossOriginWhitelist();
+}
+
 void CCefContext_doCefMessageLoopWork(ccefcontext_class * thiz) {
   thiz->doCefMessageLoopWork();
 }

@@ -33,6 +33,11 @@ extern "C"
   CCEFVIEW_EXPORT void CCefContext_addFolderResource(ccefcontext_class * thiz, const char * path, const char * url, int priority);
   CCEFVIEW_EXPORT void CCefContext_addArchiveResource(ccefcontext_class * thiz, const char * path, const char * url, const char * password, int priority);
   CCEFVIEW_EXPORT bool CCefContext_addCookie(ccefcontext_class * thiz, const char * name, const char * value, const char * domain, const char * url);
+  CCEFVIEW_EXPORT bool CCefContext_deleteCookie(ccefcontext_class * thiz, const char * url, const char * name);
+  CCEFVIEW_EXPORT bool CCefContext_deleteAllCookies(ccefcontext_class * thiz);
+  CCEFVIEW_EXPORT bool CCefContext_addCrossOriginWhitelistEntry(ccefcontext_class * thiz, const char * sourceOrigin, const char * targetProtocol, const char * targetDomain, bool allowTargetSubdomains);
+  CCEFVIEW_EXPORT bool CCefContext_removeCrossOriginWhitelistEntry(ccefcontext_class * thiz, const char * sourceOrigin, const char * targetProtocol, const char * targetDomain, bool allowTargetSubdomains);
+  CCEFVIEW_EXPORT bool CCefContext_clearCrossOriginWhitelist(ccefcontext_class * thiz);
   CCEFVIEW_EXPORT void CCefContext_doCefMessageLoopWork(ccefcontext_class * thiz);
   CCEFVIEW_EXPORT bool CCefContext_isSafeToShutdown(ccefcontext_class * thiz);
 

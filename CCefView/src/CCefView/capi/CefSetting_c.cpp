@@ -235,3 +235,11 @@ bool CCefSetting_hardwareAccelerationEnabled(ccefsetting_class * thiz) {
   return thiz->hardwareAccelerationEnabled();
 }
 
+void CCefSetting_setExternalBeginFrameEnabled(ccefsetting_class * thiz, bool enabled) {
+  thiz->setExternalBeginFrameEnabled(enabled);
+}
+
+bool CCefSetting_externalBeginFrameEnabled(ccefsetting_class * thiz) {
+  return thiz->externalBeginFrameEnabled();
+}
+

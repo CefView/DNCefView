@@ -30,7 +30,7 @@ namespace DNCefView.Avalonia.Demo
                 await dialog.ShowAsync();
 
                 query.SetResponseResult(true, query.Request.ToUpper(), 0);
-                LocalCefview.ResponseQCefQuery(query);
+                LocalCefview.ReplyCefQuery(query);
             });
         }
 
@@ -67,6 +67,11 @@ namespace DNCefView.Avalonia.Demo
 
             //broadcast the event to all frames in all browsers created by this QCefView widget
             LocalCefview.TriggerEvent("colorChange", arguments, CefBrowser.AllFrameId);
+        }
+
+        private void BtnShowLeftDevTools_Click(object? sender, RoutedEventArgs e)
+        {
+            LocalCefview.ShowDevTools();
         }
     }
 }

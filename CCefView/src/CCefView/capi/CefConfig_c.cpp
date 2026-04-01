@@ -139,11 +139,3 @@ short CCefConfig_remoteDebuggingPort(ccefconfig_class * thiz) {
   return thiz->remoteDebuggingPort();
 }
 
-void CCefConfig_setWindowlessRendering(ccefconfig_class * thiz, bool enable) {
-  thiz->setWindowlessRendering(enable);
-}
-
-bool CCefConfig_windowlessRendering(ccefconfig_class * thiz) {
-  return thiz->windowlessRendering();
-}
-

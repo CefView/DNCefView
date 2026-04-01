@@ -342,6 +342,17 @@ CCefSetting::hardwareAccelerationEnabled() const
 {
   return hardwareAcceleration_;
 }
+void
+CCefSetting::setExternalBeginFrameEnabled(bool enabled)
+{
+  externalBeginFrame_ = enabled;
+}
+
+bool
+CCefSetting::externalBeginFrameEnabled() const
+{
+  return externalBeginFrame_;
+}
 
 void
 CCefSetting::CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs)

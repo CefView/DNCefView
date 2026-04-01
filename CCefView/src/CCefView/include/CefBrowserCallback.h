@@ -55,6 +55,8 @@ public:
 
   void(STDCALL* pfnLoadingProgressChanged)(const int browserId, double progress);
 
+  void(STDCALL* pfnFaviconUrlChanged)(const int browserId, const char* faviconUrl);
+
   bool(STDCALL* pfnCursorChanged)(const int browserId,
                                   const void* cursorHandle,
                                   const CefViewCursorType type,
@@ -79,7 +81,14 @@ public:
   void(STDCALL* pfnOnGotFocus)(const int browserId);
 
   //////////////////////////////////////////////////////////////////////////
-  // TODO: JSDialogHandler
+  // JSDialogHandler
+  bool(STDCALL* pfnOnJSDialog)(const int browserId,
+                               const void* dialogHandle,
+                               const char* originUrl,
+                               const int dialogType,
+                               const char* messageText,
+                               const char* defaultPromptText,
+                               const bool suppressMessage);
 
   //////////////////////////////////////////////////////////////////////////
   // TODO: KeyboardHandler
@@ -160,8 +169,7 @@ public:
                                        const void* sharedHandle,
                                        const int planeBytesCount);
 
-  // bool(STDCALL* pfnStartDragging)(const int browserId, CefRefPtr<CefDragData> dragData, uint32_t allowedOps, int x,
-  // int y);
+  bool(STDCALL* pfnStartDragging)(const int browserId, const CefViewDragOperation allowedOps, const int x, const int y);
 
   void(STDCALL* pfnUpdateDragCursor)(const int browserId, const CefViewDragOperation operation);
 

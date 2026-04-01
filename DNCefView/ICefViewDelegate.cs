@@ -18,7 +18,12 @@ namespace DNCefView
         void OnCefStatusMessage(int browserId, string message);
         void OnCefConsoleMessage(int browserId, string message, int level);
         void OnCefLoadingProgressChanged(int browserId, double progress);
+        void OnCefFaviconUrlChanged(int browserId, string faviconUrl);
         void OnCefCursorChanged(int browserId, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
+        #endregion
+
+        #region DragHandler
+        void OnCefDraggableRegionChanged(CefViewDraggableRegion[] draggableRegion, int count);
         #endregion
 
         #region FocusHandler
@@ -27,8 +32,28 @@ namespace DNCefView
         void OnCefGotFocus(int browserId);
         #endregion
 
+        #region JSDialogHandler
+        bool OnCefJSDialog(int browserId, IntPtr dialogHandle, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage);
+        #endregion
+
         #region LifespanHandler
+        bool OnCefBeforeNewPopupCreate(string frameId,
+                                       string targetUrl,
+                                       string targetFrameName,
+                                       CefViewWindowOpenDisposition targetDisposition,
+                                       ref CefViewRect rect,
+                                       IntPtr settings,
+                                       ref bool disableJavascriptAccess);
+        bool OnCefBeforeNewBrowserCreate(string frameId,
+                                         string targetUrl,
+                                         string targetFrameName,
+                                         CefViewWindowOpenDisposition targetDisposition,
+                                         CefViewRect rect,
+                                         IntPtr settings);
         void OnCefAfterCreated();
+        bool OnCefDoClose();
+        bool OnCefRequestClose();
+        void OnCefBeforeClose();
         #endregion
 
         #region LoadHandler
@@ -47,6 +72,8 @@ namespace DNCefView
         void OnCefPopupSize(int browserId, CefViewRect rect);
         void OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height);
         void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
+        bool OnCefStartDragging(int browserId, CefViewDragOperation allowedOps, int x, int y);
+        void OnCefUpdateDragCursor(int browserId, CefViewDragOperation operation);
         void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange);
         void OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount);
         #endregion

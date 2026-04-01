@@ -56,7 +56,7 @@ CCefContext::init(const CCefConfig* config)
   // path values
   if (CefString(&cef_settings.browser_subprocess_path).empty()) {
     auto subprocessPath = (std::filesystem::path(modPath.data()) / kCefViewRenderProcessName);
-    CefString(&cef_settings.browser_subprocess_path) = subprocessPath.u8string().c_str();
+    CefString(&cef_settings.browser_subprocess_path) = (char*)subprocessPath.u8string().c_str();
   }
 
   // create job object

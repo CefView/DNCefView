@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -49,8 +49,7 @@ CCefClientDelegate::onBeforePopup(CefRefPtr<CefBrowser>& browser,
       CCefSetting s;
       CCefSetting::CopyFromCefBrowserSettings(settings, &s);
 
-      pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(i.c_str(), u.c_str(), n.c_str(), d, r, &s);
-      cancel = true;
+      cancel = pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(i.c_str(), u.c_str(), n.c_str(), d, r, &s);
     }
   }
 
