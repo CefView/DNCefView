@@ -1,4 +1,4 @@
-#include "CefBrowser.h"
+﻿#include "CefBrowser.h"
 
 #pragma region cef_headers
 #include <include/cef_browser.h>
@@ -385,6 +385,22 @@ CCefBrowser::isPopupContextMenuDisabled()
 }
 
 void
+CCefBrowser::executeContextMenuCommand(int id)
+{
+  if (contextMenuCallback_) {
+    contextMenuCallback_->Continue(id, EVENTFLAG_NONE);
+  }
+}
+
+void
+CCefBrowser::cancelContextMenu()
+{
+  if (contextMenuCallback_) {
+    contextMenuCallback_->Cancel();
+  }
+}
+
+void
 CCefBrowser::setWindowlessFrameRate(int rate)
 {
   if (!pCefBrowser_)
@@ -421,7 +437,7 @@ CCefBrowser::showDevTools()
   windowInfo.SetAsPopup(nullptr, "CefView DevTools");
 #else
   CefString(&windowInfo.window_name) = "CefView DevTools";
-  windowInfo.SetAsChild(nullptr, {100, 100, 800, 600});
+  windowInfo.SetAsChild(nullptr, { 100, 100, 800, 600 });
 #endif
 
   CefBrowserSettings browserSettings;

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace DNCefView.Avalonia;
 
@@ -73,7 +73,6 @@ public partial class CefView : ICefViewDelegate
     public delegate void FaviconUrlChangedCallback(int browserId, string faviconUrl);
 
     public event FaviconUrlChangedCallback? FaviconUrlChanged;
-
 
     #endregion
 
@@ -268,6 +267,25 @@ public partial class CefView : ICefViewDelegate
 
     #endregion
 
+    #region ContextMenuHandler
+
+    bool ICefViewDelegate.OnCefBeforeContextMenu(string menuData)
+    {
+        return UI_OnCefBeforeContextMenu(menuData);
+    }
+
+    void ICefViewDelegate.OnCefRunContextMenu(int x, int y)
+    {
+        UI_OnCefRunContextMenu(x, y);
+    }
+
+    void ICefViewDelegate.OnCefContextMenuDismissed()
+    {
+        UI_OnCefContextMenuDismissed();
+    }
+
+    #endregion
+
     #region DisplayHandler
 
     void ICefViewDelegate.OnCefAddressChanged(int browserId, string frameId, string url)
@@ -341,7 +359,7 @@ public partial class CefView : ICefViewDelegate
     #region JSDialogHandler
     bool ICefViewDelegate.OnCefJSDialog(int browserId, IntPtr dialogHandle, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage)
     {
-        return true;
+        return UI_ShowCefJSDialog(browserId, dialogHandle, originUrl, dialogType, messageText, defaultPromptText, suppressMessage);
     }
     #endregion
 

@@ -42,6 +42,15 @@ public:
   // TODO: DialogHandler
 
   //////////////////////////////////////////////////////////////////////////
+  // ContextMenuHandler
+
+  bool(STDCALL* pfnOnBeforeContextMenu)(const char* menuData);
+
+  void(STDCALL* pfnOnRunCefContextMenu)(int x, int y);
+
+  void(STDCALL* pfnOnCefContextMenuDismissed)();
+
+  //////////////////////////////////////////////////////////////////////////
   // DisplayHandler
   void(STDCALL* pfnAddressChanged)(const int browserId, const char* frameId, const char* url);
 

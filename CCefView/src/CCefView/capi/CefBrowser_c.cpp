@@ -99,6 +99,14 @@ bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz) {
   return thiz->isPopupContextMenuDisabled();
 }
 
+void CCefBrowser_executeContextMenuCommand(ccefbrowser_class * thiz, int id) {
+  thiz->executeContextMenuCommand(id);
+}
+
+void CCefBrowser_cancelContextMenu(ccefbrowser_class * thiz) {
+  thiz->cancelContextMenu();
+}
+
 void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate) {
   thiz->setWindowlessFrameRate(rate);
 }

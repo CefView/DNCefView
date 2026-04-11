@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Threading;
 
 namespace DNCefView.Avalonia;
 
@@ -13,31 +12,63 @@ public partial class CefView
     {
     }
 
-    CefViewJSDialog? _jsAlertDialog;
-    CefViewJSDialog? _jsConfirmDialog;
-    CefViewJSDialog? _jsPromptDialog;
-
     void InitializeJSDialogs()
     {
     }
 
-    bool UI_ShowJSDialogAlert(string originUrl, string messageText)
+    bool UI_ShowCefJSDialog(int browserId, IntPtr dialogHandle, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage)
     {
-        _jsAlertDialog ??= CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.ALERT);
-        return _jsAlertDialog.Show(this, messageText, $"JavaScript Alert - {originUrl}", "", out _);
+        if (suppressMessage)
+        {
+            return false;
+        }
+
+        switch ((CefViewJSDialog.CefDialogType)dialogType)
+        {
+            case CefViewJSDialog.CefDialogType.ALERT:
+                UI_ShowJSDialogAlert(dialogHandle, originUrl, messageText);
+                break;
+            case CefViewJSDialog.CefDialogType.CONFIRM:
+                UI_ShowJSDialogConfirm(dialogHandle, originUrl, messageText);
+                break;
+            case CefViewJSDialog.CefDialogType.PROMPT:
+                UI_ShowJSDialogPrompt(dialogHandle, originUrl, messageText, defaultPromptText);
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 
-    bool UI_ShowJSDialogConfirm(string originUrl, string messageText)
+    void UI_ShowJSDialogAlert(IntPtr dialogHandle, string originUrl, string messageText)
     {
-        _jsConfirmDialog ??= CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.CONFIRM);
-        return _jsConfirmDialog.Show(this, messageText, $"JavaScript Confirm - {originUrl}", "", out _);
+        RunInUIThread(() =>
+        {
+            var dialog = CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.ALERT);
+            dialog.ShowAsync(this, dialogHandle, messageText, $"JavaScript Alert - {originUrl}", "");
+        },
+        block: false);
     }
 
-    bool UI_ShowJSDialogPrompt(string originUrl, string messageText, string defaultPromptText, out string? promptResult)
+    void UI_ShowJSDialogConfirm(IntPtr dialogHandle, string originUrl, string messageText)
     {
-        _jsPromptDialog ??= CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.PROMPT);
-        return _jsPromptDialog.Show(this, messageText, $"JavaScript Prompt - {originUrl}", defaultPromptText,
-            out promptResult);
+        RunInUIThread(() =>
+        {
+            var dialog = CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.CONFIRM);
+            dialog.ShowAsync(this, dialogHandle, messageText, $"JavaScript Confirm - {originUrl}", "");
+        },
+        block: false);
+    }
+
+    void UI_ShowJSDialogPrompt(IntPtr dialogHandle, string originUrl, string messageText, string defaultPromptText)
+    {
+        RunInUIThread(() =>
+        {
+            var dialog = CefViewJSDialog.CreateJSDialog(this, CefViewJSDialog.CefDialogType.PROMPT);
+            dialog.ShowAsync(this, dialogHandle, messageText, $"JavaScript Prompt - {originUrl}", defaultPromptText);
+        },
+        block: false);
     }
 
     sealed class CefViewJSDialog
@@ -122,8 +153,7 @@ public partial class CefView
             return new CefViewJSDialog(owner, type);
         }
 
-        public bool Show(CefView owner, string message, string title, string defaultPromptText,
-            out string? promptResult)
+        public async void ShowAsync(CefView owner, IntPtr dialogHandle, string message, string title, string defaultPromptText)
         {
             _result.IsAccepted = false;
             _result.PromptResult = null;
@@ -136,22 +166,17 @@ public partial class CefView
                 _promptInput.SelectAll();
             }
 
-            var showTask = Dispatcher.UIThread.InvokeAsync(async () =>
+            if (TopLevel.GetTopLevel(owner) is Window ownerWindow)
             {
-                if (TopLevel.GetTopLevel(owner) is Window ownerWindow)
-                {
-                    await _dialog.ShowDialog(ownerWindow);
-                }
-                else
-                {
-                    _result.IsAccepted = false;
-                    _dialog.Close();
-                }
-            }, DispatcherPriority.Normal);
+                await _dialog.ShowDialog(ownerWindow);
+            }
+            else
+            {
+                _result.IsAccepted = false;
+                _dialog.Hide();
+            }
 
-            showTask.GetAwaiter().GetResult();
-            promptResult = _result.PromptResult;
-            return _result.IsAccepted;
+            owner._cefBrowser?.ContinueJSDialog(dialogHandle, _result.IsAccepted, _result.PromptResult ?? string.Empty);
         }
 
         Panel CreateButtonPanel()

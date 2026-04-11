@@ -228,6 +228,17 @@ public:
   /// <returns>True to disable; otherwise false</returns>
   bool isPopupContextMenuDisabled();
 
+  /// <summary>
+  ///
+  /// </summary>
+  /// <param name="id"></param>
+  void executeContextMenuCommand(int id);
+
+  /// <summary>
+  ///
+  /// </summary>
+  void cancelContextMenu();
+
 #pragma region Control CEF
   void setWindowlessFrameRate(int rate);
   void sendExternalBeginFrame();
@@ -327,6 +338,11 @@ private:
   ///
   /// </summary>
   bool disablePopuContextMenu_ = false;
+
+  /// <summary>
+  ///
+  /// </summary>
+  CefRefPtr<CefRunContextMenuCallback> contextMenuCallback_;
 
   /// <summary>
   ///

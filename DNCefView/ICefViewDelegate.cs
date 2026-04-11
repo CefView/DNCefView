@@ -11,6 +11,12 @@ namespace DNCefView
         void OnCefInputStateChanged(int browserId, string frameId, bool editable);
         #endregion
 
+        #region ContextMenuHandler
+        bool OnCefBeforeContextMenu(string menuData);
+        void OnCefRunContextMenu(int x, int y);
+        void OnCefContextMenuDismissed();
+        #endregion
+
         #region DisplayHandler
         void OnCefAddressChanged(int browserId, string frameId, string url);
         void OnCefTitleChanged(int browserId, string title);

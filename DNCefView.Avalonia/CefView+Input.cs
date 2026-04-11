@@ -1,5 +1,4 @@
-﻿using System;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 
 namespace DNCefView.Avalonia;
 
@@ -76,9 +75,12 @@ public partial class CefView
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        using var _ =
-            this.LogM(
-                $"KeyEventArgs: Key:{e.Key}, Modifiers:{e.KeyModifiers}, PhysicalKey:{e.PhysicalKey}, KeySymbol:{e.KeySymbol}");
+        using var _ = this.LogM($"KeyEventArgs: Key:{e.Key}, Modifiers:{e.KeyModifiers}, PhysicalKey:{e.PhysicalKey}, KeySymbol:{e.KeySymbol}");
+
+        if (e.Key == Key.ImeProcessed)
+        {
+            return;
+        }
 
         var keyEvent = new CefKeyEventData();
         MapKeyEventToCefKeyEvent(e, ref keyEvent);

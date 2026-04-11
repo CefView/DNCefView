@@ -238,6 +238,24 @@ namespace DNCefView
             return CCefBrowser_isPopupContextMenuDisabled(_native);
         }
 
+        // Source: void executeContextMenuCommand(int)
+        [DllImport("CCefView")]
+        // No Return Value
+        internal static extern void CCefBrowser_executeContextMenuCommand(IntPtr thiz, int id);
+        public void ExecuteContextMenuCommand(int id)
+        {
+            CCefBrowser_executeContextMenuCommand(_native, id);
+        }
+
+        // Source: void cancelContextMenu()
+        [DllImport("CCefView")]
+        // No Return Value
+        internal static extern void CCefBrowser_cancelContextMenu(IntPtr thiz);
+        public void CancelContextMenu()
+        {
+            CCefBrowser_cancelContextMenu(_native);
+        }
+
         // Source: void setWindowlessFrameRate(int)
         [DllImport("CCefView")]
         // No Return Value

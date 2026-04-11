@@ -76,7 +76,12 @@ public partial class CefView
 
         base.OnLostFocus(e);
 
-        // cancel context menu: TODO
+        ImeFinishComposingText(true);
+
+        if (_isShowingContextMenu)
+        {
+            return;
+        }
 
         _cefBrowser?.SetFocus(false);
     }

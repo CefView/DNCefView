@@ -48,6 +48,12 @@ namespace DNCefView
             _callbackTable.DraggableRegionChangedCb = OnCefDraggableRegionChanged;
             #endregion
 
+            #region ContextMenuHandler
+            _callbackTable.OnBeforeContextMenuCb = OnCefBeforeContextMenu;
+            _callbackTable.OnRunCefContextMenuCb = OnCefRunContextMenu;
+            _callbackTable.OnCefContextMenuDismissedCb = OnCefContextMenuDismissed;
+            #endregion
+
             #region FocusHandler
             _callbackTable.OnFocusReleasedByTabKeyCb = OnCefReleasedFocusByTabKey;
             _callbackTable.OnRequestSetFocusCb = OnCefRequestSetFocus;
@@ -205,6 +211,33 @@ namespace DNCefView
             if (null != del)
             {
                 del.OnCefDraggableRegionChanged(draggableRegion, count);
+            }
+        }
+        #endregion
+
+        #region ContextMenuHandler
+        public bool OnCefBeforeContextMenu(string menuData)
+        {
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
+            {
+                return del.OnCefBeforeContextMenu(menuData);
+            }
+            return false;
+        }
+
+        public void OnCefRunContextMenu(int x, int y)
+        {
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
+            {
+                del.OnCefRunContextMenu(x, y);
+            }
+        }
+
+        public void OnCefContextMenuDismissed()
+        {
+            if (_dnCefViewDelegate.Target is ICefViewDelegate del)
+            {
+                del.OnCefContextMenuDismissed();
             }
         }
         #endregion

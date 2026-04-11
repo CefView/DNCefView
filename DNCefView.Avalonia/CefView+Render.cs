@@ -160,10 +160,6 @@ public partial class CefView
     {
     }
 
-    void UI_OnCefImeTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
-    {
-    }
-
     public override void Render(DrawingContext context)
     {
         if (_cefViewImage != null)

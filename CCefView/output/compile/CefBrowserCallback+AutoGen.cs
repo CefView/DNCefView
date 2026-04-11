@@ -28,6 +28,21 @@ namespace DNCefView
         public delegate void InputStateChangedCallback(int browserId, string frameId, bool editable);
         public InputStateChangedCallback InputStateChangedCb;
 
+        // Source: bool pfnOnBeforeContextMenu(const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate bool OnBeforeContextMenuCallback(string menuData);
+        public OnBeforeContextMenuCallback OnBeforeContextMenuCb;
+
+        // Source: void pfnOnRunCefContextMenu(int, int)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnRunCefContextMenuCallback(int x, int y);
+        public OnRunCefContextMenuCallback OnRunCefContextMenuCb;
+
+        // Source: void pfnOnCefContextMenuDismissed()
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnCefContextMenuDismissedCallback();
+        public OnCefContextMenuDismissedCallback OnCefContextMenuDismissedCb;
+
         // Source: void pfnAddressChanged(int, const char *, const char *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void AddressChangedCallback(int browserId, string frameId, string url);

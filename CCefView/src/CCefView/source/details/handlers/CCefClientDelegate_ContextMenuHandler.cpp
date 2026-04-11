@@ -18,24 +18,16 @@ CCefClientDelegate::onBeforeContextMenu(CefRefPtr<CefBrowser>& browser,
 
   // popup browser doesn't involve off-screen rendering
   if (browser->IsPopup()) {
-    if (pCefView_->disablePopuContextMenu_) {
-      model->Clear();
-    }
-
     return;
   }
 
-  // main browser
-  // auto policy = pCefView_->q_ptr->contextMenuPolicy();
-  // if (Qt::DefaultContextMenu != policy) {
-  //  model->Clear();
-  //  return;
-  //}
-
-  // auto menuData = MenuBuilder::CreateMenuDataFromCefMenu(model.get());
-  // QMetaObject::invokeMethod(pCefView_, [=]() { pCefView_->onBeforeCefContextMenu(menuData); });
-
-  return;
+  if (pCefView_->callbackTable_.pfnOnBeforeContextMenu) {
+    auto menuData = MenuBuilder::CreateMenuDataFromCefMenu(model.get());
+    auto allow = pCefView_->callbackTable_.pfnOnBeforeContextMenu(menuData.c_str());
+    if (!allow) {
+      model->Clear();
+    }
+  }
 }
 
 bool
@@ -51,13 +43,11 @@ CCefClientDelegate::onRunContextMenu(CefRefPtr<CefBrowser>& browser,
     return false;
   }
 
-  // auto policy = pCefView_->pImpl_->contextMenuPolicy();
-  // if (Qt::DefaultContextMenu != policy) {
-  //   return false;
-  // }
+  pCefView_->contextMenuCallback_ = callback;
 
-  // QPoint pos(params->GetXCoord(), params->GetYCoord());
-  // QMetaObject::invokeMethod(pCefView_, [=]() { pCefView_->onRunCefContextMenu(pos, callback); });
+  if (pCefView_->callbackTable_.pfnOnRunCefContextMenu) {
+    pCefView_->callbackTable_.pfnOnRunCefContextMenu(params->GetXCoord(), params->GetYCoord());
+  }
 
   return true;
 }
@@ -79,5 +69,9 @@ CCefClientDelegate::onContextMenuDismissed(CefRefPtr<CefBrowser>& browser, CefRe
 {
   FLog();
 
-  // QMetaObject::invokeMethod(pCefView_, [=]() { pCefView_->onCefContextMenuDismissed(); });
+  if (pCefView_->callbackTable_.pfnOnCefContextMenuDismissed) {
+    pCefView_->callbackTable_.pfnOnCefContextMenuDismissed();
+  }
+
+  pCefView_->contextMenuCallback_ = nullptr;
 }

@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Input;
 using Avalonia.Input.TextInput;
 using Avalonia.Threading;
@@ -87,26 +87,20 @@ public partial class CefView
 
         internal void UpdateComposition(CefViewRange selectedRange, CefViewRect[] charBounds)
         {
-            using var _ = this.LogM("CefView[IME]:");
-
-            if (_owner == null)
+            if (_owner == null || charBounds == null || charBounds.Length == 0)
             {
                 return;
             }
 
-            if (charBounds.Length == 0)
-            {
-                return;
-            }
+            // Capture the data for the UI thread
+            var bounds = charBounds.ToArray();
+            var range = selectedRange;
+            var lastCharBound = bounds.Last();
+            _cursorRectangle = new Rect(lastCharBound.X, lastCharBound.Y, lastCharBound.Width, lastCharBound.Height);
 
-            _cursorRectangle = charBounds
-                .Select(r => new Rect(r.X, r.Y, r.Width, r.Height))
-                .Aggregate((acc, r) => acc.Union(r));
+            this.LogD($"new _cursorRectangle: ({_cursorRectangle.X:F2}, {_cursorRectangle.Y:F2}) size:[{_cursorRectangle.Width:F2}, {_cursorRectangle.Height:F2}]");
 
-            this.LogD(
-                $"new _cursorRectangle: ({_cursorRectangle.X}, {_cursorRectangle.Y}) - [{_cursorRectangle.Width}, {_cursorRectangle.Height}]");
-
-            Dispatcher.UIThread.Post(RaiseCursorRectangleChanged);
+            RaiseCursorRectangleChanged();
         }
 
         private Rect GetCursorRectangle()
@@ -129,26 +123,23 @@ public partial class CefView
                 return;
             }
 
-            if (text == null || text.Length == 0)
+            if (!string.IsNullOrEmpty(text))
             {
-                // composing end
-                this.LogD($"composing end");
-                Dispatcher.UIThread.Post(() => { _owner?.ImeCancelComposition(); }, DispatcherPriority.Input);
-                return;
+                var underline = new CefViewCompositionUnderline()
+                {
+                    BackgroundColor = 0,
+                    Range = new CefViewRange(0, (uint)(text.Length)),
+                    Style = CefViewCompositionUnderlineStyle.CEF_CUS_DOT,
+                };
+
+                // in composing
+                this.LogD($"composing update");
+                _owner.ImeSetComposition(
+                    text,
+                    [underline],
+                    new(uint.MaxValue, uint.MaxValue),
+                    new((uint)text.Length, (uint)text.Length));
             }
-
-            var underline = new CefViewCompositionUnderline()
-            {
-                BackgroundColor = 0,
-                Range = new CefViewRange(0, (uint)(text?.Length ?? 0)),
-                Style = CefViewCompositionUnderlineStyle.CEF_CUS_DOT,
-            };
-
-            // in composing
-            this.LogD($"composing update");
-            _owner.ImeSetComposition(text!, [underline],
-                new(uint.MaxValue, uint.MaxValue),
-                new((uint)text!.Length, (uint)text!.Length));
         }
 
         public override TextSelection Selection { get; set; } = new();
@@ -170,6 +161,8 @@ public partial class CefView
 
     private CefViewTextInputMethodClient? _imClient;
 
+    private int _selectedTextLength = 0;
+
     void InitializeIME()
     {
         _imClient = new CefViewTextInputMethodClient(this);
@@ -188,7 +181,7 @@ public partial class CefView
                     RoutedEvent = InputMethod.TextInputMethodClientRequeryRequestedEvent,
                 });
             },
-            block: false);
+            block: true);
     }
 
     void OnTextInputMethodClientRequested(TextInputMethodClientRequestedEventArgs e)
@@ -201,14 +194,17 @@ public partial class CefView
             this.LogI("set IME client to _imeClient");
 
             // tricky code to trigger CEF updating of caret rect
-            ImeSetComposition(" ", [], new(uint.MaxValue, uint.MaxValue), new(1, 1));
-            Dispatcher.UIThread.Post(ImeCancelComposition, DispatcherPriority.Input);
+            if (_selectedTextLength <= 0)
+            {
+                ImeSetComposition("\u200B", [], new(uint.MaxValue, uint.MaxValue), new(uint.MaxValue, uint.MaxValue));
+                Dispatcher.UIThread.Post(ImeCancelComposition, DispatcherPriority.Input);
+            }
         }
         else
         {
             e.Client = null;
             this.LogI("set IME client to null");
-            ImeCancelComposition();
+            ImeFinishComposingText(true);
         }
     }
 
@@ -217,13 +213,24 @@ public partial class CefView
     {
         using var _ = this.LogM($"CefView[IME]:char bounds: {characterBounds.Length}");
 
-        var imeClient = _imClient;
-        if (!_isCefFocusedNodeEditable || imeClient == null)
+        RunInUIThread(() =>
         {
-            return;
-        }
+            var imeClient = _imClient;
+            if (!_isCefFocusedNodeEditable || imeClient == null)
+            {
+                return;
+            }
 
-        imeClient.UpdateComposition(selectedRange, characterBounds);
+            imeClient.UpdateComposition(selectedRange, characterBounds);
+        },
+        block: true);
+    }
+
+    void UI_OnCefImeTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
+    {
+        using var _ = this.LogM($"CefView[IME]:selectedText: {selectedText}, selectedRange: {selectedRange.From} - {selectedRange.To}");
+
+        _selectedTextLength = selectedText?.Length ?? 0;
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
@@ -234,13 +241,6 @@ public partial class CefView
         {
             return;
         }
-
-        if (e.Handled)
-        {
-            return;
-        }
-
-        e.Handled = true;
 
         if (string.IsNullOrEmpty(e.Text))
         {
