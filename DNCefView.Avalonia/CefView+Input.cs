@@ -87,11 +87,7 @@ public partial class CefView
 
         SendKeyEvent(CefViewKeyEventType.KEYEVENT_RAWKEYDOWN, keyEvent);
 
-        e.Handled = e.Key switch
-        {
-            Key.Tab => true,
-            _ => false
-        };
+        e.Handled = true;
     }
 
     protected override void OnKeyUp(KeyEventArgs e)
@@ -105,11 +101,7 @@ public partial class CefView
 
         SendKeyEvent(CefViewKeyEventType.KEYEVENT_KEYUP, keyEvent);
 
-        e.Handled = e.Key switch
-        {
-            Key.Tab => true,
-            _ => false
-        };
+        e.Handled = true;
     }
 
     #region Shared Input
