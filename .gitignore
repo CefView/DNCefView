@@ -3,6 +3,5 @@
 .artifacts
 bin
 obj
-CCefView/output/runtimes/*
-!CCefView/output/runtimes/
+CCefView/output/runtimes/**/*.*
 !CCefView/output/runtimes/**/*.md

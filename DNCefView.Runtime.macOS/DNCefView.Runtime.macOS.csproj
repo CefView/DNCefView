@@ -30,12 +30,15 @@
       <Pack>true</Pack>
       <PackagePath>runtimes\osx-arm64\</PackagePath>
     </None>
+    <!-- remove support for osx-x64 -->
+    <!-- 
     <None Include="..\CCefView\output\runtimes\osx-x64\**\*">
       <Visible>true</Visible>
       <Link>runtimes\osx-x64\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\osx-x64\</PackagePath>
-    </None>
+    </None> 
+    -->
   </ItemGroup>
 </Project>
