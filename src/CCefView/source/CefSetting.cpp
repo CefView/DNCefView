@@ -1,4 +1,4 @@
-﻿#include "CefSetting.h"
+#include "CefSetting.h"
 
 CCefSetting::CCefSetting()
 {
@@ -113,6 +113,17 @@ int
 CCefSetting::windowlessFrameRate() const
 {
   return windowlessFrameRate_.value_or(0);
+}
+void
+CCefSetting::setWindowlessRenderingEnabled(bool enabled)
+{
+  windowlessRendering_ = enabled;
+}
+
+bool
+CCefSetting::windowlessRenderingEnabled() const
+{
+  return windowlessRendering_;
 }
 
 void
@@ -341,6 +352,17 @@ bool
 CCefSetting::hardwareAccelerationEnabled() const
 {
   return hardwareAcceleration_;
+}
+void
+CCefSetting::setExternalBeginFrameEnabled(bool enabled)
+{
+  externalBeginFrame_ = enabled;
+}
+
+bool
+CCefSetting::externalBeginFrameEnabled() const
+{
+  return externalBeginFrame_;
 }
 
 void

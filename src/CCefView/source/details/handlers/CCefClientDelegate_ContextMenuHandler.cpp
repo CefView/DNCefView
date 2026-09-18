@@ -59,6 +59,7 @@ CCefClientDelegate::onRunContextMenu(CefRefPtr<CefBrowser>& browser,
   // QPoint pos(params->GetXCoord(), params->GetYCoord());
   // QMetaObject::invokeMethod(pCefView_, [=]() { pCefView_->onRunCefContextMenu(pos, callback); });
 
+  callback->Cancel();
   return true;
 }
 

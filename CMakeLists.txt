@@ -39,8 +39,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "~CMakeTargets")
 # ################################################################
 # Native projects
 set(CMAKE_FOLDER CCefView)
-set(CEF_SDK_VERSION "137.0.19+g8a1c4ce+chromium-137.0.7151.121")
-set(CEFVIEW_CORE_VERSION "main")
+set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183")
+set(CEFVIEW_CORE_VERSION "9415c2c5d893c7e3ddc10fc917671e81f1bfe8ce")
 add_subdirectory(src/CCefView)
 
 # ################################################################

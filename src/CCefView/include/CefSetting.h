@@ -1,4 +1,4 @@
-﻿#ifndef CCEFSETTING_H
+#ifndef CCEFSETTING_H
 #define CCEFSETTING_H
 
 #pragma once
@@ -135,6 +135,17 @@ public:
   /// </summary
   /// <returnsThe frame rate</returns
   int windowlessFrameRate() const;
+  /// <summary>
+  /// Sets whether to create browser in windowless (OSR) mode.
+  /// </summary>
+  /// <param name="enabled">True for OSR; false for windowed rendering.</param>
+  void setWindowlessRenderingEnabled(bool enabled);
+
+  /// <summary>
+  /// Gets whether browser will be created in windowless (OSR) mode.
+  /// </summary>
+  /// <returns>True if OSR is enabled.</returns>
+  bool windowlessRenderingEnabled() const;
 
   /// <summary
   /// Sets the default font size
@@ -369,6 +380,17 @@ public:
   /// </summary>
   /// <returns></returns>
   bool hardwareAccelerationEnabled() const;
+  /// <summary>
+  /// Sets whether to enable external begin frame driving in OSR mode.
+  /// </summary>
+  /// <param name="enabled">True to drive rendering via SendExternalBeginFrame().</param>
+  void setExternalBeginFrameEnabled(bool enabled);
+
+  /// <summary>
+  /// Gets whether external begin frame driving is enabled.
+  /// </summary>
+  /// <returns></returns>
+  bool externalBeginFrameEnabled() const;
 
 protected:
   static void CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs);
@@ -385,7 +407,9 @@ private:
   std::string defaultEncoding_;
   std::string acceptLanguageList_;
 
+  bool windowlessRendering_ = true;
   bool hardwareAcceleration_ = false;
+  bool externalBeginFrame_ = false;
 
   std::optional<uint32_t> backgroundColor_;
   std::optional<int> windowlessFrameRate_;

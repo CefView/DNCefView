@@ -82,6 +82,13 @@ void CCefSetting_setWindowlessFrameRate(ccefsetting_class * thiz, const int valu
 int CCefSetting_windowlessFrameRate(ccefsetting_class * thiz) {
   return thiz->windowlessFrameRate();
 }
+void CCefSetting_setWindowlessRenderingEnabled(ccefsetting_class * thiz, bool enabled) {
+  thiz->setWindowlessRenderingEnabled(enabled);
+}
+
+bool CCefSetting_windowlessRenderingEnabled(ccefsetting_class * thiz) {
+  return thiz->windowlessRenderingEnabled();
+}
 
 void CCefSetting_setDefaultFontSize(ccefsetting_class * thiz, const int value) {
   thiz->setDefaultFontSize(value);
@@ -219,7 +226,7 @@ cefviewpluingstate_enum CCefSetting_webGL(ccefsetting_class * thiz) {
   return (cef_state_t)thiz->webGL();
 }
 
-void CCefSetting_setBackgroundColor(ccefsetting_class * thiz, const uint32_t & value) {
+void CCefSetting_setBackgroundColor(ccefsetting_class * thiz, uint32_t value) {
   thiz->setBackgroundColor(value);
 }
 
@@ -234,4 +241,10 @@ void CCefSetting_setHardwareAccelerationEnabled(ccefsetting_class * thiz, bool e
 bool CCefSetting_hardwareAccelerationEnabled(ccefsetting_class * thiz) {
   return thiz->hardwareAccelerationEnabled();
 }
+void CCefSetting_setExternalBeginFrameEnabled(ccefsetting_class * thiz, bool enabled) {
+  thiz->setExternalBeginFrameEnabled(enabled);
+}
 
+bool CCefSetting_externalBeginFrameEnabled(ccefsetting_class * thiz) {
+  return thiz->externalBeginFrameEnabled();
+}

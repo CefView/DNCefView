@@ -58,11 +58,18 @@ class CSharpTypeMapper(TypeMapper):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        cef_include_path = sys.argv[1]
-        print("cef_include_path:", cef_include_path)
-    else:
-        print("cef include path not found")
+    import argparse
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description="Generate candidates without overwriting hardened interop snapshots")
+    parser.add_argument("cef_include_path")
+    parser.add_argument("--output-root", default=".generated-bindings")
+    options = parser.parse_args()
+    cef_include_path = options.cef_include_path
+    output = Path(options.output_root).resolve()
+    source = Path("src").resolve()
+    if output == source or source in output.parents:
+        parser.error("Generate outside src; review and merge candidates with the maintained lifetime/ABI contracts")
+    output.mkdir(parents=True, exist_ok=True)
 
     # configuration
     args = [
@@ -73,11 +80,11 @@ if __name__ == "__main__":
     ]
     translator = Translator(args)
 
-    cgen = CGenerator("src/CCefView/capi", CTypeMapper())
+    cgen = CGenerator(str(output / "capi"), CTypeMapper())
     translator.add_generator(cgen)
 
     csharpgen = CSharpGenerator(
-        "src/DNCefView/AutoGen", "DNCefView", "CCefView", CSharpTypeMapper()
+        str(output / "AutoGen"), "DNCefView", "CCefView", CSharpTypeMapper()
     )
     translator.add_generator(csharpgen)
 

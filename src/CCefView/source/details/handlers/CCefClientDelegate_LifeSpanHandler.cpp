@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -12,6 +12,7 @@ CCefClientDelegate::onBeforePopup(CefRefPtr<CefBrowser>& browser,
                                   CefBrowserSettings& settings,
                                   bool& DisableJavascriptAccess)
 {
+  if (!pCefView_) return true;
   bool cancel = true;
 
 #if CEF_VERSION_MAJOR < 119
@@ -49,8 +50,7 @@ CCefClientDelegate::onBeforePopup(CefRefPtr<CefBrowser>& browser,
       CCefSetting s;
       CCefSetting::CopyFromCefBrowserSettings(settings, &s);
 
-      pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(i.c_str(), u.c_str(), n.c_str(), d, r, &s);
-      cancel = true;
+      cancel = pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(i.c_str(), u.c_str(), n.c_str(), d, r, &s);
     }
   }
 
@@ -63,6 +63,7 @@ CCefClientDelegate::onAfterCreate(CefRefPtr<CefBrowser>& browser)
   if (!pCefView_)
     return;
 
+  if (!pCefView_) { browser->GetHost()->CloseBrowser(true); return; }
   if (browser->IsPopup()) {
     // pop-up browser
 
@@ -94,7 +95,7 @@ CCefClientDelegate::requestClose(CefRefPtr<CefBrowser>& browser)
   if (!pCefView_)
     return false;
 
-  bool rt = true;
+  bool rt = false;
   if (pCefView_->callbackTable_.pfnRequestClose) {
     rt = pCefView_->callbackTable_.pfnRequestClose();
   }
@@ -104,7 +105,7 @@ CCefClientDelegate::requestClose(CefRefPtr<CefBrowser>& browser)
 void
 CCefClientDelegate::onBeforeClose(CefRefPtr<CefBrowser>& browser)
 {
-  if (!pCefView_)
+  if (!IsValidBrowser(browser))
     return;
 
   if (pCefView_->callbackTable_.pfnOnBeforeClose) {

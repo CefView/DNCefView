@@ -168,7 +168,7 @@ namespace DNCefView
         CEF_CUS_NONE = 3,
     };
 
-    // Source: CefViewPoint 
+    // Source: CefViewPoint
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewPoint
     {
@@ -180,7 +180,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewSize 
+    // Source: CefViewSize
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewSize
     {
@@ -192,7 +192,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewRect 
+    // Source: CefViewRect
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewRect
     {
@@ -210,7 +210,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewScreenInfo 
+    // Source: CefViewScreenInfo
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewScreenInfo
     {
@@ -234,7 +234,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewRange 
+    // Source: CefViewRange
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewRange
     {
@@ -246,7 +246,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewDraggableRegion 
+    // Source: CefViewDraggableRegion
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewDraggableRegion
     {
@@ -258,7 +258,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewCursorInfo 
+    // Source: CefViewCursorInfo
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewCursorInfo
     {
@@ -276,7 +276,7 @@ namespace DNCefView
 
     }
 
-    // Source: CefViewCompositionUnderline 
+    // Source: CefViewCompositionUnderline
     [StructLayout(LayoutKind.Sequential)]
     public partial struct CefViewCompositionUnderline
     {

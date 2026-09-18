@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -91,12 +91,16 @@ CCefClientDelegate::faviconURLChanged(CefRefPtr<CefBrowser>& browser, const std:
   if (!IsValidBrowser(browser))
     return;
 
-  // QStringList urls;
-  // for (auto& iconUrl : icon_urls) {
-  //   urls.append(QString::fromStdString(iconUrl.ToString()));
-  // }
+  if (!pCefView_->callbackTable_.pfnFaviconUrlChanged)
+    return;
 
-  // pCefView_->q_ptr->faviconURLChanged(urls);
+  if (icon_urls.empty()) {
+    pCefView_->callbackTable_.pfnFaviconUrlChanged(browser->GetIdentifier(), "");
+    return;
+  }
+
+  const auto faviconUrl = icon_urls.front().ToString();
+  pCefView_->callbackTable_.pfnFaviconUrlChanged(browser->GetIdentifier(), faviconUrl.c_str());
 }
 
 void

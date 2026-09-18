@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace DNCefView
 {
-    // Source: CCefQuery 
+    // Source: CCefQuery
     public partial class CefQuery : IDisposable
     {
         private IntPtr _native;
         public IntPtr NativeObject
         {
-            get { return _native; }
+            get { if (_native == IntPtr.Zero) throw new ObjectDisposedException(nameof(CefQuery)); return _native; }
         }
 
         public void Dispose()
@@ -21,19 +21,10 @@ namespace DNCefView
 
         [DllImport("CCefView")]
         private static extern void CCefQuery_Delete(IntPtr p);
-        protected virtual void Dispose(bool disposing)
+        protected virtual void Dispose([MarshalAs(UnmanagedType.I1)] bool disposing)
         {
-            if (disposing)
-            {
-                // TODO: cleanup the managed resources
-            }
-
-            // cleanup unmanaged resources
-            if (_native != IntPtr.Zero)
-            {
-                CCefQuery_Delete(_native);
-                _native = IntPtr.Zero;
-            }
+            var native = System.Threading.Interlocked.Exchange(ref _native, IntPtr.Zero);
+            if (native != IntPtr.Zero) CCefQuery_Delete(native);
         }
 
         // Source: CCefQuery()
@@ -49,7 +40,7 @@ namespace DNCefView
         private static extern IntPtr CCefQuery_getRequest(IntPtr thiz);
         public string GetRequest()
         {
-            return Marshal.PtrToStringUTF8(CCefQuery_getRequest(_native));
+            return Marshal.PtrToStringUTF8(CCefQuery_getRequest(NativeObject));
         }
 
         // Source: const int64_t getId()
@@ -57,7 +48,7 @@ namespace DNCefView
         private static extern Int64 CCefQuery_getId(IntPtr thiz);
         public Int64 GetId()
         {
-            return CCefQuery_getId(_native);
+            return CCefQuery_getId(NativeObject);
         }
 
         // Source: const std::string & getResponse()
@@ -65,15 +56,16 @@ namespace DNCefView
         private static extern IntPtr CCefQuery_getResponse(IntPtr thiz);
         public string GetResponse()
         {
-            return Marshal.PtrToStringUTF8(CCefQuery_getResponse(_native));
+            return Marshal.PtrToStringUTF8(CCefQuery_getResponse(NativeObject));
         }
 
         // Source: const bool getResult()
         [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
         private static extern bool CCefQuery_getResult(IntPtr thiz);
         public bool GetResult()
         {
-            return CCefQuery_getResult(_native);
+            return CCefQuery_getResult(NativeObject);
         }
 
         // Source: const int getError()
@@ -81,15 +73,15 @@ namespace DNCefView
         private static extern int CCefQuery_getError(IntPtr thiz);
         public int GetError()
         {
-            return CCefQuery_getError(_native);
+            return CCefQuery_getError(NativeObject);
         }
 
         // Source: void setResponseResult(bool, const std::string &, int)
         [DllImport("CCefView")]
-        private static extern void CCefQuery_setResponseResult(IntPtr thiz, bool success, [MarshalAs(UnmanagedType.LPUTF8Str)] string response, int error);
-        public void SetResponseResult(bool success, string response, int error)
+        private static extern void CCefQuery_setResponseResult(IntPtr thiz, [MarshalAs(UnmanagedType.I1)] bool success, [MarshalAs(UnmanagedType.LPUTF8Str)] string response, int error);
+        public void SetResponseResult([MarshalAs(UnmanagedType.I1)] bool success, string response, int error)
         {
-            CCefQuery_setResponseResult(_native, success, response, error);
+            CCefQuery_setResponseResult(NativeObject, success, response, error);
         }
 
     }

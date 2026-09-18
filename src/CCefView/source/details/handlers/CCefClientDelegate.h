@@ -29,6 +29,7 @@ public:
   CCefClientDelegate(CCefBrowser* p);
 
   ~CCefClientDelegate();
+  void detach() { pCefView_ = nullptr; }
 
   virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser,
                                  CefRefPtr<CefFrame>& frame,

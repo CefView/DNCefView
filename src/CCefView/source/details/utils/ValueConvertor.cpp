@@ -1,12 +1,11 @@
 ﻿#include "ValueConvertor.h"
 
 #include <nlohmann/json.hpp>
+#include <limits>
 
 static bool
 CefValueToJson(nlohmann::json& jsonValue, CefValue* cefValue)
 {
-  jsonValue = nlohmann::json(1);
-  auto jj = nlohmann::json(true);
 
   if (!cefValue) {
     return false;
@@ -102,7 +101,10 @@ JsonToCefValue(CefValue* cValue, const nlohmann::json& jsonValue)
       cValue->SetBool(jsonValue.get<bool>());
     } break;
     case nlohmann::json::value_t::number_integer: {
-      cValue->SetInt(jsonValue.get<int>());
+      const auto value = jsonValue.get<int64_t>();
+      if (value >= (std::numeric_limits<int>::min)() && value <= (std::numeric_limits<int>::max)())
+        cValue->SetInt(static_cast<int>(value));
+      else cValue->SetDouble(static_cast<double>(value));
     } break;
     case nlohmann::json::value_t::number_unsigned:
     case nlohmann::json::value_t::number_float: {
@@ -130,6 +132,7 @@ JsonToCefValue(CefValue* cValue, const nlohmann::json& jsonValue)
     case nlohmann::json::value_t::array: {
       auto jCount = jsonValue.size();
       auto cList = CefListValue::Create();
+      cList->SetSize(jCount);
       for (int i = 0; i < jCount; i++) {
         auto jVal = jsonValue.at(i);
         auto cVal = CefValue::Create();
@@ -153,7 +156,8 @@ ValueConvertor::JsonStringToCefValue(CefValue* cefValue, const std::string& json
     return false;
   }
 
-  auto jsonValue = nlohmann::json::parse(jsonString);
+  auto jsonValue = nlohmann::json::parse(jsonString, nullptr, false);
+  if (jsonValue.is_discarded()) return false;
   if (JsonToCefValue(cefValue, jsonValue)) {
     return true;
   }

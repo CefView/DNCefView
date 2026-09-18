@@ -13,13 +13,6 @@ CCefClientDelegate::loadingStateChanged(CefRefPtr<CefBrowser>& browser,
   if (!IsValidBrowser(browser))
     return;
 
-  if (!isLoading) {
-    // loading complete
-    if (auto focusedFrame = browser->GetFocusedFrame()) {
-      browser->GetHost()->SetFocus(true);
-    }
-  }
-
   if (pCefView_->callbackTable_.pfnLoadingStateChanged) {
     pCefView_->callbackTable_.pfnLoadingStateChanged(browser->GetIdentifier(), isLoading, canGoBack, canGoForward);
   }
@@ -66,8 +59,8 @@ CCefClientDelegate::loadError(CefRefPtr<CefBrowser>& browser,
     auto frameId = frame->GetIdentifier();
     handled = pCefView_->callbackTable_.pfnLoadError(browser->GetIdentifier(),
                                                      FrameIdC2X(frameId).c_str(),
-                                                     errorCode,
                                                      frame->IsMain(),
+                                                     errorCode,
                                                      errorMsg.ToString().c_str(),
                                                      failedUrl.ToString().c_str());
   }

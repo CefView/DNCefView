@@ -16,6 +16,7 @@ CCefClientDelegate::takeFocus(CefRefPtr<CefBrowser>& browser, bool next)
 bool
 CCefClientDelegate::setFocus(CefRefPtr<CefBrowser>& browser)
 {
+  if (!pCefView_) return false;
   // allow the focus setting action
   if (pCefView_->callbackTable_.pfnOnRequestSetFocus) {
     return pCefView_->callbackTable_.pfnOnRequestSetFocus(browser->GetIdentifier());
