@@ -59,7 +59,7 @@ set(CMAKE_DOTNET_TARGET_FRAMEWORK "net8.0")
 set(CMAKE_VS_GLOBALS
   "Authors=CefView"
   "Company=CefView"
-  "Version=1.0.8"
+  "Version=1.1.0"
   "Copyright=Copyright © 2026 CefView"
   "Description=.NET Implementation of CefView"
   "PackageTags=CefView CEF"
