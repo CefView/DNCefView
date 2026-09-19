@@ -39,15 +39,11 @@ CCefContext::init(const CCefConfig* config)
   CefSettings cef_settings;
   CCefConfig::CopyToCefSettings(config, cef_settings);
 
-#if CEF_VERSION_MAJOR >= 125 && CEF_VERSION_MAJOR <= 127
-  //  https://github.com/chromiumembedded/cef/issues/3685
-  cef_settings.chrome_runtime = true;
-#endif
-
   // fixed values
-#if CEF_VERSION_MAJOR < 128
-  cef_settings.pack_loading_disabled = false;
-#endif
+  // CEF 128+ dropped the chrome_runtime workaround for
+  // https://github.com/chromiumembedded/cef/issues/3685 (only valid for 125-127)
+  // and removed pack_loading_disabled / persist_user_preferences.
+  cef_settings.no_sandbox = true; // no sandbox support in this host; see linux/mac twins
 
   // external message pump
   if (cef_settings.multi_threaded_message_loop) {

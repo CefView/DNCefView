@@ -39,8 +39,11 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "~CMakeTargets")
 # ################################################################
 # Native projects
 set(CMAKE_FOLDER CCefView)
-set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183")
-set(CEFVIEW_CORE_VERSION "9415c2c5d893c7e3ddc10fc917671e81f1bfe8ce")
+set(CEF_SDK_VERSION "142.0.15+g6dfdb28+chromium-142.0.7444.176")
+# Pinned to the feat/unity-callbacks tip (onBeforeBrowse, onRenderProcessTerminated,
+# onFindResult, onFileDialogEx) until the upstream MRs merge; repin to the upstream
+# merge commit afterwards. Upstream parent: 9415c2c5d893c7e3ddc10fc917671e81f1bfe8ce.
+set(CEFVIEW_CORE_VERSION "99b83e74c6367b78c0d67a32c9a0b0dcb2050688")
 add_subdirectory(src/CCefView)
 
 # ################################################################

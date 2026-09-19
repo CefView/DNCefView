@@ -434,7 +434,10 @@ CCefSetting::CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings&
 
   cs.local_storage = (cef_state_t)(qs->localStorage_);
 
+#if defined(CEF_VERSION_MAJOR) && CEF_VERSION_MAJOR < 142
+  // CEF 142 removed databases from CefBrowserSettings.
   cs.databases = (cef_state_t)(qs->databases_);
+#endif
 
   cs.webgl = (cef_state_t)(qs->webGL_);
 
