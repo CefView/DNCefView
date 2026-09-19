@@ -290,6 +290,30 @@ public:
   void imeFinishComposingText(bool keep_selection);
   void imeCancelComposition();
   bool continueJSDialog(int64_t requestId, bool success, const std::string& userInput);
+  // ABI 3: editor commands on the focused frame.
+  void copy();
+  void cut();
+  void paste();
+  void selectAll();
+  void undo();
+  void redo();
+  void del();
+  // ABI 3: find.
+  void startFinding(const std::string& searchText, bool forward, bool matchCase);
+  void stopFinding(bool clearSelection);
+  // ABI 3: file dialog reserve map answers (requestId keyed).
+  bool continueFileDialog(int64_t requestId, int filterIndex, const std::vector<std::string>& filePaths);
+  void cancelFileDialog(int64_t requestId);
+  // ABI 3: download control (beforeDownload map keyed by requestId; item map keyed by downloadId).
+  bool continueDownload(int64_t downloadId, const std::string& downloadPath, bool showDialog);
+  void cancelDownload(int64_t downloadId);
+  void pauseDownload(int64_t downloadId);
+  void resumeDownload(int64_t downloadId);
+  // ABI 3: context menu reserve map answers (commandId executes the CEF built-in command).
+  bool continueContextMenu(int64_t requestId, int commandId, int eventFlags);
+  void cancelContextMenu(int64_t requestId);
+  // ABI 3: permission prompt answers.
+  bool continuePermissionPrompt(uint64_t promptId, bool allow);
 #pragma endregion
 
 #pragma region CEF Callbacks
@@ -319,6 +343,32 @@ private:
   int64_t reserveJSDialogRequestId();
   void storeJSDialogCallback(int64_t requestId, CefRefPtr<CefJSDialogCallback> callback);
   void clearJSDialogCallbacks();
+
+private:
+  // ABI 3 reserve maps: the pfn callback returns true, the host answers asynchronously
+  // through the continue*/cancel* exports, and every clear path drops the CEF callback
+  // so a destroyed browser cannot leak one.
+  int64_t reserveRequestId();
+  void storeFileDialogCallback(int64_t requestId, CefRefPtr<CefFileDialogCallback> callback);
+  bool takeFileDialogCallback(int64_t requestId, CefRefPtr<CefFileDialogCallback>& callback);
+  void clearFileDialogCallbacks();
+
+  void storeBeforeDownloadCallback(int64_t requestId, CefRefPtr<CefBeforeDownloadCallback> callback);
+  bool takeBeforeDownloadCallback(int64_t requestId, CefRefPtr<CefBeforeDownloadCallback>& callback);
+  void clearBeforeDownloadCallbacks();
+
+  void storeDownloadItemCallback(int64_t downloadId, CefRefPtr<CefDownloadItemCallback> callback);
+  bool takeDownloadItemCallback(int64_t downloadId, CefRefPtr<CefDownloadItemCallback>& callback);
+  void dropDownloadItemCallback(int64_t downloadId);
+  void clearDownloadItemCallbacks();
+
+  void storeContextMenuCallback(int64_t requestId, CefRefPtr<CefRunContextMenuCallback> callback);
+  bool takeContextMenuCallback(int64_t requestId, CefRefPtr<CefRunContextMenuCallback>& callback);
+  void clearContextMenuCallbacks();
+
+  void storePermissionPromptCallback(uint64_t promptId, CefRefPtr<CefPermissionPromptCallback> callback);
+  bool takePermissionPromptCallback(uint64_t promptId, CefRefPtr<CefPermissionPromptCallback>& callback);
+  void clearPermissionPromptCallbacks();
 
 private:
   /// <summary>
@@ -383,6 +433,16 @@ private:
   std::mutex jsDialogCallbacksMutex_;
   std::unordered_map<int64_t, CefRefPtr<CefJSDialogCallback>> jsDialogCallbacks_;
   int64_t nextJSDialogRequestId_ = 1;
+
+  // ABI 3 reserve maps (see the take/store helpers above).
+  std::mutex requestMapsMutex_;
+  std::unordered_map<int64_t, CefRefPtr<CefFileDialogCallback>> fileDialogCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefBeforeDownloadCallback>> beforeDownloadCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefDownloadItemCallback>> downloadItemCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefRunContextMenuCallback>> contextMenuCallbacks_;
+  std::unordered_map<uint64_t, CefRefPtr<CefPermissionPromptCallback>> permissionPromptCallbacks_;
+  int64_t nextRequestId_ = 1;
+  int nextFindRequestId_ = 1;
 
 private:
   void updateSourceDragTarget(int x, int y, uint32_t modifiers);

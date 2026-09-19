@@ -26,6 +26,14 @@ bool CCefContext_addCookie(ccefcontext_class * thiz, const char * name, const ch
   return thiz->addCookie(name, value, domain, url);
 }
 
+bool CCefContext_addCookieEx(ccefcontext_class * thiz, const char * name, const char * value, const char * domain, const char * url, const char * path, bool secure, bool httpOnly, double expiresEpochSeconds) {
+  return thiz->addCookieEx(name, value, domain, url, path ? path : "", secure, httpOnly, expiresEpochSeconds);
+}
+
+bool CCefContext_flushCookieStore(ccefcontext_class * thiz, int timeoutMs) {
+  return thiz->flushCookieStore(timeoutMs);
+}
+
 bool CCefContext_deleteCookie(ccefcontext_class * thiz, const char * url, const char * name) {
   return thiz->deleteCookie(url, name);
 }

@@ -211,3 +211,84 @@ void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_sele
 void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz) {
   OnCefUi([=]() { thiz->imeCancelComposition(); });
 }
+
+// ---------------------------------------------------------------------------
+// ABI 3 additions (declared in CefBrowser_c.h alongside the generated surface)
+// ---------------------------------------------------------------------------
+
+void CCefBrowser_copy(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->copy(); });
+}
+
+void CCefBrowser_cut(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->cut(); });
+}
+
+void CCefBrowser_paste(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->paste(); });
+}
+
+void CCefBrowser_selectAll(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->selectAll(); });
+}
+
+void CCefBrowser_undo(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->undo(); });
+}
+
+void CCefBrowser_redo(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->redo(); });
+}
+
+void CCefBrowser_delete(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->del(); });
+}
+
+void CCefBrowser_startFinding(ccefbrowser_class * thiz, const char * searchText, bool forward, bool matchCase) {
+  OnCefUi([=]() { thiz->startFinding(searchText ? searchText : "", forward, matchCase); });
+}
+
+void CCefBrowser_stopFinding(ccefbrowser_class * thiz, bool clearSelection) {
+  OnCefUi([=]() { thiz->stopFinding(clearSelection); });
+}
+
+bool CCefBrowser_continueFileDialog(ccefbrowser_class * thiz, int64_t requestId, int filterIndex, const char * const * filePaths, int filePathCount) {
+  std::vector<std::string> paths;
+  if (filePaths)
+    for (int i = 0; i < filePathCount; ++i)
+      if (filePaths[i]) paths.push_back(filePaths[i]);
+  return OnCefUi([=]() { return thiz->continueFileDialog(requestId, filterIndex, paths); });
+}
+
+void CCefBrowser_cancelFileDialog(ccefbrowser_class * thiz, int64_t requestId) {
+  OnCefUi([=]() { thiz->cancelFileDialog(requestId); });
+}
+
+bool CCefBrowser_continueDownload(ccefbrowser_class * thiz, int64_t downloadId, const char * downloadPath, bool showDialog) {
+  const char * safePath = downloadPath ? downloadPath : "";
+  return OnCefUi([=]() { return thiz->continueDownload(downloadId, safePath, showDialog); });
+}
+
+void CCefBrowser_cancelDownload(ccefbrowser_class * thiz, int64_t downloadId) {
+  OnCefUi([=]() { thiz->cancelDownload(downloadId); });
+}
+
+void CCefBrowser_pauseDownload(ccefbrowser_class * thiz, int64_t downloadId) {
+  OnCefUi([=]() { thiz->pauseDownload(downloadId); });
+}
+
+void CCefBrowser_resumeDownload(ccefbrowser_class * thiz, int64_t downloadId) {
+  OnCefUi([=]() { thiz->resumeDownload(downloadId); });
+}
+
+bool CCefBrowser_continueContextMenu(ccefbrowser_class * thiz, int64_t requestId, int commandId, int eventFlags) {
+  return OnCefUi([=]() { return thiz->continueContextMenu(requestId, commandId, eventFlags); });
+}
+
+void CCefBrowser_cancelContextMenu(ccefbrowser_class * thiz, int64_t requestId) {
+  OnCefUi([=]() { thiz->cancelContextMenu(requestId); });
+}
+
+bool CCefBrowser_continuePermissionPrompt(ccefbrowser_class * thiz, uint64_t promptId, bool allow) {
+  return OnCefUi([=]() { return thiz->continuePermissionPrompt(promptId, allow); });
+}

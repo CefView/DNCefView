@@ -92,6 +92,27 @@ public:
   bool addCookie(const std::string& name, const std::string& value, const std::string& domain, const std::string& url);
 
   /// <summary>
+  /// Adds a cookie with the full attribute set (path, secure, httpOnly, expiry).
+  /// </summary>
+  /// <param name="expiresEpochSeconds">Seconds since the Unix epoch; 0 keeps a session cookie</param>
+  /// <returns>True on success; otherwise false</returns>
+  bool addCookieEx(const std::string& name,
+                   const std::string& value,
+                   const std::string& domain,
+                   const std::string& url,
+                   const std::string& path,
+                   bool secure,
+                   bool httpOnly,
+                   double expiresEpochSeconds);
+
+  /// <summary>
+  /// Flushes the cookie store to disk when a persistent cache path is configured.
+  /// </summary>
+  /// <param name="timeoutMs">Wait at most this long for the flush to finish</param>
+  /// <returns>True when the flush finished; false on timeout or no persistent store</returns>
+  bool flushCookieStore(int timeoutMs);
+
+  /// <summary>
   /// Deletes a specific cookie matching |url| and |name|.
   /// </summary>
   /// <returns>True on success; otherwise false</returns>

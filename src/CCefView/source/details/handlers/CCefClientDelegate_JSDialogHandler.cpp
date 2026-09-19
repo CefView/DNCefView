@@ -39,7 +39,17 @@ CCefClientDelegate::onBeforeUnloadDialog(CefRefPtr<CefBrowser>& browser,
                                          bool is_reload,
                                          CefRefPtr<CefJSDialogCallback>& callback)
 {
-  return false;
+  if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnBeforeUnloadDialog)
+    return false;
+
+  // Same reserve map and continueJSDialog answer channel as onJSDialog.
+  const int64_t requestId = pCefView_->reserveJSDialogRequestId();
+  pCefView_->storeJSDialogCallback(requestId, callback);
+  const bool handled = pCefView_->callbackTable_.pfnOnBeforeUnloadDialog(
+    browser->GetIdentifier(), requestId, message_text.ToString().c_str(), is_reload);
+  if (!handled)
+    pCefView_->storeJSDialogCallback(requestId, nullptr);
+  return handled;
 }
 
 void

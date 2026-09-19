@@ -28,6 +28,12 @@ namespace DNCefView
         public delegate void InputStateChangedCallback(int browserId, [MarshalAs(UnmanagedType.LPUTF8Str)] string frameId, [MarshalAs(UnmanagedType.I1)] bool editable);
         public InputStateChangedCallback InputStateChangedCb;
 
+        // Source: bool pfnOnFileDialog(int, int64_t, int, const char *, const char *, const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public delegate bool OnFileDialogCallback(int browserId, long requestId, int mode, [MarshalAs(UnmanagedType.LPUTF8Str)] string title, [MarshalAs(UnmanagedType.LPUTF8Str)] string defaultFilePath, [MarshalAs(UnmanagedType.LPUTF8Str)] string filtersJson);
+        public OnFileDialogCallback OnFileDialogCb;
+
         // Source: void pfnAddressChanged(int, const char *, const char *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void AddressChangedCallback(int browserId, [MarshalAs(UnmanagedType.LPUTF8Str)] string frameId, [MarshalAs(UnmanagedType.LPUTF8Str)] string url);
@@ -69,10 +75,26 @@ namespace DNCefView
         public delegate bool CursorChangedCallback(int browserId, IntPtr cursorHandle, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
         public CursorChangedCallback CursorChangedCb;
 
+        // Source: bool pfnOnBeforeDownload(int, int64_t, const char *, const char *, const char *, int64_t)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public delegate bool OnBeforeDownloadCallback(int browserId, long downloadId, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, [MarshalAs(UnmanagedType.LPUTF8Str)] string suggestedName, [MarshalAs(UnmanagedType.LPUTF8Str)] string mimeType, long totalBytes);
+        public OnBeforeDownloadCallback OnBeforeDownloadCb;
+
+        // Source: void pfnOnDownloadUpdated(int, int64_t, int, double, int64_t, int64_t, int64_t)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnDownloadUpdatedCallback(int browserId, long downloadId, int state, double percent, long speed, long receivedBytes, long totalBytes);
+        public OnDownloadUpdatedCallback OnDownloadUpdatedCb;
+
         // Source: void pfnDraggableRegionChanged(const _cef_draggable_region_t *, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate void DraggableRegionChangedCallback([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] CefViewDraggableRegion[] draggableRegion, int count);
         public DraggableRegionChangedCallback DraggableRegionChangedCb;
+
+        // Source: void pfnOnFindResult(int, int, int, int, bool, _cef_rect_t)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnFindResultCallback(int browserId, int identifier, int count, int activeMatchOrdinal, [MarshalAs(UnmanagedType.I1)] bool finalUpdate, CefViewRect selectionRect);
+        public OnFindResultCallback OnFindResultCb;
 
         // Source: void pfnOnFocusReleasedByTabKey(int, bool)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -95,6 +117,12 @@ namespace DNCefView
         [return: MarshalAs(UnmanagedType.I1)]
         public delegate bool OnJSDialogCallback(int browserId, long requestId, [MarshalAs(UnmanagedType.LPUTF8Str)] string originUrl, int dialogType, [MarshalAs(UnmanagedType.LPUTF8Str)] string messageText, [MarshalAs(UnmanagedType.LPUTF8Str)] string defaultPromptText, [MarshalAs(UnmanagedType.I1)] bool suppressMessage);
         public OnJSDialogCallback OnJSDialogCb;
+
+        // Source: bool pfnOnBeforeUnloadDialog(int, int64_t, const char *, bool)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public delegate bool OnBeforeUnloadDialogCallback(int browserId, long requestId, [MarshalAs(UnmanagedType.LPUTF8Str)] string messageText, [MarshalAs(UnmanagedType.I1)] bool isReload);
+        public OnBeforeUnloadDialogCallback OnBeforeUnloadDialogCb;
 
         // Source: bool pfnOnBeforeNewPopupCreate(const char *, const char *, const char *, cef_window_open_disposition_t, _cef_rect_t *, CCefSetting *, bool *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -150,6 +178,28 @@ namespace DNCefView
         [return: MarshalAs(UnmanagedType.I1)]
         public delegate bool LoadErrorCallback(int browserId, [MarshalAs(UnmanagedType.LPUTF8Str)] string frameId, [MarshalAs(UnmanagedType.I1)] bool isMainFrame, int errorCode, [MarshalAs(UnmanagedType.LPUTF8Str)] string errorMsg, [MarshalAs(UnmanagedType.LPUTF8Str)] string failedUrl);
         public LoadErrorCallback LoadErrorCb;
+
+        // Source: bool pfnOnContextMenu(int, int64_t, const char *, const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public delegate bool OnContextMenuCallback(int browserId, long requestId, [MarshalAs(UnmanagedType.LPUTF8Str)] string contextParamsJson, [MarshalAs(UnmanagedType.LPUTF8Str)] string menuJson);
+        public OnContextMenuCallback OnContextMenuCb;
+
+        // Source: void pfnOnContextMenuDismissed(int)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnContextMenuDismissedCallback(int browserId);
+        public OnContextMenuDismissedCallback OnContextMenuDismissedCb;
+
+        // Source: bool pfnOnPermissionPrompt(int, uint64_t, const char *, unsigned int)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public delegate bool OnPermissionPromptCallback(int browserId, ulong promptId, [MarshalAs(UnmanagedType.LPUTF8Str)] string requestingOrigin, uint requestedPermissions);
+        public OnPermissionPromptCallback OnPermissionPromptCb;
+
+        // Source: void pfnOnRenderProcessTerminated(int, int, int, const char *)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void OnRenderProcessTerminatedCallback(int browserId, int status, int errorCode, [MarshalAs(UnmanagedType.LPUTF8Str)] string errorString);
+        public OnRenderProcessTerminatedCallback OnRenderProcessTerminatedCb;
 
         // Source: void pfnGetRootScreenRect(int, _cef_rect_t *)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]

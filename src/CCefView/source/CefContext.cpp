@@ -54,6 +54,28 @@ private:
   IMPLEMENT_REFCOUNTING(CookieCollectorVisitor);
 };
 
+// Signals flushCookieStore's condition variable when FlushStore completes.
+class FlushCompletionCallback : public CefCompletionCallback {
+public:
+  typedef std::function<void()> Notify;
+
+  explicit FlushCompletionCallback(Notify notify)
+    : notify_(std::move(notify))
+  {
+  }
+
+  void OnComplete() override
+  {
+    if (notify_)
+      notify_();
+  }
+
+private:
+  Notify notify_;
+
+  IMPLEMENT_REFCOUNTING(FlushCompletionCallback);
+};
+
 static std::string
 EscapeJson(const std::string& input)
 {
@@ -253,6 +275,54 @@ CCefContext::addCookie(const std::string& name,
   CefString(&cookie.value).FromString(value);
   CefString(&cookie.domain).FromString(domain);
   return CefCookieManager::GetGlobalManager(nullptr)->SetCookie(CefString(url), cookie, nullptr);
+}
+
+bool
+CCefContext::addCookieEx(const std::string& name,
+                         const std::string& value,
+                         const std::string& domain,
+                         const std::string& url,
+                         const std::string& path,
+                         bool secure,
+                         bool httpOnly,
+                         double expiresEpochSeconds)
+{
+  CefCookie cookie;
+  CefString(&cookie.name).FromString(name);
+  CefString(&cookie.value).FromString(value);
+  CefString(&cookie.domain).FromString(domain);
+  CefString(&cookie.path).FromString(path.empty() ? "/" : path);
+  cookie.secure = secure ? 1 : 0;
+  cookie.httponly = httpOnly ? 1 : 0;
+  // CEF 127 stores the expiry as basetime microseconds since the Windows epoch (1601).
+  if (expiresEpochSeconds > 0) {
+    cookie.has_expires = 1;
+    constexpr int64_t kSeconds1601To1970 = 11644473600LL;
+    const int64_t unixSeconds = static_cast<int64_t>(expiresEpochSeconds);
+    cookie.expires.val = (unixSeconds + kSeconds1601To1970) * 1000000LL;
+  }
+  return CefCookieManager::GetGlobalManager(nullptr)->SetCookie(CefString(url), cookie, nullptr);
+}
+
+bool
+CCefContext::flushCookieStore(int timeoutMs)
+{
+  auto manager = CefCookieManager::GetGlobalManager(nullptr);
+  if (!manager)
+    return false;
+  // FlushStore is asynchronous; wait on the completion like CollectCookiesJson does.
+  std::mutex waitMutex;
+  std::condition_variable waitCondition;
+  bool flushed = false;
+  manager->FlushStore(new FlushCompletionCallback([&]() {
+    {
+      std::lock_guard<std::mutex> lock(waitMutex);
+      flushed = true;
+    }
+    waitCondition.notify_all();
+  }));
+  std::unique_lock<std::mutex> lock(waitMutex);
+  return waitCondition.wait_for(lock, std::chrono::milliseconds(timeoutMs), [&] { return flushed; });
 }
 
 bool

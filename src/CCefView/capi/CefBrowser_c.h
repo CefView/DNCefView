@@ -82,6 +82,26 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
   CCEFVIEW_EXPORT void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz);
 
+  // ABI 3 additions: editor commands, find, and the dialog/download/context-menu/permission answer channels.
+  CCEFVIEW_EXPORT void CCefBrowser_copy(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_cut(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_paste(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_selectAll(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_undo(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_redo(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_delete(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_startFinding(ccefbrowser_class * thiz, const char * searchText, bool forward, bool matchCase);
+  CCEFVIEW_EXPORT void CCefBrowser_stopFinding(ccefbrowser_class * thiz, bool clearSelection);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueFileDialog(ccefbrowser_class * thiz, int64_t requestId, int filterIndex, const char * const * filePaths, int filePathCount);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelFileDialog(ccefbrowser_class * thiz, int64_t requestId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueDownload(ccefbrowser_class * thiz, int64_t downloadId, const char * downloadPath, bool showDialog);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT void CCefBrowser_pauseDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT void CCefBrowser_resumeDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueContextMenu(ccefbrowser_class * thiz, int64_t requestId, int commandId, int eventFlags);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelContextMenu(ccefbrowser_class * thiz, int64_t requestId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continuePermissionPrompt(ccefbrowser_class * thiz, uint64_t promptId, bool allow);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -20,7 +20,7 @@ namespace DNCefView
         {
             if (Instance != null) throw new InvalidOperationException("Only one CEF context is allowed");
             if (config == null) throw new ArgumentNullException(nameof(config));
-            if (CCefView_GetUnityAbiVersion() != 2) throw new InvalidOperationException("Mismatched CCefView ABI; deploy the complete runtime");
+            if (CCefView_GetUnityAbiVersion() != 3) throw new InvalidOperationException("Mismatched CCefView ABI; deploy the complete runtime");
             _config = config;
             _editorLease = editorLease;
             _native = editorLease ? CCefContext_AcquireEditor(config.NativeObject) : CCefContext_new0(config.NativeObject);

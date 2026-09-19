@@ -39,7 +39,16 @@ public:
   void(STDCALL* pfnInputStateChanged)(const int browserId, const char* frameId, const bool editable);
 
   //////////////////////////////////////////////////////////////////////////
-  // TODO: DialogHandler
+  // DialogHandler
+  // The host returns true when it takes ownership of requestId; the native side
+  // keeps the CefFileDialogCallback alive until continueFileDialog/cancelFileDialog
+  // or browser teardown clears the reserve map.
+  bool(STDCALL* pfnOnFileDialog)(const int browserId,
+                                 const int64_t requestId,
+                                 const int mode,
+                                 const char* title,
+                                 const char* defaultFilePath,
+                                 const char* filtersJson); // { "filters": [...], "extensions": [...], "descriptions": [...] }
 
   //////////////////////////////////////////////////////////////////////////
   // DisplayHandler
@@ -63,14 +72,38 @@ public:
                                   const CefViewCursorInfo customCursorInfo);
 
   //////////////////////////////////////////////////////////////////////////
-  // TODO: DownloadHandler
+  // DownloadHandler
+  // The host returns true when it takes ownership of requestId; the native side
+  // keeps the CefBeforeDownloadCallback alive until continueDownload/cancelDownload.
+  bool(STDCALL* pfnOnBeforeDownload)(const int browserId,
+                                     const int64_t downloadId,
+                                     const char* url,
+                                     const char* suggestedName,
+                                     const char* mimeType,
+                                     const int64_t totalBytes);
+
+  // state mirrors CefDownloadItem::DownloadState; the native side drops its
+  // CefDownloadItemCallback map entry on COMPLETE/CANCELED/INTERRUPTED.
+  void(STDCALL* pfnOnDownloadUpdated)(const int browserId,
+                                      const int64_t downloadId,
+                                      const int state,
+                                      const double percent,
+                                      const int64_t speed,
+                                      const int64_t receivedBytes,
+                                      const int64_t totalBytes);
 
   //////////////////////////////////////////////////////////////////////////
   // DragHandler
   void(STDCALL* pfnDraggableRegionChanged)(const CefViewDraggableRegion draggableRegion[], const int count);
 
   //////////////////////////////////////////////////////////////////////////
-  // TODO: FindHandler
+  // FindHandler
+  void(STDCALL* pfnOnFindResult)(const int browserId,
+                                 const int identifier,
+                                 const int count,
+                                 const int activeMatchOrdinal,
+                                 const bool finalUpdate,
+                                 const CefViewRect selectionRect);
 
   //////////////////////////////////////////////////////////////////////////
   // FocusHandler
@@ -89,6 +122,13 @@ public:
                                const char* messageText,
                                const char* defaultPromptText,
                                const bool suppressMessage);
+
+  // Before-unload confirmation; the answer goes through the same
+  // continueJSDialog(requestId, success, userInput) channel as pfnOnJSDialog.
+  bool(STDCALL* pfnOnBeforeUnloadDialog)(const int browserId,
+                                         const int64_t requestId,
+                                         const char* messageText,
+                                         const bool isReload);
 
   //////////////////////////////////////////////////////////////////////////
   // TODO: KeyboardHandler
@@ -138,6 +178,35 @@ public:
                               const int errorCode,
                               const char* errorMsg,
                               const char* failedUrl);
+
+  //////////////////////////////////////////////////////////////////////////
+  // ContextMenuHandler
+  // The host returns true when it takes ownership of requestId; the native side
+  // keeps the CefRunContextMenuCallback alive until continueContextMenu(commandId,
+  // eventFlags)/cancelContextMenu or onContextMenuDismissed clears the reserve map.
+  bool(STDCALL* pfnOnContextMenu)(const int browserId,
+                                  const int64_t requestId,
+                                  const char* contextParamsJson,
+                                  const char* menuJson);
+
+  void(STDCALL* pfnOnContextMenuDismissed)(const int browserId);
+
+  //////////////////////////////////////////////////////////////////////////
+  // PermissionHandler (CEF 106+)
+  // The host returns true when it takes ownership of promptId; the native side
+  // keeps the CefPermissionPromptCallback alive until continuePermissionPrompt.
+  bool(STDCALL* pfnOnPermissionPrompt)(const int browserId,
+                                       const uint64_t promptId,
+                                       const char* requestingOrigin,
+                                       const unsigned int requestedPermissions);
+
+  //////////////////////////////////////////////////////////////////////////
+  // RequestHandler
+  // Renderer process termination; the native side reloads the URL after forwarding.
+  void(STDCALL* pfnOnRenderProcessTerminated)(const int browserId,
+                                              const int status,
+                                              const int errorCode,
+                                              const char* errorString);
 
   //////////////////////////////////////////////////////////////////////////
   // RenderHandler

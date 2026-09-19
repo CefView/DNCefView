@@ -191,6 +191,23 @@ public:
 #endif
                                          ) override;
 
+  // FindHandler (CefViewCore feat/unity-callbacks)
+  virtual void onFindResult(CefRefPtr<CefBrowser>& browser,
+                            int identifier,
+                            int count,
+                            const CefRect& selectionRect,
+                            int activeMatchOrdinal,
+                            bool finalUpdate) override;
+
+#if CEF_VERSION_MAJOR >= 106
+  // PermissionHandler (CEF 106+)
+  virtual bool onShowPermissionPrompt(CefRefPtr<CefBrowser>& browser,
+                                      uint64_t prompt_id,
+                                      const CefString& requesting_origin,
+                                      uint32_t requested_permissions,
+                                      CefRefPtr<CefPermissionPromptCallback>& callback) override;
+#endif
+
   // RenderHandler
   virtual bool getRootScreenRect(CefRefPtr<CefBrowser>& browser, CefRect& rect) override;
   virtual void getViewRect(CefRefPtr<CefBrowser>& browser, CefRect& rect) override;

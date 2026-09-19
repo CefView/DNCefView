@@ -23,12 +23,53 @@ CCefClientDelegate::onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
 #endif
 )
 {
-  // Renderer crash observation point for the host (RUN-01); forwarding to the
-  // callback table lands with the ABI 3 batch.
-  (void)browser;
-  (void)status;
+  if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnRenderProcessTerminated)
+    return;
+  pCefView_->callbackTable_.pfnOnRenderProcessTerminated(
+    browser->GetIdentifier(), static_cast<int>(status)
 #if CEF_VERSION_MAJOR >= 124
-  (void)errorCode;
-  (void)errorString;
+                                ,
+                                errorCode,
+                                errorString.ToString().c_str()
+#else
+                                ,
+                                0,
+                                ""
 #endif
+  );
 }
+
+void
+CCefClientDelegate::onFindResult(CefRefPtr<CefBrowser>& browser,
+                                 int identifier,
+                                 int count,
+                                 const CefRect& selectionRect,
+                                 int activeMatchOrdinal,
+                                 bool finalUpdate)
+{
+  if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnFindResult)
+    return;
+  const CefViewRect rect{ selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height };
+  pCefView_->callbackTable_.pfnOnFindResult(
+    browser->GetIdentifier(), identifier, count, activeMatchOrdinal, finalUpdate, rect);
+}
+
+#if CEF_VERSION_MAJOR >= 106
+bool
+CCefClientDelegate::onShowPermissionPrompt(CefRefPtr<CefBrowser>& browser,
+                                           uint64_t prompt_id,
+                                           const CefString& requesting_origin,
+                                           uint32_t requested_permissions,
+                                           CefRefPtr<CefPermissionPromptCallback>& callback)
+{
+  if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnPermissionPrompt)
+    return false; // default handling keeps the CEF dismissal behavior
+  const uint64_t promptId = prompt_id;
+  pCefView_->storePermissionPromptCallback(promptId, callback);
+  const bool handled = pCefView_->callbackTable_.pfnOnPermissionPrompt(
+    browser->GetIdentifier(), promptId, requesting_origin.ToString().c_str(), requested_permissions);
+  if (!handled)
+    pCefView_->storePermissionPromptCallback(promptId, nullptr);
+  return handled;
+}
+#endif

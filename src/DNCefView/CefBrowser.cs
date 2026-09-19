@@ -78,6 +78,16 @@ namespace DNCefView
             _callbackTable.OnPopupSizeCb = OnCefPopupSize;
             _callbackTable.OnPaintCb = OnCefPaint;
             _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
+            // ABI 3 callbacks.
+            _callbackTable.OnBeforeUnloadDialogCb = OnCefBeforeUnloadDialog;
+            _callbackTable.OnFileDialogCb = OnCefFileDialog;
+            _callbackTable.OnBeforeDownloadCb = OnCefBeforeDownload;
+            _callbackTable.OnDownloadUpdatedCb = OnCefDownloadUpdated;
+            _callbackTable.OnFindResultCb = OnCefFindResult;
+            _callbackTable.OnContextMenuCb = OnCefContextMenu;
+            _callbackTable.OnContextMenuDismissedCb = OnCefContextMenuDismissed;
+            _callbackTable.OnPermissionPromptCb = OnCefPermissionPrompt;
+            _callbackTable.OnRenderProcessTerminatedCb = OnCefRenderProcessTerminated;
             _callbackTable.StartDraggingCb = OnCefStartDragging;
             _callbackTable.UpdateDragCursorCb = OnCefUpdateDragCursor;
             _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
@@ -615,6 +625,102 @@ namespace DNCefView
                     del.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
                 }
 
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+        }
+
+        // ABI 3 callbacks: forward to the delegate with the same guarded pattern.
+        public bool OnCefBeforeUnloadDialog(int browserId, long requestId, string messageText, bool isReload)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) return del.OnCefBeforeUnloadDialog(browserId, requestId, messageText, isReload);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+            return false;
+        }
+
+        public bool OnCefFileDialog(int browserId, long requestId, int mode, string title, string defaultFilePath, string filtersJson)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) return del.OnCefFileDialog(browserId, requestId, mode, title, defaultFilePath, filtersJson);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+            return false;
+        }
+
+        public bool OnCefBeforeDownload(int browserId, long downloadId, string url, string suggestedName, string mimeType, long totalBytes)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) return del.OnCefBeforeDownload(browserId, downloadId, url, suggestedName, mimeType, totalBytes);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+            return false;
+        }
+
+        public void OnCefDownloadUpdated(int browserId, long downloadId, int state, double percent, long speed, long receivedBytes, long totalBytes)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) del.OnCefDownloadUpdated(browserId, downloadId, state, percent, speed, receivedBytes, totalBytes);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+        }
+
+        public void OnCefFindResult(int browserId, int identifier, int count, int activeMatchOrdinal, bool finalUpdate, CefViewRect selectionRect)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) del.OnCefFindResult(browserId, identifier, count, activeMatchOrdinal, finalUpdate, selectionRect);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+        }
+
+        public bool OnCefContextMenu(int browserId, long requestId, string contextParamsJson, string menuJson)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) return del.OnCefContextMenu(browserId, requestId, contextParamsJson, menuJson);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+            return false;
+        }
+
+        public void OnCefContextMenuDismissed(int browserId)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) del.OnCefContextMenuDismissed(browserId);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+        }
+
+        public bool OnCefPermissionPrompt(int browserId, ulong promptId, string requestingOrigin, uint requestedPermissions)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) return del.OnCefPermissionPrompt(browserId, promptId, requestingOrigin, requestedPermissions);
+            }
+            catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
+            return false;
+        }
+
+        public void OnCefRenderProcessTerminated(int browserId, int status, int errorCode, string errorString)
+        {
+            try
+            {
+                var del = _dnCefViewDelegate.Target as ICefViewDelegate;
+                if (null != del) del.OnCefRenderProcessTerminated(browserId, status, errorCode, errorString);
             }
             catch (Exception exception) { System.Diagnostics.Trace.TraceError(exception.ToString()); }
         }

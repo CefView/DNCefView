@@ -70,6 +70,24 @@ namespace DNCefView
             return CCefContext_addCookie(_native, name, value, domain, url);
         }
 
+        // ABI 3 addition: full cookie attribute set.
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefContext_addCookieEx(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string value, [MarshalAs(UnmanagedType.LPUTF8Str)] string domain, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, [MarshalAs(UnmanagedType.I1)] bool secure, [MarshalAs(UnmanagedType.I1)] bool httpOnly, double expiresEpochSeconds);
+        public bool AddCookieEx(string name, string value, string domain, string url, string path, bool secure, bool httpOnly, double expiresEpochSeconds)
+        {
+            return CCefContext_addCookieEx(_native, name, value, domain, url, path, secure, httpOnly, expiresEpochSeconds);
+        }
+
+        // ABI 3 addition: flush the store to a persistent cache.
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefContext_flushCookieStore(IntPtr thiz, int timeoutMs);
+        public bool FlushCookieStore(int timeoutMs)
+        {
+            return CCefContext_flushCookieStore(_native, timeoutMs);
+        }
+
         // Source: bool deleteCookie(const std::string &, const std::string &)
         [DllImport("CCefView")]
         [return: MarshalAs(UnmanagedType.I1)]

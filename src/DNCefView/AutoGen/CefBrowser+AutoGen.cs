@@ -594,5 +594,71 @@ namespace DNCefView
             }
         }
 
+        // ABI 3 additions: editor commands, find, and dialog/download/context-menu/permission answers.
+        [DllImport("CCefView")] private static extern void CCefBrowser_copy(IntPtr thiz);
+        public void Copy() { using (AcquireCall()) { CCefBrowser_copy(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_cut(IntPtr thiz);
+        public void Cut() { using (AcquireCall()) { CCefBrowser_cut(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_paste(IntPtr thiz);
+        public void Paste() { using (AcquireCall()) { CCefBrowser_paste(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_selectAll(IntPtr thiz);
+        public void SelectAll() { using (AcquireCall()) { CCefBrowser_selectAll(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_undo(IntPtr thiz);
+        public void Undo() { using (AcquireCall()) { CCefBrowser_undo(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_redo(IntPtr thiz);
+        public void Redo() { using (AcquireCall()) { CCefBrowser_redo(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_delete(IntPtr thiz);
+        public void Delete() { using (AcquireCall()) { CCefBrowser_delete(NativeObject); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_startFinding(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchText, [MarshalAs(UnmanagedType.I1)] bool forward, [MarshalAs(UnmanagedType.I1)] bool matchCase);
+        public void StartFinding(string searchText, bool forward, bool matchCase) { using (AcquireCall()) { CCefBrowser_startFinding(NativeObject, searchText, forward, matchCase); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_stopFinding(IntPtr thiz, [MarshalAs(UnmanagedType.I1)] bool clearSelection);
+        public void StopFinding(bool clearSelection) { using (AcquireCall()) { CCefBrowser_stopFinding(NativeObject, clearSelection); } }
+
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefBrowser_continueFileDialog(IntPtr thiz, long requestId, int filterIndex, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4, ArraySubType = UnmanagedType.LPUTF8Str)] string[] filePaths, int filePathCount);
+        public bool ContinueFileDialog(long requestId, int filterIndex, string[] filePaths)
+        {
+            using (AcquireCall()) { return CCefBrowser_continueFileDialog(NativeObject, requestId, filterIndex, filePaths ?? Array.Empty<string>(), filePaths?.Length ?? 0); }
+        }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_cancelFileDialog(IntPtr thiz, long requestId);
+        public void CancelFileDialog(long requestId) { using (AcquireCall()) { CCefBrowser_cancelFileDialog(NativeObject, requestId); } }
+
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefBrowser_continueDownload(IntPtr thiz, long downloadId, [MarshalAs(UnmanagedType.LPUTF8Str)] string downloadPath, [MarshalAs(UnmanagedType.I1)] bool showDialog);
+        public bool ContinueDownload(long downloadId, string downloadPath, bool showDialog) { using (AcquireCall()) { return CCefBrowser_continueDownload(NativeObject, downloadId, downloadPath, showDialog); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_cancelDownload(IntPtr thiz, long downloadId);
+        public void CancelDownload(long downloadId) { using (AcquireCall()) { CCefBrowser_cancelDownload(NativeObject, downloadId); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_pauseDownload(IntPtr thiz, long downloadId);
+        public void PauseDownload(long downloadId) { using (AcquireCall()) { CCefBrowser_pauseDownload(NativeObject, downloadId); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_resumeDownload(IntPtr thiz, long downloadId);
+        public void ResumeDownload(long downloadId) { using (AcquireCall()) { CCefBrowser_resumeDownload(NativeObject, downloadId); } }
+
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefBrowser_continueContextMenu(IntPtr thiz, long requestId, int commandId, int eventFlags);
+        public bool ContinueContextMenu(long requestId, int commandId, int eventFlags) { using (AcquireCall()) { return CCefBrowser_continueContextMenu(NativeObject, requestId, commandId, eventFlags); } }
+
+        [DllImport("CCefView")] private static extern void CCefBrowser_cancelContextMenu(IntPtr thiz, long requestId);
+        public void CancelContextMenu(long requestId) { using (AcquireCall()) { CCefBrowser_cancelContextMenu(NativeObject, requestId); } }
+
+        [DllImport("CCefView")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool CCefBrowser_continuePermissionPrompt(IntPtr thiz, ulong promptId, [MarshalAs(UnmanagedType.I1)] bool allow);
+        public bool ContinuePermissionPrompt(ulong promptId, bool allow) { using (AcquireCall()) { return CCefBrowser_continuePermissionPrompt(NativeObject, promptId, allow); } }
+
     }
 }

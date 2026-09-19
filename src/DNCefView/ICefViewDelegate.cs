@@ -31,6 +31,33 @@ namespace DNCefView
 
         #region JSDialogHandler
         bool OnCefJSDialog(int browserId, long requestId, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage);
+        bool OnCefBeforeUnloadDialog(int browserId, long requestId, string messageText, bool isReload);
+        #endregion
+
+        #region DialogHandler
+        bool OnCefFileDialog(int browserId, long requestId, int mode, string title, string defaultFilePath, string filtersJson);
+        #endregion
+
+        #region DownloadHandler
+        bool OnCefBeforeDownload(int browserId, long downloadId, string url, string suggestedName, string mimeType, long totalBytes);
+        void OnCefDownloadUpdated(int browserId, long downloadId, int state, double percent, long speed, long receivedBytes, long totalBytes);
+        #endregion
+
+        #region FindHandler
+        void OnCefFindResult(int browserId, int identifier, int count, int activeMatchOrdinal, bool finalUpdate, CefViewRect selectionRect);
+        #endregion
+
+        #region ContextMenuHandler
+        bool OnCefContextMenu(int browserId, long requestId, string contextParamsJson, string menuJson);
+        void OnCefContextMenuDismissed(int browserId);
+        #endregion
+
+        #region PermissionHandler
+        bool OnCefPermissionPrompt(int browserId, ulong promptId, string requestingOrigin, uint requestedPermissions);
+        #endregion
+
+        #region RequestHandler
+        void OnCefRenderProcessTerminated(int browserId, int status, int errorCode, string errorString);
         #endregion
 
         #region LifespanHandler
