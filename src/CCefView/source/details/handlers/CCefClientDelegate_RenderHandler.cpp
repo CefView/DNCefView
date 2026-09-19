@@ -202,8 +202,9 @@ CCefClientDelegate::onImeCompositionRangeChanged(CefRefPtr<CefBrowser>& browser,
     return;
 
   std::vector<cef_rect_t> characterBoundsBuffer;
-  for (auto const& rc : character_bounds)
+  for (auto const& rc : character_bounds) {
     characterBoundsBuffer.push_back(rc);
+  }
 
   if (pCefView_->callbackTable_.pfnOnImeCompositionRangeChanged) {
     pCefView_->callbackTable_.pfnOnImeCompositionRangeChanged(browser->GetIdentifier(),

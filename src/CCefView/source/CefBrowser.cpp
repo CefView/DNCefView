@@ -10,6 +10,8 @@
 #pragma endregion cef_headers
 
 #include <algorithm>
+#include <atomic>
+#include <cstdio>
 #include <sstream>
 
 #include <CefViewBrowserClient.h>

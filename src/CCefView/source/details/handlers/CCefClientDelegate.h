@@ -175,6 +175,22 @@ public:
                          const CefString& failedUrl,
                          bool& handled) override;
 
+  // RequestHandler hooks (CefViewCore feat/unity-callbacks)
+  virtual bool onBeforeBrowse(CefRefPtr<CefBrowser>& browser,
+                              CefRefPtr<CefFrame>& frame,
+                              CefRefPtr<CefRequest>& request,
+                              bool user_gesture,
+                              bool is_redirect) override;
+
+  virtual void onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
+                                         CefRequestHandler::TerminationStatus status
+#if CEF_VERSION_MAJOR >= 124
+                                         ,
+                                         int errorCode,
+                                         const CefString& errorString
+#endif
+                                         ) override;
+
   // RenderHandler
   virtual bool getRootScreenRect(CefRefPtr<CefBrowser>& browser, CefRect& rect) override;
   virtual void getViewRect(CefRefPtr<CefBrowser>& browser, CefRect& rect) override;

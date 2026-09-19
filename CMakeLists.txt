@@ -39,7 +39,12 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "~CMakeTargets")
 # ################################################################
 # Native projects
 set(CMAKE_FOLDER CCefView)
-set(CEF_SDK_VERSION "142.0.15+g6dfdb28+chromium-142.0.7444.176")
+# 142.0.15/142.0.17 were attempted and rolled back on this machine: the OSR
+# renderer stays alive, answers GetViewRect and completes loads, but no
+# OnPaint/OnAcceleratedPaint ever arrives (see review-evidence native-diag
+# traces, 2026-09-19). 127.3.5 keeps the 125-127 chrome_runtime workaround
+# (chromiumembedded/cef#3685) and passed the full regression on 126/127 guards.
+set(CEF_SDK_VERSION "127.3.5+g114ea2a+chromium-127.0.6533.120")
 # Pinned to the feat/unity-callbacks tip (onBeforeBrowse, onRenderProcessTerminated,
 # onFindResult, onFileDialogEx) until the upstream MRs merge; repin to the upstream
 # merge commit afterwards. Upstream parent: 9415c2c5d893c7e3ddc10fc917671e81f1bfe8ce.
