@@ -12,5 +12,7 @@ Native bool is one byte and callback strings are UTF-8. Match callback field ord
 ## Validation
 Build both native and managed code, deploy the complete matched runtime, and run Unity's Regression scene plus a standalone Player. Include malformed JSON, Unicode callbacks, focus, load errors, per-browser sizes and repeated close/recreate. Review generated diffs; do not infer ABI correctness from successful compilation. Tests that only compare copied source do not replace runtime checks.
 
+Binding generation is a candidate workflow. From the repository root, run `python scripts/gen.py <CEF-root> --output-root <new-directory>` with the same Clang include arguments used by the pinned VS toolchain. The output directory must not exist, generation refuses incomplete ASTs, and the result contains `manifest.json` with `deployable=false`. Generate twice into two new directories and compare file hashes before reviewing ABI, UTF-8, one-byte bool, callback rooting, UI-thread dispatch and call-lease behavior. Never copy candidate files directly into `src` or the Unity project.
+
 ## Style and Review
 Follow `.clang-format` and `.editorconfig`; use four-space C# indentation. Preserve ownership comments and document synchronous callback constraints. Use imperative `fix:`, `feat:` or `chore:` commits. PRs explain observable behavior, ABI/dependency changes, executed validation and remaining limits. Do not include generated builds or machine-specific paths.

@@ -63,13 +63,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate candidates without overwriting hardened interop snapshots")
     parser.add_argument("cef_include_path")
     parser.add_argument("--output-root", default=".generated-bindings")
+    parser.add_argument("--clang-arg", action="append", default=[], help="Repeat to select explicit include/toolchain flags")
     options = parser.parse_args()
     cef_include_path = options.cef_include_path
     output = Path(options.output_root).resolve()
-    source = Path("src").resolve()
-    if output == source or source in output.parents:
+    repository = Path(__file__).resolve().parent.parent
+    source = repository / "src"
+    if output == source or source in output.parents or output in source.parents:
         parser.error("Generate outside src; review and merge candidates with the maintained lifetime/ABI contracts")
-    output.mkdir(parents=True, exist_ok=True)
+    if output.exists():
+        parser.error("Output must be a new directory; existing candidates are never overwritten")
+    cef_include_path = str(Path(cef_include_path).resolve())
+    if not (Path(cef_include_path) / "include" / "cef_app.h").is_file():
+        parser.error("CEF root must contain include/cef_app.h")
+    os.chdir(repository)
+    output.mkdir(parents=True)
+    (output / "capi").mkdir()
+    (output / "AutoGen").mkdir()
 
     # configuration
     args = [
@@ -77,8 +87,10 @@ if __name__ == "__main__":
         "c++",
         "-std=c++17",
         f"-I{cef_include_path}",
+        "-Isrc/CCefView/include",
+        "-Isrc/CCefView/source",
     ]
-    translator = Translator(args)
+    translator = Translator(args + options.clang_arg)
 
     cgen = CGenerator(str(output / "capi"), CTypeMapper())
     translator.add_generator(cgen)
@@ -101,3 +113,15 @@ if __name__ == "__main__":
 
     # translate
     translator.translate()
+
+    # Candidates are review artifacts, never deployable replacements for the
+    # maintained native dispatch and managed lifetime implementations.
+    import hashlib
+    import json
+    files = {str(path.relative_to(output)).replace("\\", "/"): hashlib.sha256(path.read_bytes()).hexdigest()
+             for path in sorted(output.rglob("*")) if path.is_file()}
+    (output / "manifest.json").write_text(json.dumps({
+        "schemaVersion": 1, "deployable": False,
+        "requiredReview": ["native UI-thread dispatch", "managed call leases", "callback rooting and close barrier"],
+        "files": files,
+    }, indent=2) + "\n", encoding="utf-8")

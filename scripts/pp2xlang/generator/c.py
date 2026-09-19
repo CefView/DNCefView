@@ -111,7 +111,7 @@ class CGenerator(SourceGenerator):
     def parse(self, tu: clang.cindex.TranslationUnit):
         """"""
         for cursor in tu.cursor.get_children():
-            if cursor.location.file.name != tu.spelling:
+            if not cursor.location.file or cursor.location.file.name != tu.spelling:
                 continue
             else:
                 self.parse_cursor(cursor)
@@ -143,8 +143,8 @@ class CGenerator(SourceGenerator):
     def prepare(self, tu: clang.cindex.TranslationUnit):
         """"""
         self.source_name = os.path.splitext(os.path.basename(tu.spelling))[0]
-        self.header_file = open(f"{os.path.join(self.out, self.source_name)}_c.h", "wt")
-        self.impl_file = open(f"{os.path.join(self.out, self.source_name)}_c.cpp", "wt")
+        self.header_file = open(f"{os.path.join(self.out, self.source_name)}_c.h", "wt", encoding="utf-8", newline="\n")
+        self.impl_file = open(f"{os.path.join(self.out, self.source_name)}_c.cpp", "wt", encoding="utf-8", newline="\n")
 
         include_list = ""
         inc_files = self.get_included_files(tu)

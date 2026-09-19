@@ -81,6 +81,8 @@ class Translator:
             source, merged_args, options=clang.cindex.TranslationUnit.PARSE_INCOMPLETE
         )
         [print(f"  DIAGNOSTIC: {x}") for x in tu.diagnostics]
+        if any(d.severity >= clang.cindex.Diagnostic.Error for d in tu.diagnostics):
+            raise RuntimeError(f"Refusing generation from incomplete AST: {source}")
         [x.parse(tu) for x in self.generators]
         self.tus.append(tu)
 
@@ -91,7 +93,7 @@ class Translator:
 
             for cursor in tu.cursor.get_children():
 
-                if cursor.location.file.name == tu.spelling:
+                if cursor.location.file and cursor.location.file.name == tu.spelling:
                     [x.translate_cursor(cursor) for x in self.generators]
 
             [x.finalize() for x in self.generators]
