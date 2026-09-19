@@ -19,5 +19,10 @@ CCefClientDelegate::onFileDialog(CefRefPtr<CefBrowser>& browser,
   if (!IsValidBrowser(browser))
     return handled;
 
+  // No Unity file-picker bridge exists yet. Complete the callback explicitly
+  // so a page cannot leave the browser waiting indefinitely.
+  if (callback)
+    callback->Cancel();
+  handled = true;
   return handled;
 }
