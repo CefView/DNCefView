@@ -18,7 +18,7 @@ CCefClientDelegate::onJSDialog(CefRefPtr<CefBrowser>& browser,
   const int64_t requestId = pCefView_->reserveJSDialogRequestId();
   // A synchronous managed handler may continue the dialog before returning.
   pCefView_->storeJSDialogCallback(requestId, callback);
-  const bool handled = pCefView_->callbackTable_.pfnOnJSDialog(browser->GetIdentifier(),
+  const bool handled = pCefView_->callbackTable_.pfnOnJSDialog(pCefView_, browser->GetIdentifier(),
                                                                requestId,
                                                                origin_url.ToString().c_str(),
                                                                static_cast<int>(dialog_type),
@@ -45,7 +45,7 @@ CCefClientDelegate::onBeforeUnloadDialog(CefRefPtr<CefBrowser>& browser,
   // Same reserve map and continueJSDialog answer channel as onJSDialog.
   const int64_t requestId = pCefView_->reserveJSDialogRequestId();
   pCefView_->storeJSDialogCallback(requestId, callback);
-  const bool handled = pCefView_->callbackTable_.pfnOnBeforeUnloadDialog(
+  const bool handled = pCefView_->callbackTable_.pfnOnBeforeUnloadDialog(pCefView_, 
     browser->GetIdentifier(), requestId, message_text.ToString().c_str(), is_reload);
   if (!handled)
     pCefView_->storeJSDialogCallback(requestId, nullptr);

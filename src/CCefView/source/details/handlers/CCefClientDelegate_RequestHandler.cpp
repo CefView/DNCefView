@@ -25,7 +25,7 @@ CCefClientDelegate::onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
 {
   if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnRenderProcessTerminated)
     return;
-  pCefView_->callbackTable_.pfnOnRenderProcessTerminated(
+  pCefView_->callbackTable_.pfnOnRenderProcessTerminated(pCefView_, 
     browser->GetIdentifier(), static_cast<int>(status)
 #if CEF_VERSION_MAJOR >= 124
                                 ,
@@ -50,7 +50,7 @@ CCefClientDelegate::onFindResult(CefRefPtr<CefBrowser>& browser,
   if (!IsValidBrowser(browser) || !pCefView_->callbackTable_.pfnOnFindResult)
     return;
   const CefViewRect rect{ selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height };
-  pCefView_->callbackTable_.pfnOnFindResult(
+  pCefView_->callbackTable_.pfnOnFindResult(pCefView_, 
     browser->GetIdentifier(), identifier, count, activeMatchOrdinal, finalUpdate, rect);
 }
 
@@ -66,7 +66,7 @@ CCefClientDelegate::onShowPermissionPrompt(CefRefPtr<CefBrowser>& browser,
     return false; // default handling keeps the CEF dismissal behavior
   const uint64_t promptId = prompt_id;
   pCefView_->storePermissionPromptCallback(promptId, callback);
-  const bool handled = pCefView_->callbackTable_.pfnOnPermissionPrompt(
+  const bool handled = pCefView_->callbackTable_.pfnOnPermissionPrompt(pCefView_, 
     browser->GetIdentifier(), promptId, requesting_origin.ToString().c_str(), requested_permissions);
   if (!handled)
     pCefView_->storePermissionPromptCallback(promptId, nullptr);

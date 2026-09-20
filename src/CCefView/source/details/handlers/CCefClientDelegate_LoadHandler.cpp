@@ -14,7 +14,7 @@ CCefClientDelegate::loadingStateChanged(CefRefPtr<CefBrowser>& browser,
     return;
 
   if (pCefView_->callbackTable_.pfnLoadingStateChanged) {
-    pCefView_->callbackTable_.pfnLoadingStateChanged(browser->GetIdentifier(), isLoading, canGoBack, canGoForward);
+    pCefView_->callbackTable_.pfnLoadingStateChanged(pCefView_, browser->GetIdentifier(), isLoading, canGoBack, canGoForward);
   }
 }
 
@@ -26,7 +26,7 @@ CCefClientDelegate::loadStart(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame
 
   if (pCefView_->callbackTable_.pfnLoadStart) {
     auto frameId = frame->GetIdentifier();
-    pCefView_->callbackTable_.pfnLoadStart(
+    pCefView_->callbackTable_.pfnLoadStart(pCefView_, 
       browser->GetIdentifier(), FrameIdC2X(frameId).c_str(), frame->IsMain(), transition_type);
   }
 }
@@ -39,7 +39,7 @@ CCefClientDelegate::loadEnd(CefRefPtr<CefBrowser>& browser, CefRefPtr<CefFrame>&
 
   if (pCefView_->callbackTable_.pfnLoadEnd) {
     auto frameId = frame->GetIdentifier();
-    pCefView_->callbackTable_.pfnLoadEnd(
+    pCefView_->callbackTable_.pfnLoadEnd(pCefView_, 
       browser->GetIdentifier(), FrameIdC2X(frameId).c_str(), frame->IsMain(), httpStatusCode);
   }
 }
@@ -57,7 +57,7 @@ CCefClientDelegate::loadError(CefRefPtr<CefBrowser>& browser,
 
   if (pCefView_->callbackTable_.pfnLoadError) {
     auto frameId = frame->GetIdentifier();
-    handled = pCefView_->callbackTable_.pfnLoadError(browser->GetIdentifier(),
+    handled = pCefView_->callbackTable_.pfnLoadError(pCefView_, browser->GetIdentifier(),
                                                      FrameIdC2X(frameId).c_str(),
                                                      frame->IsMain(),
                                                      errorCode,

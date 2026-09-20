@@ -48,13 +48,21 @@ public:
 
 public:
   /// <summary>
-  /// Constructs a CCefView instance
+  /// Constructs a CCefView instance (ABI 4 phase 1: allocate and store the
+  /// callback table only — no CEF browser is created yet).
   /// </summary>
   /// <param name="callback">The delegate table</param>
   /// <param name="url">The target url</param>
   /// <param name="setting">The <see cref="QCefSetting"/> instance</param>
   /// <param name="parent">The parent</param>
   CCefBrowser(CefBrowserCallback callback, const std::string& url, const CCefSetting* setting);
+
+  /// <summary>
+  /// ABI 4 phase 2: creates the CEF browser. The managed host registers its
+  /// static thunk route between construction and start(), so callbacks during
+  /// browser creation (GetViewRect) cannot precede registration.
+  /// </summary>
+  void start();
 
   /// <summary>
   /// Destructs the CCefView instance
@@ -425,6 +433,10 @@ private:
   ///
   /// </summary>
   CefBrowserCallback callbackTable_;
+
+  // ABI 4 two-phase construction: start() consumes these.
+  std::string pendingUrl_;
+  std::unique_ptr<CCefSetting> pendingSetting_;
 
   bool sourceDragActive_ = false;
   bool sourceDragEntered_ = false;

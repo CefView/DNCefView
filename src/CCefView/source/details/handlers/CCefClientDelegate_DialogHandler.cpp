@@ -30,7 +30,7 @@ CCefClientDelegate::onFileDialog(CefRefPtr<CefBrowser>& browser,
   nlohmann::json filters = nlohmann::json::array();
   for (const auto& filter : accept_filters)
     filters.push_back(filter.ToString());
-  const bool handled = pCefView_->callbackTable_.pfnOnFileDialog(browser->GetIdentifier(),
+  const bool handled = pCefView_->callbackTable_.pfnOnFileDialog(pCefView_, browser->GetIdentifier(),
                                                                  requestId,
                                                                  static_cast<int>(mode),
                                                                  title.ToString().c_str(),

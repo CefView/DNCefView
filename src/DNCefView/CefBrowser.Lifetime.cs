@@ -55,6 +55,7 @@ namespace DNCefView
                     _deleting = true;
                     while (_activeCalls != 0) Monitor.Wait(_callGate);
                 }
+                UnregisterRoute(_native);
                 CCefBrowser_Delete(_native);
                 Interlocked.Exchange(ref _native, IntPtr.Zero);
                 lock (LiveInstances) LiveInstances.Remove(this);

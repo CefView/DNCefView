@@ -28,70 +28,70 @@ namespace DNCefView
             _dnCefViewDelegate = new WeakReference(del);
 
             #region CefView events
-            _callbackTable.CefQueryRequestCb = OnCefQueryRequest;
-            _callbackTable.InvokeMethodCb = OnCefInvokeMethod;
-            _callbackTable.ReportJavascriptResultCb = OnCefReportJavascriptResult;
-            _callbackTable.InputStateChangedCb = OnCefInputStateChanged;
+            _callbackTable.CefQueryRequestCb = Thunk_OnCefQueryRequest;
+            _callbackTable.InvokeMethodCb = Thunk_OnCefInvokeMethod;
+            _callbackTable.ReportJavascriptResultCb = Thunk_OnCefReportJavascriptResult;
+            _callbackTable.InputStateChangedCb = Thunk_OnCefInputStateChanged;
             #endregion
 
             #region DisplayHandler
-            _callbackTable.AddressChangedCb = OnCefAddressChanged;
-            _callbackTable.TitleChangedCb = OnCefTitleChanged;
-            _callbackTable.FullscreenModeChangedCb = OnCefFullScreenModeChanged;
-            _callbackTable.StatusMessageCb = OnCefStatusMessage;
-            _callbackTable.ConsoleMessageCb = OnCefConsoleMessage;
-            _callbackTable.LoadingProgressChangedCb = OnCefLoadingProgressChanged;
-            _callbackTable.FaviconUrlChangedCb = OnCefFaviconUrlChanged;
-            _callbackTable.CursorChangedCb = OnCefCursorChanged;
-            _callbackTable.DraggableRegionChangedCb = OnCefDraggableRegionChanged;
+            _callbackTable.AddressChangedCb = Thunk_OnCefAddressChanged;
+            _callbackTable.TitleChangedCb = Thunk_OnCefTitleChanged;
+            _callbackTable.FullscreenModeChangedCb = Thunk_OnCefFullScreenModeChanged;
+            _callbackTable.StatusMessageCb = Thunk_OnCefStatusMessage;
+            _callbackTable.ConsoleMessageCb = Thunk_OnCefConsoleMessage;
+            _callbackTable.LoadingProgressChangedCb = Thunk_OnCefLoadingProgressChanged;
+            _callbackTable.FaviconUrlChangedCb = Thunk_OnCefFaviconUrlChanged;
+            _callbackTable.CursorChangedCb = Thunk_OnCefCursorChanged;
+            _callbackTable.DraggableRegionChangedCb = Thunk_OnCefDraggableRegionChanged;
             #endregion
 
             #region FocusHandler
-            _callbackTable.OnFocusReleasedByTabKeyCb = OnCefReleasedFocusByTabKey;
-            _callbackTable.OnRequestSetFocusCb = OnCefRequestSetFocus;
-            _callbackTable.OnGotFocusCb = OnCefGotFocus;
-            _callbackTable.OnJSDialogCb = OnCefJSDialog;
+            _callbackTable.OnFocusReleasedByTabKeyCb = Thunk_OnCefReleasedFocusByTabKey;
+            _callbackTable.OnRequestSetFocusCb = Thunk_OnCefRequestSetFocus;
+            _callbackTable.OnGotFocusCb = Thunk_OnCefGotFocus;
+            _callbackTable.OnJSDialogCb = Thunk_OnCefJSDialog;
             #endregion
 
             #region LifespanHandler
-            _callbackTable.OnBeforeNewPopupCreateCb = OnCefBeforeNewPopupCreate;
-            _callbackTable.OnBeforeNewBrowserCreateCb = OnCefBeforeNewBrowserCreate;
-            _callbackTable.DoCloseCb = OnCefDoClose;
-            _callbackTable.RequestCloseCb = OnCefRequestClose;
-            _callbackTable.OnAfterCreatedCb = OnCefAfterCreated;
-            _callbackTable.OnBeforeCloseCb = OnCefBeforeClose;
+            _callbackTable.OnBeforeNewPopupCreateCb = Thunk_OnCefBeforeNewPopupCreate;
+            _callbackTable.OnBeforeNewBrowserCreateCb = Thunk_OnCefBeforeNewBrowserCreate;
+            _callbackTable.DoCloseCb = Thunk_OnCefDoClose;
+            _callbackTable.RequestCloseCb = Thunk_OnCefRequestClose;
+            _callbackTable.OnAfterCreatedCb = Thunk_OnCefAfterCreated;
+            _callbackTable.OnBeforeCloseCb = Thunk_OnCefBeforeClose;
             #endregion
 
             #region LoadHandler
-            _callbackTable.LoadingStateChangedCb = OnCefLoadingStateChanged;
-            _callbackTable.LoadStartCb = OnCefLoadStart;
-            _callbackTable.LoadEndCb = OnCefLoadEnd;
-            _callbackTable.LoadErrorCb = OnCefLoadError;
+            _callbackTable.LoadingStateChangedCb = Thunk_OnCefLoadingStateChanged;
+            _callbackTable.LoadStartCb = Thunk_OnCefLoadStart;
+            _callbackTable.LoadEndCb = Thunk_OnCefLoadEnd;
+            _callbackTable.LoadErrorCb = Thunk_OnCefLoadError;
             #endregion
 
             #region RenderHandler
-            _callbackTable.GetRootScreenRectCb = OnCefGetRootScreenRect;
-            _callbackTable.GetViewRectCb = OnCefGetViewRect;
-            _callbackTable.GetScreenPointCb = OnCefGetScreenPoint;
-            _callbackTable.GetScreenInfoCb = OnCefGetScreenInfo;
-            _callbackTable.OnPopupShowCb = OnCefPopupShow;
-            _callbackTable.OnPopupSizeCb = OnCefPopupSize;
-            _callbackTable.OnPaintCb = OnCefPaint;
-            _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
+            _callbackTable.GetRootScreenRectCb = Thunk_OnCefGetRootScreenRect;
+            _callbackTable.GetViewRectCb = Thunk_OnCefGetViewRect;
+            _callbackTable.GetScreenPointCb = Thunk_OnCefGetScreenPoint;
+            _callbackTable.GetScreenInfoCb = Thunk_OnCefGetScreenInfo;
+            _callbackTable.OnPopupShowCb = Thunk_OnCefPopupShow;
+            _callbackTable.OnPopupSizeCb = Thunk_OnCefPopupSize;
+            _callbackTable.OnPaintCb = Thunk_OnCefPaint;
+            _callbackTable.OnAcceleratedPaintCb = Thunk_OnCefAcceleratedPaint;
             // ABI 3 callbacks.
-            _callbackTable.OnBeforeUnloadDialogCb = OnCefBeforeUnloadDialog;
-            _callbackTable.OnFileDialogCb = OnCefFileDialog;
-            _callbackTable.OnBeforeDownloadCb = OnCefBeforeDownload;
-            _callbackTable.OnDownloadUpdatedCb = OnCefDownloadUpdated;
-            _callbackTable.OnFindResultCb = OnCefFindResult;
-            _callbackTable.OnContextMenuCb = OnCefContextMenu;
-            _callbackTable.OnContextMenuDismissedCb = OnCefContextMenuDismissed;
-            _callbackTable.OnPermissionPromptCb = OnCefPermissionPrompt;
-            _callbackTable.OnRenderProcessTerminatedCb = OnCefRenderProcessTerminated;
-            _callbackTable.StartDraggingCb = OnCefStartDragging;
-            _callbackTable.UpdateDragCursorCb = OnCefUpdateDragCursor;
-            _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
-            _callbackTable.OnTextSelectionChangedCb = OnCefTextSelectionChanged;
+            _callbackTable.OnBeforeUnloadDialogCb = Thunk_OnCefBeforeUnloadDialog;
+            _callbackTable.OnFileDialogCb = Thunk_OnCefFileDialog;
+            _callbackTable.OnBeforeDownloadCb = Thunk_OnCefBeforeDownload;
+            _callbackTable.OnDownloadUpdatedCb = Thunk_OnCefDownloadUpdated;
+            _callbackTable.OnFindResultCb = Thunk_OnCefFindResult;
+            _callbackTable.OnContextMenuCb = Thunk_OnCefContextMenu;
+            _callbackTable.OnContextMenuDismissedCb = Thunk_OnCefContextMenuDismissed;
+            _callbackTable.OnPermissionPromptCb = Thunk_OnCefPermissionPrompt;
+            _callbackTable.OnRenderProcessTerminatedCb = Thunk_OnCefRenderProcessTerminated;
+            _callbackTable.StartDraggingCb = Thunk_OnCefStartDragging;
+            _callbackTable.UpdateDragCursorCb = Thunk_OnCefUpdateDragCursor;
+            _callbackTable.OnImeCompositionRangeChangedCb = Thunk_OnCefImeCompositionRangeChanged;
+            _callbackTable.OnTextSelectionChangedCb = Thunk_OnCefTextSelectionChanged;
             #endregion
 
             _native = CCefBrowser_new0(_callbackTable, url, setting.NativeObject);
@@ -100,8 +100,232 @@ namespace DNCefView
                 lock (LiveInstances) LiveInstances.Remove(this);
                 throw new InvalidOperationException("Native browser creation failed");
             }
+            // ABI 4: register the static thunk route before browser creation so the
+            // first native callback (GetViewRect during creation) cannot precede it.
+            RegisterRoute(_native, this);
+            System.Diagnostics.Trace.WriteLine($"[ABI4] route registered host={_native}");
+            CCefBrowser_start(_native);
+            System.Diagnostics.Trace.WriteLine("[ABI4] start returned");
         }
 
+        #region ABI 4 static thunks (IL2CPP cannot marshal instance-method delegates)
+        // The native side passes the CCefBrowser pointer (host) back on every callback;
+        // the route maps it to this instance and forwards to the instance method.
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<IntPtr, CefBrowser> _route =
+            new System.Collections.Concurrent.ConcurrentDictionary<IntPtr, CefBrowser>();
+        internal static void RegisterRoute(IntPtr host, CefBrowser browser) => _route[host] = browser;
+        internal static void UnregisterRoute(IntPtr host) => _route.TryRemove(host, out _);
+        private static CefBrowser Route(IntPtr host) => _route.TryGetValue(host, out var b) ? b : null;
+
+        private static void Thunk_OnCefQueryRequest(System.IntPtr host, int browserId, string frameId, IntPtr query)
+        {
+            Route(host)?.OnCefQueryRequest(browserId, frameId, query);
+        }
+        private static void Thunk_OnCefInvokeMethod(System.IntPtr host, int browserId, string frameId, string method, string arguments)
+        {
+            Route(host)?.OnCefInvokeMethod(browserId, frameId, method, arguments);
+        }
+        private static void Thunk_OnCefReportJavascriptResult(System.IntPtr host, int browserId, string frameId, string context, string result)
+        {
+            Route(host)?.OnCefReportJavascriptResult(browserId, frameId, context, result);
+        }
+        private static void Thunk_OnCefInputStateChanged(System.IntPtr host, int browserId, string frameId, bool editable)
+        {
+            Route(host)?.OnCefInputStateChanged(browserId, frameId, editable);
+        }
+        private static void Thunk_OnCefAddressChanged(System.IntPtr host, int browserId, string frameId, string url)
+        {
+            Route(host)?.OnCefAddressChanged(browserId, frameId, url);
+        }
+        private static void Thunk_OnCefTitleChanged(System.IntPtr host, int browserId, string title)
+        {
+            Route(host)?.OnCefTitleChanged(browserId, title);
+        }
+        private static void Thunk_OnCefFullScreenModeChanged(System.IntPtr host, int browserId, bool fullscreen)
+        {
+            Route(host)?.OnCefFullScreenModeChanged(browserId, fullscreen);
+        }
+        private static void Thunk_OnCefStatusMessage(System.IntPtr host, int browserId, string message)
+        {
+            Route(host)?.OnCefStatusMessage(browserId, message);
+        }
+        private static void Thunk_OnCefConsoleMessage(System.IntPtr host, int browserId, string message, int level)
+        {
+            Route(host)?.OnCefConsoleMessage(browserId, message, level);
+        }
+        private static void Thunk_OnCefLoadingProgressChanged(System.IntPtr host, int browserId, double progress)
+        {
+            Route(host)?.OnCefLoadingProgressChanged(browserId, progress);
+        }
+        private static void Thunk_OnCefFaviconUrlChanged(System.IntPtr host, int browserId, string faviconUrl)
+        {
+            Route(host)?.OnCefFaviconUrlChanged(browserId, faviconUrl);
+        }
+        private static bool Thunk_OnCefCursorChanged(System.IntPtr host, int browserId, IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefCursorChanged(browserId, cursor, type, customCursorInfo) : false;
+        }
+        private static void Thunk_OnCefDraggableRegionChanged(System.IntPtr host, CefViewDraggableRegion[] draggableRegion, int count)
+        {
+            Route(host)?.OnCefDraggableRegionChanged(draggableRegion, count);
+        }
+        private static void Thunk_OnCefReleasedFocusByTabKey(System.IntPtr host, int browserId, bool next)
+        {
+            Route(host)?.OnCefReleasedFocusByTabKey(browserId, next);
+        }
+        private static bool Thunk_OnCefRequestSetFocus(System.IntPtr host, int browserId)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefRequestSetFocus(browserId) : false;
+        }
+        private static void Thunk_OnCefGotFocus(System.IntPtr host, int browserId)
+        {
+            Route(host)?.OnCefGotFocus(browserId);
+        }
+        private static bool Thunk_OnCefJSDialog(System.IntPtr host, int browserId, long requestId, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefJSDialog(browserId, requestId, originUrl, dialogType, messageText, defaultPromptText, suppressMessage) : false;
+        }
+        private static bool Thunk_OnCefBeforeNewPopupCreate(System.IntPtr host, string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, ref CefViewRect rect, IntPtr settings, ref bool disableJavascriptAccess)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefBeforeNewPopupCreate(frameId, targetUrl, targetFrameName, targetDisposition, ref rect, settings, ref disableJavascriptAccess) : false;
+        }
+        private static bool Thunk_OnCefBeforeNewBrowserCreate(System.IntPtr host, string frameId, string targetUrl, string targetFrameName, CefViewWindowOpenDisposition targetDisposition, CefViewRect rect, IntPtr settings)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefBeforeNewBrowserCreate(frameId, targetUrl, targetFrameName, targetDisposition, rect, settings) : false;
+        }
+        private static bool Thunk_OnCefDoClose(System.IntPtr host)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefDoClose() : false;
+        }
+        private static bool Thunk_OnCefRequestClose(System.IntPtr host)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefRequestClose() : false;
+        }
+        private static void Thunk_OnCefAfterCreated(System.IntPtr host)
+        {
+            Route(host)?.OnCefAfterCreated();
+        }
+        private static void Thunk_OnCefBeforeClose(System.IntPtr host)
+        {
+            Route(host)?.OnCefBeforeClose();
+        }
+        private static void Thunk_OnCefLoadingStateChanged(System.IntPtr host, int browserId, bool isLoading, bool canGoBack, bool canGoForward)
+        {
+            Route(host)?.OnCefLoadingStateChanged(browserId, isLoading, canGoBack, canGoForward);
+        }
+        private static void Thunk_OnCefLoadStart(System.IntPtr host, int browserId, string frameId, bool isMainFrame, int transition_type)
+        {
+            Route(host)?.OnCefLoadStart(browserId, frameId, isMainFrame, transition_type);
+        }
+        private static void Thunk_OnCefLoadEnd(System.IntPtr host, int browserId, string frameId, bool isMainFrame, int httpStatusCode)
+        {
+            Route(host)?.OnCefLoadEnd(browserId, frameId, isMainFrame, httpStatusCode);
+        }
+        private static bool Thunk_OnCefLoadError(System.IntPtr host, int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefLoadError(browserId, frameId, isMainFrame, errorCode, errorMsg, failedUrl) : false;
+        }
+        private static void Thunk_OnCefGetRootScreenRect(System.IntPtr host, int browserId, ref CefViewRect rect)
+        {
+            Route(host)?.OnCefGetRootScreenRect(browserId, ref rect);
+        }
+        private static void Thunk_OnCefGetViewRect(System.IntPtr host, int browserId, ref CefViewRect rect)
+        {
+            Route(host)?.OnCefGetViewRect(browserId, ref rect);
+        }
+        private static bool Thunk_OnCefGetScreenPoint(System.IntPtr host, int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY) : false;
+        }
+        private static bool Thunk_OnCefGetScreenInfo(System.IntPtr host, int browserId, ref CefViewScreenInfo info)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefGetScreenInfo(browserId, ref info) : false;
+        }
+        private static void Thunk_OnCefPopupShow(System.IntPtr host, int browserId, bool show)
+        {
+            Route(host)?.OnCefPopupShow(browserId, show);
+        }
+        private static void Thunk_OnCefPopupSize(System.IntPtr host, int browserId, CefViewRect rect)
+        {
+            Route(host)?.OnCefPopupSize(browserId, rect);
+        }
+        private static void Thunk_OnCefPaint(System.IntPtr host, int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
+        {
+            Route(host)?.OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytesBuffer, imageBytesCount, width, height);
+        }
+        private static void Thunk_OnCefAcceleratedPaint(System.IntPtr host, int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
+        {
+            Route(host)?.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
+        }
+        private static bool Thunk_OnCefBeforeUnloadDialog(System.IntPtr host, int browserId, long requestId, string messageText, bool isReload)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefBeforeUnloadDialog(browserId, requestId, messageText, isReload) : false;
+        }
+        private static bool Thunk_OnCefFileDialog(System.IntPtr host, int browserId, long requestId, int mode, string title, string defaultFilePath, string filtersJson)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefFileDialog(browserId, requestId, mode, title, defaultFilePath, filtersJson) : false;
+        }
+        private static bool Thunk_OnCefBeforeDownload(System.IntPtr host, int browserId, long downloadId, string url, string suggestedName, string mimeType, long totalBytes)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefBeforeDownload(browserId, downloadId, url, suggestedName, mimeType, totalBytes) : false;
+        }
+        private static void Thunk_OnCefDownloadUpdated(System.IntPtr host, int browserId, long downloadId, int state, double percent, long speed, long receivedBytes, long totalBytes)
+        {
+            Route(host)?.OnCefDownloadUpdated(browserId, downloadId, state, percent, speed, receivedBytes, totalBytes);
+        }
+        private static void Thunk_OnCefFindResult(System.IntPtr host, int browserId, int identifier, int count, int activeMatchOrdinal, bool finalUpdate, CefViewRect selectionRect)
+        {
+            Route(host)?.OnCefFindResult(browserId, identifier, count, activeMatchOrdinal, finalUpdate, selectionRect);
+        }
+        private static bool Thunk_OnCefContextMenu(System.IntPtr host, int browserId, long requestId, string contextParamsJson, string menuJson)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefContextMenu(browserId, requestId, contextParamsJson, menuJson) : false;
+        }
+        private static void Thunk_OnCefContextMenuDismissed(System.IntPtr host, int browserId)
+        {
+            Route(host)?.OnCefContextMenuDismissed(browserId);
+        }
+        private static bool Thunk_OnCefPermissionPrompt(System.IntPtr host, int browserId, ulong promptId, string requestingOrigin, uint requestedPermissions)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefPermissionPrompt(browserId, promptId, requestingOrigin, requestedPermissions) : false;
+        }
+        private static void Thunk_OnCefRenderProcessTerminated(System.IntPtr host, int browserId, int status, int errorCode, string errorString)
+        {
+            Route(host)?.OnCefRenderProcessTerminated(browserId, status, errorCode, errorString);
+        }
+        private static bool Thunk_OnCefStartDragging(System.IntPtr host, int browserId, CefViewDragOperation allowedOps, int x, int y)
+        {
+            var b = Route(host);
+            return b != null ? b.OnCefStartDragging(browserId, allowedOps, x, y) : false;
+        }
+        private static void Thunk_OnCefUpdateDragCursor(System.IntPtr host, int browserId, CefViewDragOperation operation)
+        {
+            Route(host)?.OnCefUpdateDragCursor(browserId, operation);
+        }
+        private static void Thunk_OnCefImeCompositionRangeChanged(System.IntPtr host, int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount)
+        {
+            Route(host)?.OnCefImeCompositionRangeChanged(browserId, selectedRange, characterBounds, characterBoundsCount);
+        }
+        private static void Thunk_OnCefTextSelectionChanged(System.IntPtr host, int browserId, string selectedText, CefViewRange selectedRange)
+        {
+            Route(host)?.OnCefTextSelectionChanged(browserId, selectedText, selectedRange);
+        }
+        #endregion
         #region CEF Callbacks
         #region CefView events
         public void OnCefQueryRequest(int browserId, string frameId, IntPtr query)
@@ -419,6 +643,7 @@ namespace DNCefView
 
         public void OnCefAfterCreated()
         {
+            System.Diagnostics.Trace.WriteLine("[ABI4] OnCefAfterCreated instance");
             try
             {
                 _created = true;

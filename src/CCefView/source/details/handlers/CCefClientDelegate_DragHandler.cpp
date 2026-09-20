@@ -21,5 +21,5 @@ CCefClientDelegate::draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
     return;
 
   if (pCefView_->callbackTable_.pfnDraggableRegionChanged)
-    pCefView_->callbackTable_.pfnDraggableRegionChanged(regions.data(), static_cast<int>(regions.size()));
+    pCefView_->callbackTable_.pfnDraggableRegionChanged(pCefView_, regions.data(), static_cast<int>(regions.size()));
 }

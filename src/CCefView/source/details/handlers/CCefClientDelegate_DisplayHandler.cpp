@@ -70,7 +70,7 @@ CCefClientDelegate::addressChanged(CefRefPtr<CefBrowser>& browser, CefRefPtr<Cef
 
   if (pCefView_->callbackTable_.pfnAddressChanged) {
     auto frameId = frame->GetIdentifier();
-    pCefView_->callbackTable_.pfnAddressChanged(
+    pCefView_->callbackTable_.pfnAddressChanged(pCefView_, 
       browser->GetIdentifier(), FrameIdC2X(frameId).c_str(), url.ToString().c_str());
   }
 }
@@ -82,7 +82,7 @@ CCefClientDelegate::titleChanged(CefRefPtr<CefBrowser>& browser, const CefString
     return;
 
   if (pCefView_->callbackTable_.pfnTitleChanged)
-    pCefView_->callbackTable_.pfnTitleChanged(browser->GetIdentifier(), title.ToString().c_str());
+    pCefView_->callbackTable_.pfnTitleChanged(pCefView_, browser->GetIdentifier(), title.ToString().c_str());
 }
 
 void
@@ -95,12 +95,12 @@ CCefClientDelegate::faviconURLChanged(CefRefPtr<CefBrowser>& browser, const std:
     return;
 
   if (icon_urls.empty()) {
-    pCefView_->callbackTable_.pfnFaviconUrlChanged(browser->GetIdentifier(), "");
+    pCefView_->callbackTable_.pfnFaviconUrlChanged(pCefView_, browser->GetIdentifier(), "");
     return;
   }
 
   const auto faviconUrl = icon_urls.front().ToString();
-  pCefView_->callbackTable_.pfnFaviconUrlChanged(browser->GetIdentifier(), faviconUrl.c_str());
+  pCefView_->callbackTable_.pfnFaviconUrlChanged(pCefView_, browser->GetIdentifier(), faviconUrl.c_str());
 }
 
 void
@@ -110,7 +110,7 @@ CCefClientDelegate::fullscreenModeChanged(CefRefPtr<CefBrowser>& browser, bool f
     return;
 
   if (pCefView_->callbackTable_.pfnFullscreenModeChanged)
-    pCefView_->callbackTable_.pfnFullscreenModeChanged(browser->GetIdentifier(), fullscreen);
+    pCefView_->callbackTable_.pfnFullscreenModeChanged(pCefView_, browser->GetIdentifier(), fullscreen);
 }
 
 bool
@@ -127,7 +127,7 @@ CCefClientDelegate::statusMessage(CefRefPtr<CefBrowser>& browser, const CefStrin
     return;
 
   if (pCefView_->callbackTable_.pfnStatusMessage)
-    pCefView_->callbackTable_.pfnStatusMessage(browser->GetIdentifier(), value.ToString().c_str());
+    pCefView_->callbackTable_.pfnStatusMessage(pCefView_, browser->GetIdentifier(), value.ToString().c_str());
 }
 
 void
@@ -137,7 +137,7 @@ CCefClientDelegate::consoleMessage(CefRefPtr<CefBrowser>& browser, const CefStri
     return;
 
   if (pCefView_->callbackTable_.pfnConsoleMessage)
-    pCefView_->callbackTable_.pfnConsoleMessage(browser->GetIdentifier(), message.ToString().c_str(), level);
+    pCefView_->callbackTable_.pfnConsoleMessage(pCefView_, browser->GetIdentifier(), message.ToString().c_str(), level);
 }
 
 void
@@ -147,7 +147,7 @@ CCefClientDelegate::loadingProgressChanged(CefRefPtr<CefBrowser>& browser, doubl
     return;
 
   if (pCefView_->callbackTable_.pfnLoadingProgressChanged)
-    pCefView_->callbackTable_.pfnLoadingProgressChanged(browser->GetIdentifier(), progress);
+    pCefView_->callbackTable_.pfnLoadingProgressChanged(pCefView_, browser->GetIdentifier(), progress);
 }
 
 bool
@@ -160,7 +160,7 @@ CCefClientDelegate::cursorChanged(CefRefPtr<CefBrowser>& browser,
     return false;
 
   if (pCefView_->callbackTable_.pfnCursorChanged)
-    pCefView_->callbackTable_.pfnCursorChanged(browser->GetIdentifier(), (void*)cursor, type, custom_cursor_info);
+    pCefView_->callbackTable_.pfnCursorChanged(pCefView_, browser->GetIdentifier(), (void*)cursor, type, custom_cursor_info);
 
   return true;
 }

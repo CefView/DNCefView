@@ -24,7 +24,7 @@ CCefClientDelegate::onBeforeDownload(CefRefPtr<CefBrowser>& browser,
   // callback is tracked separately by download id once updates start.
   const int64_t downloadId = pCefView_->reserveRequestId();
   pCefView_->storeBeforeDownloadCallback(downloadId, callback);
-  const bool handled = pCefView_->callbackTable_.pfnOnBeforeDownload(
+  const bool handled = pCefView_->callbackTable_.pfnOnBeforeDownload(pCefView_, 
     browser->GetIdentifier(),
     downloadId,
     download_item->GetURL().ToString().c_str(),
@@ -70,7 +70,7 @@ CCefClientDelegate::onDownloadUpdated(CefRefPtr<CefBrowser>& browser,
   else
     state = 0;
 
-  pCefView_->callbackTable_.pfnOnDownloadUpdated(
+  pCefView_->callbackTable_.pfnOnDownloadUpdated(pCefView_, 
     browser->GetIdentifier(),
     downloadId,
     state,

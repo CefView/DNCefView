@@ -12,6 +12,10 @@ ccefbrowser_class * CCefBrowser_new0(cefbrowsercallback_struct callback, const c
   return OnCefUi([=]() { return new CCefBrowser(callback, url, setting); });
 }
 
+void CCefBrowser_start(ccefbrowser_class * thiz) {
+  OnCefUi([=]() { thiz->start(); });
+}
+
 void CCefBrowser_addLocalFolderResource(ccefbrowser_class * thiz, const char * path, const char * url, int priority) {
   OnCefUi([=]() { thiz->addLocalFolderResource(path, url, priority); });
 }

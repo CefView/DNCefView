@@ -30,6 +30,11 @@ namespace DNCefView
         [DllImport("CCefView")]
         private static extern IntPtr CCefBrowser_new0(CefBrowserCallback callback, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, IntPtr setting);
 
+        // ABI 4: phase-2 browser creation; new0 only allocates so the host can
+        // register its thunk route before any callback can fire.
+        [DllImport("CCefView")]
+        private static extern void CCefBrowser_start(IntPtr thiz);
+
         // Source: void addLocalFolderResource(const std::string &, const std::string &, int)
         [DllImport("CCefView")]
         private static extern void CCefBrowser_addLocalFolderResource(IntPtr thiz, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, [MarshalAs(UnmanagedType.LPUTF8Str)] string url, int priority);

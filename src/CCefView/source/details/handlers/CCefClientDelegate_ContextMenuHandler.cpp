@@ -87,7 +87,7 @@ CCefClientDelegate::onRunContextMenu(CefRefPtr<CefBrowser>& browser,
   contextParams["x"] = params->GetXCoord();
   contextParams["y"] = params->GetYCoord();
   contextParams["type"] = static_cast<int>(params->GetTypeFlags());
-  const bool handled = pCefView_->callbackTable_.pfnOnContextMenu(
+  const bool handled = pCefView_->callbackTable_.pfnOnContextMenu(pCefView_, 
     browser->GetIdentifier(), requestId, contextParams.dump().c_str(), SerializeMenuModel(model).dump().c_str());
   if (!handled)
     pCefView_->storeContextMenuCallback(requestId, nullptr);
@@ -116,5 +116,5 @@ CCefClientDelegate::onContextMenuDismissed(CefRefPtr<CefBrowser>& browser, CefRe
   // Drop any unanswered menu so a destroyed menu cannot fire later.
   pCefView_->clearContextMenuCallbacks();
   if (pCefView_->callbackTable_.pfnOnContextMenuDismissed)
-    pCefView_->callbackTable_.pfnOnContextMenuDismissed(browser->GetIdentifier());
+    pCefView_->callbackTable_.pfnOnContextMenuDismissed(pCefView_, browser->GetIdentifier());
 }

@@ -71,8 +71,21 @@ std::string ExtractFileName(const std::string& path)
 }
 } // namespace
 
+// ABI 4: two-phase construction. new0 allocates the instance and stores the
+// callback table only; start() creates the CEF browser. The managed host
+// registers its static thunk route between the two calls, so the first native
+// callback (GetViewRect during creation) cannot arrive before registration.
 CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, const CCefSetting* setting)
   : callbackTable_(callback)
+  , pendingUrl_(url)
+  , pendingSetting_(setting ? new CCefSetting(*setting) : nullptr)
+{
+  auto pContext = CCefContext::instance();
+  (void)pContext;
+}
+
+void
+CCefBrowser::start()
 {
   auto pContext = CCefContext::instance();
 
@@ -84,13 +97,13 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
 
   // create the browser settings
   CefBrowserSettings browserSettings;
-  CCefSetting::CopyToCefBrowserSettings(setting, browserSettings);
+  CCefSetting::CopyToCefBrowserSettings(pendingSetting_.get(), browserSettings);
 
   // DNCefView defaults to OSR. Creation mode and begin-frame driving are controlled per browser setting.
   CefWindowInfo window_info;
-  const bool windowlessRenderingEnabled = setting ? setting->windowlessRenderingEnabled() : true;
-  const bool hardwareAccelerationEnabled = setting ? setting->hardwareAccelerationEnabled() : false;
-  const bool externalBeginFrameEnabled = setting ? setting->externalBeginFrameEnabled() : false;
+  const bool windowlessRenderingEnabled = pendingSetting_ ? pendingSetting_->windowlessRenderingEnabled() : true;
+  const bool hardwareAccelerationEnabled = pendingSetting_ ? pendingSetting_->hardwareAccelerationEnabled() : false;
+  const bool externalBeginFrameEnabled = pendingSetting_ ? pendingSetting_->externalBeginFrameEnabled() : false;
 
   if (windowlessRenderingEnabled) {
     window_info.SetAsWindowless(0);
@@ -102,9 +115,9 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
     transparentPaintingEnabled_ = true;
 
   // create browser object
-  bool success = CefBrowserHost::CreateBrowser(window_info,     // window info
-                                               pClient,         // handler
-                                               url,             // url
+  bool success = CefBrowserHost::CreateBrowser(window_info,  // window info
+                                               pClient,      // handler
+                                               pendingUrl_,  // url
                                                browserSettings, // settings
                                                nullptr,
                                                CefRequestContext::GetGlobalContext());
@@ -114,7 +127,6 @@ CCefBrowser::CCefBrowser(CefBrowserCallback callback, const std::string& url, co
 
   pClient_ = pClient;
   pClientDelegate_ = pClientDelegate;
-  return;
 }
 
 CCefBrowser::~CCefBrowser()
@@ -1186,7 +1198,7 @@ void
 CCefBrowser::cefQueryRequest(int browserId, const std::string& frameId, const CCefQuery* query)
 {
   if (callbackTable_.pfnCefQueryRequest)
-    callbackTable_.pfnCefQueryRequest(browserId, frameId.c_str(), query);
+    callbackTable_.pfnCefQueryRequest(this, browserId, frameId.c_str(), query);
 }
 
 void
@@ -1196,7 +1208,7 @@ CCefBrowser::invokeMethod(int browserId,
                           const std::string& arguments)
 {
   if (callbackTable_.pfnInvokeMethod)
-    callbackTable_.pfnInvokeMethod(browserId, frameId.c_str(), method.c_str(), arguments.c_str());
+    callbackTable_.pfnInvokeMethod(this, browserId, frameId.c_str(), method.c_str(), arguments.c_str());
 }
 
 void
@@ -1206,14 +1218,14 @@ CCefBrowser::reportJavascriptResult(int browserId,
                                     const std::string& result)
 {
   if (callbackTable_.pfnReportJavascriptResult)
-    callbackTable_.pfnReportJavascriptResult(browserId, frameId.c_str(), context.c_str(), result.c_str());
+    callbackTable_.pfnReportJavascriptResult(this, browserId, frameId.c_str(), context.c_str(), result.c_str());
 }
 
 void
 CCefBrowser::inputStateChanged(int browserId, const std::string& frameId, bool editable)
 {
   if (callbackTable_.pfnInputStateChanged)
-    callbackTable_.pfnInputStateChanged(browserId, frameId.c_str(), editable);
+    callbackTable_.pfnInputStateChanged(this, browserId, frameId.c_str(), editable);
 }
 
 bool
@@ -1234,7 +1246,7 @@ CCefBrowser::startDragging(CefRefPtr<CefDragData>& dragData, CefViewDragOperatio
   sourceDragEntered_ = false;
 
   if (callbackTable_.pfnStartDragging &&
-      !callbackTable_.pfnStartDragging(browserId(), allowedOps, x, y)) {
+      !callbackTable_.pfnStartDragging(this, browserId(), allowedOps, x, y)) {
     resetSourceDragState();
     return false;
   }

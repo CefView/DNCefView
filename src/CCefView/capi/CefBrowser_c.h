@@ -31,6 +31,9 @@ extern "C"
   typedef struct CCefBrowser ccefbrowser_class;
   CCEFVIEW_EXPORT void CCefBrowser_Delete(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT ccefbrowser_class * CCefBrowser_new0(cefbrowsercallback_struct callback, const char * url, const ccefsetting_class * setting);
+  // ABI 4: phase-2 browser creation; new0 only allocates so the host can
+  // register its thunk route first.
+  CCEFVIEW_EXPORT void CCefBrowser_start(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_addLocalFolderResource(ccefbrowser_class * thiz, const char * path, const char * url, int priority);
   CCEFVIEW_EXPORT void CCefBrowser_addArchiveResource(ccefbrowser_class * thiz, const char * path, const char * url, const char * password, int priority);
   CCEFVIEW_EXPORT int CCefBrowser_browserId(ccefbrowser_class * thiz);

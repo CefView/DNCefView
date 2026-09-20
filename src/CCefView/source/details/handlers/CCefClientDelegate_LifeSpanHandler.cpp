@@ -32,7 +32,7 @@ CCefClientDelegate::onBeforePopup(CefRefPtr<CefBrowser>& browser,
       CCefSetting s;
       CCefSetting::CopyFromCefBrowserSettings(settings, &s);
 
-      cancel = pCefView_->callbackTable_.pfnOnBeforeNewPopupCreate(i.c_str(), u.c_str(), n.c_str(), d, &r, &s, &j);
+      cancel = pCefView_->callbackTable_.pfnOnBeforeNewPopupCreate(pCefView_, i.c_str(), u.c_str(), n.c_str(), d, &r, &s, &j);
 
       if (!cancel) {
         windowInfo.bounds = r;
@@ -50,7 +50,7 @@ CCefClientDelegate::onBeforePopup(CefRefPtr<CefBrowser>& browser,
       CCefSetting s;
       CCefSetting::CopyFromCefBrowserSettings(settings, &s);
 
-      cancel = pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(i.c_str(), u.c_str(), n.c_str(), d, r, &s);
+      cancel = pCefView_->callbackTable_.pfnOnBeforeNewBrowserCreate(pCefView_, i.c_str(), u.c_str(), n.c_str(), d, r, &s);
     }
   }
 
@@ -72,7 +72,7 @@ CCefClientDelegate::onAfterCreate(CefRefPtr<CefBrowser>& browser)
     pCefView_->pCefBrowser_ = browser;
 
     if (pCefView_->callbackTable_.pfnOnAfterCreated)
-      pCefView_->callbackTable_.pfnOnAfterCreated();
+      pCefView_->callbackTable_.pfnOnAfterCreated(pCefView_);
   }
 }
 
@@ -84,7 +84,7 @@ CCefClientDelegate::doClose(CefRefPtr<CefBrowser>& browser)
 
   bool rt = false;
   if (pCefView_->callbackTable_.pfnDoClose) {
-    rt = pCefView_->callbackTable_.pfnDoClose();
+    rt = pCefView_->callbackTable_.pfnDoClose(pCefView_);
   }
   return rt;
 }
@@ -97,7 +97,7 @@ CCefClientDelegate::requestClose(CefRefPtr<CefBrowser>& browser)
 
   bool rt = false;
   if (pCefView_->callbackTable_.pfnRequestClose) {
-    rt = pCefView_->callbackTable_.pfnRequestClose();
+    rt = pCefView_->callbackTable_.pfnRequestClose(pCefView_);
   }
   return rt;
 }
@@ -109,6 +109,6 @@ CCefClientDelegate::onBeforeClose(CefRefPtr<CefBrowser>& browser)
     return;
 
   if (pCefView_->callbackTable_.pfnOnBeforeClose) {
-    pCefView_->callbackTable_.pfnOnBeforeClose();
+    pCefView_->callbackTable_.pfnOnBeforeClose(pCefView_);
   }
 }
