@@ -1,11 +1,13 @@
-﻿#ifndef CCEFVIEW_H
+#ifndef CCEFVIEW_H
 #define CCEFVIEW_H
 
 #pragma once
 // stl
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <unordered_map>
 
 // cef
 #include <include/cef_app.h>
@@ -22,6 +24,9 @@
 
 // details
 #include "details/handlers/CCefClientDelegate.h"
+
+class CefDragData;
+class CefJSDialogCallback;
 
 /// <summary>
 ///
@@ -43,13 +48,21 @@ public:
 
 public:
   /// <summary>
-  /// Constructs a CCefView instance
+  /// Constructs a CCefView instance (ABI 4 phase 1: allocate and store the
+  /// callback table only — no CEF browser is created yet).
   /// </summary>
   /// <param name="callback">The delegate table</param>
   /// <param name="url">The target url</param>
   /// <param name="setting">The <see cref="QCefSetting"/> instance</param>
   /// <param name="parent">The parent</param>
   CCefBrowser(CefBrowserCallback callback, const std::string& url, const CCefSetting* setting);
+
+  /// <summary>
+  /// ABI 4 phase 2: creates the CEF browser. The managed host registers its
+  /// static thunk route between construction and start(), so callbacks during
+  /// browser creation (GetViewRect) cannot precede registration.
+  /// </summary>
+  void start();
 
   /// <summary>
   /// Destructs the CCefView instance
@@ -228,12 +241,44 @@ public:
 
 #pragma region Control CEF
   void setWindowlessFrameRate(int rate);
+  void sendExternalBeginFrame();
+  void showDevTools();
+  void closeDevTools();
+  bool hasDevTools();
+  void closeBrowser(bool forceClose);
   void setFocus(bool focused);
   void wasResized();
   void wasHidden(bool hidden);
   void sendMouseMoveEvent(int x, int y, uint32_t modifiers, bool leave);
   void sendMouseClickEvent(int x, int y, uint32_t modifiers, CefViewMouseButtonType type, bool mouseUp, int clickCount);
   void sendWheelEvent(int x, int y, uint32_t modifiers, int deltaX, int deltaY);
+  void dragTargetDragEnterText(int x,
+                               int y,
+                               uint32_t modifiers,
+                               const std::string& text,
+                               const std::string& html,
+                               const std::string& baseUrl,
+                               CefViewDragOperation allowedOps);
+  void dragTargetDragEnterFiles(int x,
+                                int y,
+                                uint32_t modifiers,
+                                const std::string& filePaths,
+                                CefViewDragOperation allowedOps);
+  void dragTargetDragOver(int x, int y, uint32_t modifiers, CefViewDragOperation allowedOps);
+  void dragTargetDragLeave();
+  void dragTargetDrop(int x, int y, uint32_t modifiers);
+  void dragSourceEndedAt(int x, int y, CefViewDragOperation operation);
+  void dragSourceSystemDragEnded();
+  void sendTouchEvent(int touchId,
+                      float x,
+                      float y,
+                      float radiusX,
+                      float radiusY,
+                      float rotationAngle,
+                      float pressure,
+                      int touchEventType,
+                      uint32_t modifiers,
+                      int pointerType);
   void sendKeyEvent(CefViewKeyEventType type,
                     uint32_t modifiers,
                     int windowsKeyCode,
@@ -252,6 +297,31 @@ public:
   void imeCommitText(const std::string& text, CefViewRange replacement_range, int relative_cursor_pos);
   void imeFinishComposingText(bool keep_selection);
   void imeCancelComposition();
+  bool continueJSDialog(int64_t requestId, bool success, const std::string& userInput);
+  // ABI 3: editor commands on the focused frame.
+  void copy();
+  void cut();
+  void paste();
+  void selectAll();
+  void undo();
+  void redo();
+  void del();
+  // ABI 3: find.
+  void startFinding(const std::string& searchText, bool forward, bool matchCase);
+  void stopFinding(bool clearSelection);
+  // ABI 3: file dialog reserve map answers (requestId keyed).
+  bool continueFileDialog(int64_t requestId, int filterIndex, const std::vector<std::string>& filePaths);
+  void cancelFileDialog(int64_t requestId);
+  // ABI 3: download control (beforeDownload map keyed by requestId; item map keyed by downloadId).
+  bool continueDownload(int64_t downloadId, const std::string& downloadPath, bool showDialog);
+  void cancelDownload(int64_t downloadId);
+  void pauseDownload(int64_t downloadId);
+  void resumeDownload(int64_t downloadId);
+  // ABI 3: context menu reserve map answers (commandId executes the CEF built-in command).
+  bool continueContextMenu(int64_t requestId, int commandId, int eventFlags);
+  void cancelContextMenu(int64_t requestId);
+  // ABI 3: permission prompt answers.
+  bool continuePermissionPrompt(uint64_t promptId, bool allow);
 #pragma endregion
 
 #pragma region CEF Callbacks
@@ -273,7 +343,40 @@ protected:
   void inputStateChanged(int browserId, //
                          const std::string& frameId,
                          bool editable);
+
+  bool startDragging(CefRefPtr<CefDragData>& dragData, CefViewDragOperation allowedOps, int x, int y);
 #pragma endregion
+
+private:
+  int64_t reserveJSDialogRequestId();
+  void storeJSDialogCallback(int64_t requestId, CefRefPtr<CefJSDialogCallback> callback);
+  void clearJSDialogCallbacks();
+
+private:
+  // ABI 3 reserve maps: the pfn callback returns true, the host answers asynchronously
+  // through the continue*/cancel* exports, and every clear path drops the CEF callback
+  // so a destroyed browser cannot leak one.
+  int64_t reserveRequestId();
+  void storeFileDialogCallback(int64_t requestId, CefRefPtr<CefFileDialogCallback> callback);
+  bool takeFileDialogCallback(int64_t requestId, CefRefPtr<CefFileDialogCallback>& callback);
+  void clearFileDialogCallbacks();
+
+  void storeBeforeDownloadCallback(int64_t requestId, CefRefPtr<CefBeforeDownloadCallback> callback);
+  bool takeBeforeDownloadCallback(int64_t requestId, CefRefPtr<CefBeforeDownloadCallback>& callback);
+  void clearBeforeDownloadCallbacks();
+
+  void storeDownloadItemCallback(int64_t downloadId, CefRefPtr<CefDownloadItemCallback> callback);
+  bool takeDownloadItemCallback(int64_t downloadId, CefRefPtr<CefDownloadItemCallback>& callback);
+  void dropDownloadItemCallback(int64_t downloadId);
+  void clearDownloadItemCallbacks();
+
+  void storeContextMenuCallback(int64_t requestId, CefRefPtr<CefRunContextMenuCallback> callback);
+  bool takeContextMenuCallback(int64_t requestId, CefRefPtr<CefRunContextMenuCallback>& callback);
+  void clearContextMenuCallbacks();
+
+  void storePermissionPromptCallback(uint64_t promptId, CefRefPtr<CefPermissionPromptCallback> callback);
+  bool takePermissionPromptCallback(uint64_t promptId, CefRefPtr<CefPermissionPromptCallback>& callback);
+  void clearPermissionPromptCallbacks();
 
 private:
   /// <summary>
@@ -330,6 +433,33 @@ private:
   ///
   /// </summary>
   CefBrowserCallback callbackTable_;
+
+  // ABI 4 two-phase construction: start() consumes these.
+  std::string pendingUrl_;
+  std::unique_ptr<CCefSetting> pendingSetting_;
+
+  bool sourceDragActive_ = false;
+  bool sourceDragEntered_ = false;
+  CefRefPtr<CefDragData> sourceDragData_ = nullptr;
+  CefViewDragOperation sourceDragAllowedOps_ = DRAG_OPERATION_NONE;
+  std::mutex jsDialogCallbacksMutex_;
+  std::unordered_map<int64_t, CefRefPtr<CefJSDialogCallback>> jsDialogCallbacks_;
+  int64_t nextJSDialogRequestId_ = 1;
+
+  // ABI 3 reserve maps (see the take/store helpers above).
+  std::mutex requestMapsMutex_;
+  std::unordered_map<int64_t, CefRefPtr<CefFileDialogCallback>> fileDialogCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefBeforeDownloadCallback>> beforeDownloadCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefDownloadItemCallback>> downloadItemCallbacks_;
+  std::unordered_map<int64_t, CefRefPtr<CefRunContextMenuCallback>> contextMenuCallbacks_;
+  std::unordered_map<uint64_t, CefRefPtr<CefPermissionPromptCallback>> permissionPromptCallbacks_;
+  int64_t nextRequestId_ = 1;
+  int nextFindRequestId_ = 1;
+
+private:
+  void updateSourceDragTarget(int x, int y, uint32_t modifiers);
+  void endSourceDrag(int x, int y, uint32_t modifiers, bool canceled);
+  void resetSourceDragState();
 };
 
 #endif

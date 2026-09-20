@@ -1,4 +1,4 @@
-﻿#include "CefSetting.h"
+#include "CefSetting.h"
 
 CCefSetting::CCefSetting()
 {
@@ -113,6 +113,17 @@ int
 CCefSetting::windowlessFrameRate() const
 {
   return windowlessFrameRate_.value_or(0);
+}
+void
+CCefSetting::setWindowlessRenderingEnabled(bool enabled)
+{
+  windowlessRendering_ = enabled;
+}
+
+bool
+CCefSetting::windowlessRenderingEnabled() const
+{
+  return windowlessRendering_;
 }
 
 void
@@ -342,6 +353,17 @@ CCefSetting::hardwareAccelerationEnabled() const
 {
   return hardwareAcceleration_;
 }
+void
+CCefSetting::setExternalBeginFrameEnabled(bool enabled)
+{
+  externalBeginFrame_ = enabled;
+}
+
+bool
+CCefSetting::externalBeginFrameEnabled() const
+{
+  return externalBeginFrame_;
+}
 
 void
 CCefSetting::CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings& cs)
@@ -412,7 +434,10 @@ CCefSetting::CopyToCefBrowserSettings(const CCefSetting* qs, CefBrowserSettings&
 
   cs.local_storage = (cef_state_t)(qs->localStorage_);
 
+#if defined(CEF_VERSION_MAJOR) && CEF_VERSION_MAJOR < 142
+  // CEF 142 removed databases from CefBrowserSettings.
   cs.databases = (cef_state_t)(qs->databases_);
+#endif
 
   cs.webgl = (cef_state_t)(qs->webGL_);
 

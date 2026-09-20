@@ -5,9 +5,8 @@ namespace DNCefView
 {
     public partial class CefBrowser
     {
-        internal static HashSet<WeakReference> LiveInstances = new HashSet<WeakReference>();
+        internal static readonly HashSet<CefBrowser> LiveInstances = new HashSet<CefBrowser>();
 
-        private WeakReference _weakSelf;
 
         private WeakReference _dnCefViewDelegate;
 
@@ -24,353 +23,90 @@ namespace DNCefView
                 throw new Exception("CefContext must be instantiated first");
             }
 
-            _weakSelf = new WeakReference(this);
-            LiveInstances.Add(_weakSelf);
+            lock (LiveInstances) LiveInstances.Add(this);
 
             _dnCefViewDelegate = new WeakReference(del);
 
             #region CefView events
-            _callbackTable.CefQueryRequestCb = OnCefQueryRequest;
-            _callbackTable.InvokeMethodCb = OnCefInvokeMethod;
-            _callbackTable.ReportJavascriptResultCb = OnCefReportJavascriptResult;
-            _callbackTable.InputStateChangedCb = OnCefInputStateChanged;
+            _callbackTable.CefQueryRequestCb = Thunk_OnCefQueryRequest;
+            _callbackTable.InvokeMethodCb = Thunk_OnCefInvokeMethod;
+            _callbackTable.ReportJavascriptResultCb = Thunk_OnCefReportJavascriptResult;
+            _callbackTable.InputStateChangedCb = Thunk_OnCefInputStateChanged;
             #endregion
 
             #region DisplayHandler
-            _callbackTable.AddressChangedCb = OnCefAddressChanged;
-            _callbackTable.TitleChangedCb = OnCefTitleChanged;
-            _callbackTable.FullscreenModeChangedCb = OnCefFullScreenModeChanged;
-            _callbackTable.StatusMessageCb = OnCefStatusMessage;
-            _callbackTable.ConsoleMessageCb = OnCefConsoleMessage;
-            _callbackTable.LoadingProgressChangedCb = OnCefLoadingProgressChanged;
-            _callbackTable.CursorChangedCb = OnCefCursorChanged;
+            _callbackTable.AddressChangedCb = Thunk_OnCefAddressChanged;
+            _callbackTable.TitleChangedCb = Thunk_OnCefTitleChanged;
+            _callbackTable.FullscreenModeChangedCb = Thunk_OnCefFullScreenModeChanged;
+            _callbackTable.StatusMessageCb = Thunk_OnCefStatusMessage;
+            _callbackTable.ConsoleMessageCb = Thunk_OnCefConsoleMessage;
+            _callbackTable.LoadingProgressChangedCb = Thunk_OnCefLoadingProgressChanged;
+            _callbackTable.FaviconUrlChangedCb = Thunk_OnCefFaviconUrlChanged;
+            _callbackTable.CursorChangedCb = Thunk_OnCefCursorChanged;
+            _callbackTable.DraggableRegionChangedCb = Thunk_OnCefDraggableRegionChanged;
             #endregion
 
             #region FocusHandler
-            _callbackTable.OnFocusReleasedByTabKeyCb = OnCefReleasedFocusByTabKey;
-            _callbackTable.OnRequestSetFocusCb = OnCefRequestSetFocus;
-            _callbackTable.OnGotFocusCb = OnCefGotFocus;
+            _callbackTable.OnFocusReleasedByTabKeyCb = Thunk_OnCefReleasedFocusByTabKey;
+            _callbackTable.OnRequestSetFocusCb = Thunk_OnCefRequestSetFocus;
+            _callbackTable.OnGotFocusCb = Thunk_OnCefGotFocus;
+            _callbackTable.OnJSDialogCb = Thunk_OnCefJSDialog;
             #endregion
 
             #region LifespanHandler
-            _callbackTable.OnAfterCreatedCb = OnCefAfterCreated;
+            _callbackTable.OnBeforeNewPopupCreateCb = Thunk_OnCefBeforeNewPopupCreate;
+            _callbackTable.OnBeforeNewBrowserCreateCb = Thunk_OnCefBeforeNewBrowserCreate;
+            _callbackTable.DoCloseCb = Thunk_OnCefDoClose;
+            _callbackTable.RequestCloseCb = Thunk_OnCefRequestClose;
+            _callbackTable.OnAfterCreatedCb = Thunk_OnCefAfterCreated;
+            _callbackTable.OnBeforeCloseCb = Thunk_OnCefBeforeClose;
             #endregion
 
             #region LoadHandler
-            _callbackTable.LoadingStateChangedCb = OnCefLoadingStateChanged;
-            _callbackTable.LoadStartCb = OnCefLoadStart;
-            _callbackTable.LoadEndCb = OnCefLoadEnd;
-            _callbackTable.LoadErrorCb = OnCefLoadError;
+            _callbackTable.LoadingStateChangedCb = Thunk_OnCefLoadingStateChanged;
+            _callbackTable.LoadStartCb = Thunk_OnCefLoadStart;
+            _callbackTable.LoadEndCb = Thunk_OnCefLoadEnd;
+            _callbackTable.LoadErrorCb = Thunk_OnCefLoadError;
             #endregion
 
             #region RenderHandler
-            _callbackTable.GetRootScreenRectCb = OnCefGetRootScreenRect;
-            _callbackTable.GetViewRectCb = OnCefGetViewRect;
-            _callbackTable.GetScreenPointCb = OnCefGetScreenPoint;
-            _callbackTable.GetScreenInfoCb = OnCefGetScreenInfo;
-            _callbackTable.OnPopupShowCb = OnCefPopupShow;
-            _callbackTable.OnPopupSizeCb = OnCefPopupSize;
-            _callbackTable.OnPaintCb = OnCefPaint;
-            _callbackTable.OnAcceleratedPaintCb = OnCefAcceleratedPaint;
-            _callbackTable.OnImeCompositionRangeChangedCb = OnCefImeCompositionRangeChanged;
-            _callbackTable.OnTextSelectionChangedCb = OnCefTextSelectionChanged;
+            _callbackTable.GetRootScreenRectCb = Thunk_OnCefGetRootScreenRect;
+            _callbackTable.GetViewRectCb = Thunk_OnCefGetViewRect;
+            _callbackTable.GetScreenPointCb = Thunk_OnCefGetScreenPoint;
+            _callbackTable.GetScreenInfoCb = Thunk_OnCefGetScreenInfo;
+            _callbackTable.OnPopupShowCb = Thunk_OnCefPopupShow;
+            _callbackTable.OnPopupSizeCb = Thunk_OnCefPopupSize;
+            _callbackTable.OnPaintCb = Thunk_OnCefPaint;
+            _callbackTable.OnAcceleratedPaintCb = Thunk_OnCefAcceleratedPaint;
+            // ABI 3 callbacks.
+            _callbackTable.OnBeforeUnloadDialogCb = Thunk_OnCefBeforeUnloadDialog;
+            _callbackTable.OnFileDialogCb = Thunk_OnCefFileDialog;
+            _callbackTable.OnBeforeDownloadCb = Thunk_OnCefBeforeDownload;
+            _callbackTable.OnDownloadUpdatedCb = Thunk_OnCefDownloadUpdated;
+            _callbackTable.OnFindResultCb = Thunk_OnCefFindResult;
+            _callbackTable.OnContextMenuCb = Thunk_OnCefContextMenu;
+            _callbackTable.OnContextMenuDismissedCb = Thunk_OnCefContextMenuDismissed;
+            _callbackTable.OnPermissionPromptCb = Thunk_OnCefPermissionPrompt;
+            _callbackTable.OnRenderProcessTerminatedCb = Thunk_OnCefRenderProcessTerminated;
+            _callbackTable.StartDraggingCb = Thunk_OnCefStartDragging;
+            _callbackTable.UpdateDragCursorCb = Thunk_OnCefUpdateDragCursor;
+            _callbackTable.OnImeCompositionRangeChangedCb = Thunk_OnCefImeCompositionRangeChanged;
+            _callbackTable.OnTextSelectionChangedCb = Thunk_OnCefTextSelectionChanged;
             #endregion
 
             _native = CCefBrowser_new0(_callbackTable, url, setting.NativeObject);
-        }
-
-        ~CefBrowser()
-        {
-            Dispose(false);
-
-            LiveInstances.Remove(_weakSelf);
-        }
-
-        #region CEF Callbacks
-        #region CefView events
-        public void OnCefQueryRequest(int browserId, string frameId, IntPtr query)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
+            if (_native == IntPtr.Zero)
             {
-                del.OnCefQueryRequest(browserId, frameId, new CefQuery(query));
+                lock (LiveInstances) LiveInstances.Remove(this);
+                throw new InvalidOperationException("Native browser creation failed");
             }
+            // ABI 4: register the static thunk route before browser creation so the
+            // first native callback (GetViewRect during creation) cannot precede it.
+            RegisterRoute(_native, this);
+            System.Diagnostics.Trace.WriteLine($"[ABI4] route registered host={_native}");
+            CCefBrowser_start(_native);
+            System.Diagnostics.Trace.WriteLine("[ABI4] start returned");
         }
 
-        public void OnCefInvokeMethod(int browserId, string frameId, string method, string arguments)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefInvokeMethod(browserId, frameId, method, arguments);
-            }
-        }
-
-        public void OnCefReportJavascriptResult(int browserId, string frameId, string context, string result)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefReportJavascriptResult(browserId, frameId, context, result);
-            }
-        }
-
-        public void OnCefInputStateChanged(int browserId, string frameId, bool editable)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefInputStateChanged(browserId, frameId, editable);
-            }
-        }
-        #endregion
-
-        #region DisplayHandler
-        public void OnCefAddressChanged(int browserId, string frameId, string url)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefAddressChanged(browserId, frameId, url);
-            }
-        }
-
-        public void OnCefTitleChanged(int browserId, string title)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefTitleChanged(browserId, title);
-            }
-        }
-
-        public void OnCefFullScreenModeChanged(int browserId, bool fullscreen)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefFullScreenModeChanged(browserId, fullscreen);
-            }
-        }
-
-        public void OnCefStatusMessage(int browserId, string message)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefStatusMessage(browserId, message);
-            }
-        }
-
-        public void OnCefConsoleMessage(int browserId, string message, int level)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefConsoleMessage(browserId, message, level);
-            }
-        }
-
-        public void OnCefLoadingProgressChanged(int browserId, double progress)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefLoadingProgressChanged(browserId, progress);
-            }
-        }
-
-        public bool OnCefCursorChanged(int browserId, IntPtr cursor, CefViewCursorType type, CefViewCursorInfo customCursorInfo)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefCursorChanged(browserId, type, customCursorInfo);
-                return true;
-            }
-            return false;
-        }
-        #endregion
-
-        #region FocusHandler
-        public void OnCefReleasedFocusByTabKey(int browserId, bool next)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefFocusReleasedByTabKey(browserId, next);
-            }
-        }
-
-        bool OnCefRequestSetFocus(int browserId)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefRequestSetFocus(browserId);
-            }
-
-            return false;
-        }
-
-        public void OnCefGotFocus(int browserId)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefGotFocus(browserId);
-            }
-        }
-        #endregion
-
-        #region LifespanHandler
-        public void OnCefAfterCreated()
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefAfterCreated();
-            }
-        }
-        #endregion
-
-        #region LoadHandler
-        public void OnCefLoadingStateChanged(int browserId, bool isLoading, bool canGoBack, bool canGoForward)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefLoadingStateChanged(browserId, isLoading, canGoBack, canGoForward);
-            }
-        }
-
-        public void OnCefLoadStart(int browserId, string frameId, bool isMainFrame, int transition_type)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefLoadStart(browserId, frameId, isMainFrame, transition_type);
-            }
-        }
-
-        public void OnCefLoadEnd(int browserId, string frameId, bool isMainFrame, int httpStatusCode)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefLoadEnd(browserId, frameId, isMainFrame, httpStatusCode);
-            }
-        }
-
-        bool OnCefLoadError(int browserId, string frameId, bool isMainFrame, int errorCode, string errorMsg, string failedUrl)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefLoadError(browserId, frameId, isMainFrame, errorCode, errorMsg, failedUrl);
-            }
-
-            return false;
-        }
-        #endregion
-
-        #region RenderHandler
-        public void OnCefGetRootScreenRect(int browserId, ref CefViewRect rect)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefGetRootScreenRect(browserId, ref rect);
-            }
-        }
-
-        public void OnCefGetViewRect(int browserId, ref CefViewRect rect)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefGetViewRect(browserId, ref rect);
-            }
-        }
-
-        bool OnCefGetScreenPoint(int browserId, int viewX, int viewY, ref int screenX, ref int screenY)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                return del.OnCefGetScreenPoint(browserId, viewX, viewY, ref screenX, ref screenY);
-            }
-
-            screenX = 0;
-            screenY = 0;
-            return false;
-        }
-
-        bool OnCefGetScreenInfo(int browserId, ref CefViewScreenInfo info)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                return del.OnCefGetScreenInfo(browserId, ref info);
-            }
-
-            return false;
-        }
-
-        public void OnCefPopupShow(int browserId, bool show)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefPopupShow(browserId, show);
-            }
-        }
-
-        public void OnCefPopupSize(int browserId, CefViewRect rect)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefPopupSize(browserId, rect);
-            }
-        }
-
-        public void OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefPaint(browserId, type, dirtyRects, dirtyRectCount, imageBytesBuffer, imageBytesCount, width, height);
-            }
-        }
-
-        public void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefAcceleratedPaint(browserId, type, dirtyRects, dirtyRectCount, sharedHandle, planeBytesCount);
-            }
-        }
-
-        public void OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefImeCompositionRangeChanged(browserId, selectedRange, characterBounds, characterBoundsCount);
-            }
-        }
-
-        public void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange)
-        {
-            var del = _dnCefViewDelegate.Target as ICefViewDelegate;
-            if (null != del)
-            {
-                del.OnCefTextSelectionChanged(browserId, selectedText, selectedRange);
-            }
-        }
-        #endregion
-        #endregion
     }
 }

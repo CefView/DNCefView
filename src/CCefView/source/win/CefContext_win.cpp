@@ -1,4 +1,4 @@
-﻿#include <CefContext.h>
+#include <CefContext.h>
 
 #undef OS_WINDOWS
 #include <Shlwapi.h>
@@ -15,10 +15,13 @@
 bool
 CCefContext::init(const CCefConfig* config)
 {
+  config_ = config;
+
   // get current dll handle
   HMODULE hCurrentModule = nullptr;
   ::GetModuleHandleEx(
-    GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(&CCefContext::instance), &hCurrentModule);
+    GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+    reinterpret_cast<LPCTSTR>(&CCefContext::instance), &hCurrentModule);
 
   // set cef folder path
   std::vector<wchar_t> modPath(MAX_PATH * 4);
@@ -42,8 +45,14 @@ CCefContext::init(const CCefConfig* config)
 #endif
 
   // fixed values
+  // CEF 128+ dropped the chrome_runtime workaround for
+  // https://github.com/chromiumembedded/cef/issues/3685 (only valid for 125-127)
+  // and removed pack_loading_disabled / persist_user_preferences.
 #if CEF_VERSION_MAJOR < 128
   cef_settings.pack_loading_disabled = false;
+#endif
+#if CEF_VERSION_MAJOR >= 128
+  cef_settings.no_sandbox = true; // no sandbox support in this host; see linux/mac twins
 #endif
 
   // external message pump
@@ -72,9 +81,8 @@ CCefContext::init(const CCefConfig* config)
     if (!::SetInformationJobObject(windowsJobHandle_, JobObjectExtendedLimitInformation, &info, sizeof(info))) {
       // qWarning() << "Failed to set information for windows job object:" << GetLastError();
     }
-    if (!::AssignProcessToJobObject(windowsJobHandle_, ::GetCurrentProcess())) {
-      // qWarning() << "Failed to assign current process to windows job object:" << ::GetLastError();
-    }
+    // CefViewWing joins this named job itself. Keep the host outside the
+    // KILL_ON_JOB_CLOSE job so disposing the context cannot terminate Unity.
   }
 
   // Initialize CEF
@@ -95,7 +103,7 @@ CCefContext::init(const CCefConfig* config)
 
   CefMainArgs main_args(::GetModuleHandle(nullptr));
   if (!CefInitialize(main_args, cef_settings, app, sandboxInfo)) {
-    assert(0);
+    if (windowsJobHandle_) { ::CloseHandle(windowsJobHandle_); windowsJobHandle_ = nullptr; }
     return false;
   }
 
@@ -108,12 +116,16 @@ CCefContext::init(const CCefConfig* config)
 void
 CCefContext::uninit()
 {
-  if (!pApp_)
+  if (!pApp_) {
+    config_ = nullptr;
     return;
+  }
 
   pAppDelegate_ = nullptr;
   pApp_ = nullptr;
 
   // shutdown the cef
   CefShutdown();
+  if (windowsJobHandle_) { ::CloseHandle(windowsJobHandle_); windowsJobHandle_ = nullptr; }
+  config_ = nullptr;
 }

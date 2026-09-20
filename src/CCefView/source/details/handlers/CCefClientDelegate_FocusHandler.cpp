@@ -9,16 +9,17 @@ CCefClientDelegate::takeFocus(CefRefPtr<CefBrowser>& browser, bool next)
     return;
 
   if (pCefView_->callbackTable_.pfnOnFocusReleasedByTabKey) {
-    pCefView_->callbackTable_.pfnOnFocusReleasedByTabKey(browser->GetIdentifier(), next);
+    pCefView_->callbackTable_.pfnOnFocusReleasedByTabKey(pCefView_, browser->GetIdentifier(), next);
   }
 }
 
 bool
 CCefClientDelegate::setFocus(CefRefPtr<CefBrowser>& browser)
 {
+  if (!pCefView_) return false;
   // allow the focus setting action
   if (pCefView_->callbackTable_.pfnOnRequestSetFocus) {
-    return pCefView_->callbackTable_.pfnOnRequestSetFocus(browser->GetIdentifier());
+    return pCefView_->callbackTable_.pfnOnRequestSetFocus(pCefView_, browser->GetIdentifier());
   }
 
   return false;
@@ -31,6 +32,6 @@ CCefClientDelegate::gotFocus(CefRefPtr<CefBrowser>& browser)
     return;
 
   if (pCefView_->callbackTable_.pfnOnGotFocus) {
-    pCefView_->callbackTable_.pfnOnGotFocus(browser->GetIdentifier());
+    pCefView_->callbackTable_.pfnOnGotFocus(pCefView_, browser->GetIdentifier());
   }
 }

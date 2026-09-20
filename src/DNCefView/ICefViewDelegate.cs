@@ -18,7 +18,9 @@ namespace DNCefView
         void OnCefStatusMessage(int browserId, string message);
         void OnCefConsoleMessage(int browserId, string message, int level);
         void OnCefLoadingProgressChanged(int browserId, double progress);
+        void OnCefFaviconUrlChanged(int browserId, string faviconUrl);
         void OnCefCursorChanged(int browserId, CefViewCursorType type, CefViewCursorInfo customCursorInfo);
+        void OnCefDraggableRegionChanged(CefViewDraggableRegion[] draggableRegion, int count);
         #endregion
 
         #region FocusHandler
@@ -27,8 +29,55 @@ namespace DNCefView
         void OnCefGotFocus(int browserId);
         #endregion
 
+        #region JSDialogHandler
+        bool OnCefJSDialog(int browserId, long requestId, string originUrl, int dialogType, string messageText, string defaultPromptText, bool suppressMessage);
+        bool OnCefBeforeUnloadDialog(int browserId, long requestId, string messageText, bool isReload);
+        #endregion
+
+        #region DialogHandler
+        bool OnCefFileDialog(int browserId, long requestId, int mode, string title, string defaultFilePath, string filtersJson);
+        #endregion
+
+        #region DownloadHandler
+        bool OnCefBeforeDownload(int browserId, long downloadId, string url, string suggestedName, string mimeType, long totalBytes);
+        void OnCefDownloadUpdated(int browserId, long downloadId, int state, double percent, long speed, long receivedBytes, long totalBytes);
+        #endregion
+
+        #region FindHandler
+        void OnCefFindResult(int browserId, int identifier, int count, int activeMatchOrdinal, bool finalUpdate, CefViewRect selectionRect);
+        #endregion
+
+        #region ContextMenuHandler
+        bool OnCefContextMenu(int browserId, long requestId, string contextParamsJson, string menuJson);
+        void OnCefContextMenuDismissed(int browserId);
+        #endregion
+
+        #region PermissionHandler
+        bool OnCefPermissionPrompt(int browserId, ulong promptId, string requestingOrigin, uint requestedPermissions);
+        #endregion
+
+        #region RequestHandler
+        void OnCefRenderProcessTerminated(int browserId, int status, int errorCode, string errorString);
+        #endregion
+
         #region LifespanHandler
+        bool OnCefBeforeNewPopupCreate(string frameId,
+                                       string targetUrl,
+                                       string targetFrameName,
+                                       CefViewWindowOpenDisposition targetDisposition,
+                                       ref CefViewRect rect,
+                                       IntPtr settings,
+                                       ref bool disableJavascriptAccess);
+        bool OnCefBeforeNewBrowserCreate(string frameId,
+                                         string targetUrl,
+                                         string targetFrameName,
+                                         CefViewWindowOpenDisposition targetDisposition,
+                                         CefViewRect rect,
+                                         IntPtr settings);
+        bool OnCefDoClose();
+        bool OnCefRequestClose();
         void OnCefAfterCreated();
+        void OnCefBeforeClose();
         #endregion
 
         #region LoadHandler
@@ -47,6 +96,8 @@ namespace DNCefView
         void OnCefPopupSize(int browserId, CefViewRect rect);
         void OnCefPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height);
         void OnCefAcceleratedPaint(int browserId, CefViewPaintElementType type, CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
+        bool OnCefStartDragging(int browserId, CefViewDragOperation allowedOps, int x, int y);
+        void OnCefUpdateDragCursor(int browserId, CefViewDragOperation operation);
         void OnCefTextSelectionChanged(int browserId, string selectedText, CefViewRange selectedRange);
         void OnCefImeCompositionRangeChanged(int browserId, CefViewRange selectedRange, CefViewRect[] characterBounds, int characterBoundsCount);
         #endregion

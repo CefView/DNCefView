@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -9,7 +9,7 @@ CCefClientDelegate::onDragEnter(CefRefPtr<CefBrowser>& browser,
                                 CefRefPtr<CefDragData>& dragData,
                                 CefDragHandler::DragOperationsMask mask)
 {
-  return true;
+  return false;
 }
 
 void
@@ -21,5 +21,5 @@ CCefClientDelegate::draggableRegionChanged(CefRefPtr<CefBrowser>& browser,
     return;
 
   if (pCefView_->callbackTable_.pfnDraggableRegionChanged)
-    pCefView_->callbackTable_.pfnDraggableRegionChanged(regions.data(), static_cast<int>(regions.size()));
+    pCefView_->callbackTable_.pfnDraggableRegionChanged(pCefView_, regions.data(), static_cast<int>(regions.size()));
 }

@@ -97,8 +97,11 @@ class CSharpGenerator(SourceGenerator):
             if p.basic.startswith("CCef") and p.basic in self.types.keys():
                 out_params.append(p.spelling.replace(self.types[p.basic], "IntPtr"))
                 out_args.append(f"{a}.NativeObject")
-            elif p.basic.startswith("std::string"):
+            elif p.spelling.startswith("string "):
                 out_params.append(f"[MarshalAs(UnmanagedType.LPUTF8Str)] " + p.spelling)
+                out_args.append(a)
+            elif p.spelling.startswith("bool "):
+                out_params.append("[MarshalAs(UnmanagedType.I1)] " + p.spelling)
                 out_args.append(a)
             elif "[]" in p.spelling:
                 out_params.append(f"[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = {len(out_params) + 1})] " + p.spelling)
@@ -106,6 +109,11 @@ class CSharpGenerator(SourceGenerator):
             else:
                 out_params.append(p.spelling)
                 out_args.append(a)
+
+    def return_marshal(self, rt):
+        if rt.get_canonical().kind == clang.cindex.TypeKind.BOOL:
+            return "        [return: MarshalAs(UnmanagedType.I1)]\n"
+        return ""
 
     def return_prefix(self, rt):
         match rt.get_canonical().kind:
@@ -128,7 +136,7 @@ class CSharpGenerator(SourceGenerator):
     def parse(self, tu: clang.cindex.TranslationUnit):
         """"""
         for cursor in tu.cursor.get_children():
-            if cursor.location.file.name != tu.spelling:
+            if not cursor.location.file or cursor.location.file.name != tu.spelling:
                 continue
             else:
                 self.parse_cursor(cursor)
@@ -154,7 +162,7 @@ class CSharpGenerator(SourceGenerator):
         """"""
         self.source_name = os.path.splitext(os.path.basename(tu.spelling))[0]
         self.source_file = open(
-            f"{os.path.join(self.out, self.source_name)}+AutoGen.cs", "wt"
+            f"{os.path.join(self.out, self.source_name)}+AutoGen.cs", "wt", encoding="utf-8", newline="\n"
         )
         # self.user_file = open(
         #     f'{os.path.join(self.out, self.source_name)}.cs', 'wt')
@@ -305,6 +313,7 @@ class CSharpGenerator(SourceGenerator):
                     method = (
                         f"        // Source: {cpp_return_type.spelling} {c_cursor.displayname}\n"
                         f'        [DllImport("{self.dll}")]\n'
+                        f"{self.return_marshal(cpp_return_type)}"
                         f'        private static extern {self.translate_type(cpp_return_type, True)} {cpp_class}_{cpp_method_name}({", ".join(marshal_params)});\n'
                         f'        public {self.translate_type(cpp_return_type)} {csharp_method_name}({", ".join([p.spelling for p in params])})\n'
                         f"        {{\n"
@@ -362,7 +371,8 @@ class CSharpGenerator(SourceGenerator):
                                 self.source_file.write(
                                     f"        // Source: {f_cursor.type.get_canonical().spelling.replace('(*)', f_cursor.displayname)}\n"
                                     f"        [UnmanagedFunctionPointer(CallingConvention.StdCall)]\n"
-                                    f"        public delegate {self.translate_type(pointee.get_result())} {self.extract_funcptr_name(f_cursor.spelling)}Callback({", ".join(marshal_params)});\n"
+                                    f"{self.return_marshal(pointee.get_result())}"
+                                    f"        public delegate {self.translate_type(pointee.get_result())} {self.extract_funcptr_name(f_cursor.spelling)}Callback({', '.join(marshal_params)});\n"
                                     f"        public {self.extract_funcptr_name(f_cursor.spelling)}Callback {self.extract_funcptr_name(f_cursor.spelling)}Cb;\n"
                                 )
                             else:
@@ -371,6 +381,8 @@ class CSharpGenerator(SourceGenerator):
                                     f"        public {self.translate_type(f_cursor.type.get_canonical())} {self.convert_arg_name(f_cursor.spelling)};\n"
                                 )
                         case _:
+                            if f_cursor.type.get_canonical().kind == clang.cindex.TypeKind.BOOL:
+                                self.source_file.write("        [MarshalAs(UnmanagedType.I1)]\n")
                             self.source_file.write(
                                 f"        // Source: {f_cursor.type.spelling} {f_cursor.displayname}\n"
                                 f"        public {self.translate_type(f_cursor.type.get_canonical())} {self.convert_arg_name(f_cursor.spelling)};\n"

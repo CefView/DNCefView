@@ -31,6 +31,9 @@ extern "C"
   typedef struct CCefBrowser ccefbrowser_class;
   CCEFVIEW_EXPORT void CCefBrowser_Delete(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT ccefbrowser_class * CCefBrowser_new0(cefbrowsercallback_struct callback, const char * url, const ccefsetting_class * setting);
+  // ABI 4: phase-2 browser creation; new0 only allocates so the host can
+  // register its thunk route first.
+  CCEFVIEW_EXPORT void CCefBrowser_start(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_addLocalFolderResource(ccefbrowser_class * thiz, const char * path, const char * url, int priority);
   CCEFVIEW_EXPORT void CCefBrowser_addArchiveResource(ccefbrowser_class * thiz, const char * path, const char * url, const char * password, int priority);
   CCEFVIEW_EXPORT int CCefBrowser_browserId(ccefbrowser_class * thiz);
@@ -54,12 +57,26 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_setDisablePopupContextMenu(ccefbrowser_class * thiz, bool disable);
   CCEFVIEW_EXPORT bool CCefBrowser_isPopupContextMenuDisabled(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_setWindowlessFrameRate(ccefbrowser_class * thiz, int rate);
+  CCEFVIEW_EXPORT void CCefBrowser_sendExternalBeginFrame(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_showDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_closeDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT bool CCefBrowser_hasDevTools(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_closeBrowser(ccefbrowser_class * thiz, bool forceClose);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueJSDialog(ccefbrowser_class * thiz, int64_t requestId, bool success, const char * userInput);
   CCEFVIEW_EXPORT void CCefBrowser_setFocus(ccefbrowser_class * thiz, bool focused);
   CCEFVIEW_EXPORT void CCefBrowser_wasResized(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_wasHidden(ccefbrowser_class * thiz, bool hidden);
   CCEFVIEW_EXPORT void CCefBrowser_sendMouseMoveEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, bool leave);
   CCEFVIEW_EXPORT void CCefBrowser_sendMouseClickEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, cefviewmousebuttontype_enum type, bool mouseUp, int clickCount);
   CCEFVIEW_EXPORT void CCefBrowser_sendWheelEvent(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, int deltaX, int deltaY);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragEnterText(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * text, const char * html, const char * baseUrl, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragEnterFiles(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, const char * filePaths, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragOver(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers, cefviewdragoperation_enum allowedOps);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDragLeave(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_dragTargetDrop(ccefbrowser_class * thiz, int x, int y, uint32_t modifiers);
+  CCEFVIEW_EXPORT void CCefBrowser_dragSourceEndedAt(ccefbrowser_class * thiz, int x, int y, cefviewdragoperation_enum operation);
+  CCEFVIEW_EXPORT void CCefBrowser_dragSourceSystemDragEnded(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_sendTouchEvent(ccefbrowser_class * thiz, int touchId, float x, float y, float radiusX, float radiusY, float rotationAngle, float pressure, int touchEventType, uint32_t modifiers, int pointerType);
   CCEFVIEW_EXPORT void CCefBrowser_sendKeyEvent(ccefbrowser_class * thiz, cefviewkeyeventtype_enum type, uint32_t modifiers, int windowsKeyCode, int nativeKeyCode, bool isSysKey, uint16_t character, uint16_t umodifiedCharacter, bool isFocusOnEditableField);
   CCEFVIEW_EXPORT void CCefBrowser_notifyMoveOrResizeStarted(ccefbrowser_class * thiz);
   CCEFVIEW_EXPORT void CCefBrowser_notifyScreenChanged(ccefbrowser_class * thiz);
@@ -67,6 +84,26 @@ extern "C"
   CCEFVIEW_EXPORT void CCefBrowser_imeCommitText(ccefbrowser_class * thiz, const char * text, cefviewrange_struct replacement_range, int relative_cursor_pos);
   CCEFVIEW_EXPORT void CCefBrowser_imeFinishComposingText(ccefbrowser_class * thiz, bool keep_selection);
   CCEFVIEW_EXPORT void CCefBrowser_imeCancelComposition(ccefbrowser_class * thiz);
+
+  // ABI 3 additions: editor commands, find, and the dialog/download/context-menu/permission answer channels.
+  CCEFVIEW_EXPORT void CCefBrowser_copy(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_cut(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_paste(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_selectAll(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_undo(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_redo(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_delete(ccefbrowser_class * thiz);
+  CCEFVIEW_EXPORT void CCefBrowser_startFinding(ccefbrowser_class * thiz, const char * searchText, bool forward, bool matchCase);
+  CCEFVIEW_EXPORT void CCefBrowser_stopFinding(ccefbrowser_class * thiz, bool clearSelection);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueFileDialog(ccefbrowser_class * thiz, int64_t requestId, int filterIndex, const char * const * filePaths, int filePathCount);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelFileDialog(ccefbrowser_class * thiz, int64_t requestId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueDownload(ccefbrowser_class * thiz, int64_t downloadId, const char * downloadPath, bool showDialog);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT void CCefBrowser_pauseDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT void CCefBrowser_resumeDownload(ccefbrowser_class * thiz, int64_t downloadId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continueContextMenu(ccefbrowser_class * thiz, int64_t requestId, int commandId, int eventFlags);
+  CCEFVIEW_EXPORT void CCefBrowser_cancelContextMenu(ccefbrowser_class * thiz, int64_t requestId);
+  CCEFVIEW_EXPORT bool CCefBrowser_continuePermissionPrompt(ccefbrowser_class * thiz, uint64_t promptId, bool allow);
 
 #if defined(__cplusplus)
 }

@@ -1,4 +1,4 @@
-﻿#include "CCefClientDelegate.h"
+#include "CCefClientDelegate.h"
 
 #include <CefBrowser.h>
 
@@ -9,7 +9,7 @@ CCefClientDelegate::getRootScreenRect(CefRefPtr<CefBrowser>& browser, CefRect& r
     return false;
 
   if (pCefView_->callbackTable_.pfnGetRootScreenRect) {
-    pCefView_->callbackTable_.pfnGetRootScreenRect(browser->GetIdentifier(), &rect);
+    pCefView_->callbackTable_.pfnGetRootScreenRect(pCefView_, browser->GetIdentifier(), &rect);
   }
 
   return true;
@@ -24,7 +24,7 @@ CCefClientDelegate::getViewRect(CefRefPtr<CefBrowser>& browser, CefRect& rect)
   }
 
   if (pCefView_->callbackTable_.pfnGetViewRect) {
-    pCefView_->callbackTable_.pfnGetViewRect(browser->GetIdentifier(), &rect);
+    pCefView_->callbackTable_.pfnGetViewRect(pCefView_, browser->GetIdentifier(), &rect);
   }
 
   return;
@@ -37,7 +37,7 @@ CCefClientDelegate::getScreenPoint(CefRefPtr<CefBrowser>& browser, int viewX, in
     return false;
 
   if (pCefView_->callbackTable_.pfnGetScreenPoint) {
-    return pCefView_->callbackTable_.pfnGetScreenPoint(browser->GetIdentifier(), viewX, viewY, &screenX, &screenY);
+    return pCefView_->callbackTable_.pfnGetScreenPoint(pCefView_, browser->GetIdentifier(), viewX, viewY, &screenX, &screenY);
   }
 
   return false;
@@ -50,7 +50,7 @@ CCefClientDelegate::getScreenInfo(CefRefPtr<CefBrowser>& browser, CefScreenInfo&
     return false;
 
   if (pCefView_->callbackTable_.pfnGetScreenInfo) {
-    pCefView_->callbackTable_.pfnGetScreenInfo(browser->GetIdentifier(), &screen_info);
+    pCefView_->callbackTable_.pfnGetScreenInfo(pCefView_, browser->GetIdentifier(), &screen_info);
   }
 
   return true;
@@ -63,7 +63,7 @@ CCefClientDelegate::onPopupShow(CefRefPtr<CefBrowser>& browser, bool show)
     return;
 
   if (pCefView_->callbackTable_.pfnOnPopupShow) {
-    pCefView_->callbackTable_.pfnOnPopupShow(browser->GetIdentifier(), show);
+    pCefView_->callbackTable_.pfnOnPopupShow(pCefView_, browser->GetIdentifier(), show);
   }
 }
 
@@ -74,7 +74,7 @@ CCefClientDelegate::onPopupSize(CefRefPtr<CefBrowser>& browser, const CefRect& r
     return;
 
   if (pCefView_->callbackTable_.pfnOnPopupSize) {
-    pCefView_->callbackTable_.pfnOnPopupSize(browser->GetIdentifier(), rect);
+    pCefView_->callbackTable_.pfnOnPopupSize(pCefView_, browser->GetIdentifier(), rect);
   }
 }
 
@@ -98,7 +98,7 @@ CCefClientDelegate::onPaint(CefRefPtr<CefBrowser>& browser,
     dirtyRectsBuffer.push_back(rc);
   }
 
-  pCefView_->callbackTable_.pfnOnPaint(browser->GetIdentifier(),
+  pCefView_->callbackTable_.pfnOnPaint(pCefView_, browser->GetIdentifier(),
                                        type,
                                        dirtyRectsBuffer.data(),
                                        (int)dirtyRectsBuffer.size(),
@@ -126,7 +126,7 @@ CCefClientDelegate::onAcceleratedPaint(CefRefPtr<CefBrowser>& browser,
   if (!IsValidBrowser(browser))
     return;
 
-  if (!pCefView_->callbackTable_.pfnOnPaint) {
+  if (!pCefView_->callbackTable_.pfnOnAcceleratedPaint) {
     return;
   }
 
@@ -153,7 +153,7 @@ CCefClientDelegate::onAcceleratedPaint(CefRefPtr<CefBrowser>& browser,
 #endif
 
   if (pCefView_->callbackTable_.pfnOnAcceleratedPaint) {
-    pCefView_->callbackTable_.pfnOnAcceleratedPaint(browser->GetIdentifier(),
+    pCefView_->callbackTable_.pfnOnAcceleratedPaint(pCefView_, browser->GetIdentifier(),
                                                     type,
                                                     dirtyRectsBuffer.data(),
                                                     static_cast<int>(dirtyRectsBuffer.size()),
@@ -170,13 +170,22 @@ CCefClientDelegate::startDragging(CefRefPtr<CefBrowser>& browser,
                                   int x,
                                   int y)
 {
-  return false;
+  if (!IsValidBrowser(browser))
+    return false;
+
+  return pCefView_->startDragging(drag_data, static_cast<CefViewDragOperation>(allowed_ops), x, y);
 }
 
 void
 CCefClientDelegate::updateDragCursor(CefRefPtr<CefBrowser>& browser, CefRenderHandler::DragOperation operation)
 {
-  return;
+  if (!IsValidBrowser(browser))
+    return;
+
+  if (pCefView_->callbackTable_.pfnUpdateDragCursor) {
+    pCefView_->callbackTable_.pfnUpdateDragCursor(pCefView_, browser->GetIdentifier(),
+                                                  static_cast<CefViewDragOperation>(operation));
+  }
 }
 
 void
@@ -193,11 +202,12 @@ CCefClientDelegate::onImeCompositionRangeChanged(CefRefPtr<CefBrowser>& browser,
     return;
 
   std::vector<cef_rect_t> characterBoundsBuffer;
-  for (auto const& rc : character_bounds)
+  for (auto const& rc : character_bounds) {
     characterBoundsBuffer.push_back(rc);
+  }
 
   if (pCefView_->callbackTable_.pfnOnImeCompositionRangeChanged) {
-    pCefView_->callbackTable_.pfnOnImeCompositionRangeChanged(browser->GetIdentifier(),
+    pCefView_->callbackTable_.pfnOnImeCompositionRangeChanged(pCefView_, browser->GetIdentifier(),
                                                               selected_range,
                                                               characterBoundsBuffer.data(),
                                                               static_cast<int>(characterBoundsBuffer.size()));
@@ -212,7 +222,7 @@ CCefClientDelegate::onTextSelectionChanged(CefRefPtr<CefBrowser>& browser,
                                            const CefRange& selected_range)
 {
   if (pCefView_->callbackTable_.pfnOnTextSelectionChanged) {
-    pCefView_->callbackTable_.pfnOnTextSelectionChanged(
+    pCefView_->callbackTable_.pfnOnTextSelectionChanged(pCefView_, 
       browser->GetIdentifier(), selected_text.ToString().c_str(), selected_range);
   }
 }

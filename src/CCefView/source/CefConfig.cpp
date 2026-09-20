@@ -192,7 +192,10 @@ CCefConfig::setPersistUserPreferences(bool enabled)
 #if CEF_VERSION_MAJOR < 128
   persistUserPreferences_ = enabled;
 #else
-  DEPRECATED_CEF_API_WARNING(128, 0, 0);
+  // CEF 128 removed persist_user_preferences from CefSettings.
+  // Keep the API surface but explicitly refuse instead of
+  // debug-breaking (DEPRECATED_CEF_API_WARNING is assert(false)).
+  (void)enabled;
 #endif
 }
 
@@ -202,7 +205,7 @@ CCefConfig::persistUserPreferences() const
 #if CEF_VERSION_MAJOR < 128
   return persistUserPreferences_.value_or(false);
 #else
-  DEPRECATED_CEF_API_WARNING(128, 0, 0);
+  // CEF 128 removed persist_user_preferences from CefSettings.
   return false;
 #endif
 }

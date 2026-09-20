@@ -29,6 +29,7 @@ public:
   CCefClientDelegate(CCefBrowser* p);
 
   ~CCefClientDelegate();
+  void detach() { pCefView_ = nullptr; }
 
   virtual void processUrlRequest(CefRefPtr<CefBrowser>& browser,
                                  CefRefPtr<CefFrame>& frame,
@@ -173,6 +174,39 @@ public:
                          const CefString& errorMsg,
                          const CefString& failedUrl,
                          bool& handled) override;
+
+  // RequestHandler hooks (CefViewCore feat/unity-callbacks)
+  virtual bool onBeforeBrowse(CefRefPtr<CefBrowser>& browser,
+                              CefRefPtr<CefFrame>& frame,
+                              CefRefPtr<CefRequest>& request,
+                              bool user_gesture,
+                              bool is_redirect) override;
+
+  virtual void onRenderProcessTerminated(CefRefPtr<CefBrowser>& browser,
+                                         CefRequestHandler::TerminationStatus status
+#if CEF_VERSION_MAJOR >= 124
+                                         ,
+                                         int errorCode,
+                                         const CefString& errorString
+#endif
+                                         ) override;
+
+  // FindHandler (CefViewCore feat/unity-callbacks)
+  virtual void onFindResult(CefRefPtr<CefBrowser>& browser,
+                            int identifier,
+                            int count,
+                            const CefRect& selectionRect,
+                            int activeMatchOrdinal,
+                            bool finalUpdate) override;
+
+#if CEF_VERSION_MAJOR >= 106
+  // PermissionHandler (CEF 106+)
+  virtual bool onShowPermissionPrompt(CefRefPtr<CefBrowser>& browser,
+                                      uint64_t prompt_id,
+                                      const CefString& requesting_origin,
+                                      uint32_t requested_permissions,
+                                      CefRefPtr<CefPermissionPromptCallback>& callback) override;
+#endif
 
   // RenderHandler
   virtual bool getRootScreenRect(CefRefPtr<CefBrowser>& browser, CefRect& rect) override;

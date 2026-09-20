@@ -1,7 +1,7 @@
 include(FetchContent)
 
 if(NOT CEFVIEW_CORE_VERSION)
-    set(DEFAULT_CEFVIEW_CORE_VERSION "main")
+    set(DEFAULT_CEFVIEW_CORE_VERSION "99b83e74c6367b78c0d67a32c9a0b0dcb2050688")
     set(CEFVIEW_CORE_VERSION ${DEFAULT_CEFVIEW_CORE_VERSION})
     message(STATUS "CEFVIEW_CORE_VERSION not set, use default value:${CEFVIEW_CORE_VERSION}")
 endif()
@@ -17,7 +17,7 @@ FetchContent_Declare(
 set(CMAKE_FOLDER ${CMAKE_FOLDER}/CefViewCore)
 
 # set CEF SDK version
-set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183")
+# CEF_SDK_VERSION is defined once by the root project.
 
 # populate CefViewCore project
 FetchContent_MakeAvailable(CefViewCore)
