@@ -88,7 +88,7 @@ namespace DNCefView
 
         // Source: void pfnDraggableRegionChanged(const _cef_draggable_region_t *, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void DraggableRegionChangedCallback(System.IntPtr host, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] CefViewDraggableRegion[] draggableRegion, int count);
+        public delegate void DraggableRegionChangedCallback(System.IntPtr host, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] CefViewDraggableRegion[] draggableRegion, int count);
         public DraggableRegionChangedCallback DraggableRegionChangedCb;
 
         // Source: void pfnOnFindResult(int, int, int, int, bool, _cef_rect_t)
@@ -235,12 +235,12 @@ namespace DNCefView
 
         // Source: void pfnOnPaint(int, cef_paint_element_type_t, const _cef_rect_t *, int, const void *, int, int, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void OnPaintCallback(System.IntPtr host, int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height);
+        public delegate void OnPaintCallback(System.IntPtr host, int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr imageBytesBuffer, int imageBytesCount, int width, int height);
         public OnPaintCallback OnPaintCb;
 
         // Source: void pfnOnAcceleratedPaint(int, cef_paint_element_type_t, const _cef_rect_t *, int, const void *, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void OnAcceleratedPaintCallback(System.IntPtr host, int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
+        public delegate void OnAcceleratedPaintCallback(System.IntPtr host, int browserId, CefViewPaintElementType type, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] CefViewRect[] dirtyRects, int dirtyRectCount, IntPtr sharedHandle, int planeBytesCount);
         public OnAcceleratedPaintCallback OnAcceleratedPaintCb;
 
         // Source: bool pfnStartDragging(int, cef_drag_operations_mask_t, int, int)
@@ -260,7 +260,7 @@ namespace DNCefView
 
         // Source: void pfnOnImeCompositionRangeChanged(int, _cef_range_t, const _cef_rect_t *, int)
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void OnImeCompositionRangeChangedCallback(System.IntPtr host, int browserId, CefViewRange selectedRange, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] CefViewRect[] characterBounds, int characterBoundsCount);
+        public delegate void OnImeCompositionRangeChangedCallback(System.IntPtr host, int browserId, CefViewRange selectedRange, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] CefViewRect[] characterBounds, int characterBoundsCount);
         public OnImeCompositionRangeChangedCallback OnImeCompositionRangeChangedCb;
 
         // Source: void pfnOnTextSelectionChanged(int, const char *, _cef_range_t)
